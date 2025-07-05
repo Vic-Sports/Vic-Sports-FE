@@ -1,0 +1,98 @@
+import { fetchAccountAPI } from "@/services/api";
+import { createContext, useContext, useEffect, useState } from "react";
+import RingLoader from "react-spinners/PacmanLoader";
+
+interface IAppContext {
+  isAuthenticated: boolean;
+  setIsAuthenticated: (v: boolean) => void;
+  setUser: (v: IUser | null) => void;
+  user: IUser | null;
+  isAppLoading: boolean;
+  setIsAppLoading: (v: boolean) => void;
+  theme: ThemeContextType;
+  setTheme: (v: ThemeContextType) => void;
+}
+
+type ThemeContextType = "dark" | "light";
+
+const CurrentAppContext = createContext<IAppContext | null>(null);
+
+type TProps = {
+  children: React.ReactNode;
+};
+
+export const AppProvider = (props: TProps) => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  const [user, setUser] = useState<IUser | null>(null);
+  const [isAppLoading, setIsAppLoading] = useState<boolean>(false);
+  const [theme, setTheme] = useState<ThemeContextType>(() => {
+    const initialTheme =
+      (localStorage.getItem("theme") as ThemeContextType) || "light";
+    return initialTheme;
+  });
+
+  useEffect(() => {
+    const mode = localStorage.getItem("theme") as ThemeContextType;
+    if (mode) {
+      setTheme(mode);
+      document.documentElement.setAttribute("data-bs-theme", mode);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchAccount = async () => {
+      const res = await fetchAccountAPI();
+      if (res.data) {
+        setUser(res.data.user);
+        setIsAuthenticated(true);
+      }
+      setIsAppLoading(false);
+    };
+
+    fetchAccount();
+  }, []);
+
+  return (
+    <>
+      {isAppLoading === false ? (
+        <CurrentAppContext.Provider
+          value={{
+            isAuthenticated,
+            user,
+            setIsAuthenticated,
+            setUser,
+            isAppLoading,
+            setIsAppLoading,
+            theme,
+            setTheme
+          }}
+        >
+          {props.children}
+        </CurrentAppContext.Provider>
+      ) : (
+        <div
+          style={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)"
+          }}
+        >
+          <RingLoader size={30} color="" />
+        </div>
+      )}
+    </>
+  );
+};
+
+export const useCurrentApp = () => {
+  const currentAppContext = useContext(CurrentAppContext);
+
+  if (!currentAppContext) {
+    throw new Error(
+      "useCurrentApp has to be used within <CurrentAppContext.Provider>"
+    );
+  }
+
+  return currentAppContext;
+};
