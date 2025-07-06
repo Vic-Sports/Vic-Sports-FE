@@ -129,7 +129,7 @@ const Header = () => {
                     style={{ cursor: "pointer" }}
                     onClick={() => navigate("/login")}
                   >
-                    Tài Khoản
+                    {t("appHeader.login")}
                   </span>
                 ) : (
                   <Dropdown menu={{ items: menuItems }} trigger={["click"]}>
