@@ -1,5 +1,17 @@
 {
-    "appHeader": {
-        "home": "Home"
-    }
+  "appHeader": {
+    "home": "Home"
+  },
+  "auth": {
+    "register_title": "CREATE ACCOUNT",
+    "register_text": "Please fill in the details to sign up.",
+    "fullname": "Full Name",
+    "password": "Password",
+    "phone": "Phone",
+    "signup": "Sign up",
+    "register_google": "Sign up with Google",
+    "register_facebook": "Sign up with Facebook",
+    "already": "Already have an account?",
+    "login_route": "Sign in here"
+  }
 }

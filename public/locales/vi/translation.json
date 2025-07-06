@@ -1,5 +1,17 @@
 {
-    "appHeader": {
-        "home": "Trang chủ"
-    }
+  "appHeader": {
+    "home": "Trang chủ"
+  },
+  "auth": {
+    "register_title": "TẠO TÀI KHOẢN",
+    "register_text": "Vui lòng điền thông tin để đăng ký.",
+    "fullname": "Họ và tên",
+    "password": "Mật khẩu",
+    "phone": "Số điện thoại",
+    "signup": "Đăng ký",
+    "register_google": "Đăng ký với Google",
+    "register_facebook": "Đăng ký với Facebook",
+    "already": "Bạn đã có tài khoản?",
+    "login_route": "Đăng nhập"
+  }
 }

@@ -1,13 +1,14 @@
-import { App, Button, Divider, Form, Input } from "antd";
+import { App, Button, Form, Input, Checkbox } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import "./login.scss";
 import { useState } from "react";
 import type { FormProps } from "antd";
 import { loginAPI, loginWithGoogleAPI } from "@/services/api";
 import { useCurrentApp } from "@/components/context/app.context";
-import { GooglePlusOutlined } from "@ant-design/icons";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import google from "@/assets/svg/images/google-logo.png";
+import facebook from "@/assets/svg/images/facebook-logo.png";
 
 type FieldType = {
   username: string;
@@ -29,11 +30,11 @@ const LoginPage = () => {
       setIsAuthenticated(true);
       setUser(res.data.user);
       localStorage.setItem("access_token", res.data.access_token);
-      message.success("Đăng nhập tài khoản thành công!");
+      message.success("Login successful!");
       navigate("/");
     } else {
       notification.error({
-        message: "Có lỗi xảy ra",
+        message: "An error occurred",
         description:
           res.message && Array.isArray(res.message)
             ? res.message[0]
@@ -54,18 +55,16 @@ const LoginPage = () => {
         }
       );
       if (data && data.email) {
-        //call backend create user
         const res = await loginWithGoogleAPI("GOOGLE", data.email);
-
         if (res?.data) {
           setIsAuthenticated(true);
           setUser(res.data.user);
           localStorage.setItem("access_token", res.data.access_token);
-          message.success("Đăng nhập tài khoản thành công!");
+          message.success("Login successful!");
           navigate("/");
         } else {
           notification.error({
-            message: "Có lỗi xảy ra",
+            message: "An error occurred",
             description:
               res.message && Array.isArray(res.message)
                 ? res.message[0]
@@ -78,72 +77,80 @@ const LoginPage = () => {
   });
 
   return (
-    <div className="login-page">
-      <main className="main">
-        <div className="container">
-          <section className="wrapper">
-            <div className="heading">
-              <h2 className="text text-large">Đăng Nhập</h2>
-              <Divider />
+    <div className="login-container">
+      <div className="login-left">
+        <img src="/login-illustration.png" alt="login" />
+      </div>
+
+      <div className="login-right">
+        <div className="login-box">
+          <h2 className="text-large">WELCOME BACK</h2>
+          <p className="text-normal">
+            Welcome back! Please enter your details.
+          </p>
+
+          <Form
+            name="login-form"
+            onFinish={onFinish}
+            autoComplete="off"
+            layout="vertical"
+          >
+            <Form.Item<FieldType>
+              label="Email"
+              name="username"
+              rules={[
+                { required: true, message: "Email number is required!" },
+                { type: "email", message: "Email is not in correct format!" }
+              ]}
+            >
+              <Input placeholder="Enter your email" />
+            </Form.Item>
+
+            <Form.Item<FieldType>
+              label="Password"
+              name="password"
+              rules={[
+                { required: true, message: "Password number is required!" }
+              ]}
+            >
+              <Input.Password placeholder="************" />
+            </Form.Item>
+
+            <div className="login-options">
+              <Checkbox>Remember me</Checkbox>
+              <Link to="#">Forgot password</Link>
             </div>
-            <Form name="login-form" onFinish={onFinish} autoComplete="off">
-              <Form.Item<FieldType>
-                labelCol={{ span: 24 }} //whole column
-                label="Email"
-                name="username"
-                rules={[
-                  { required: true, message: "Email không được để trống!" },
-                  { type: "email", message: "Email không đúng định dạng!" }
-                ]}
-              >
-                <Input />
-              </Form.Item>
 
-              <Form.Item<FieldType>
-                labelCol={{ span: 24 }} //whole column
-                label="Mật khẩu"
-                name="password"
-                rules={[
-                  { required: true, message: "Mật khẩu không được để trống!" }
-                ]}
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={isSubmit}
+                className="login-button"
               >
-                <Input.Password />
-              </Form.Item>
+                Sign in
+              </Button>
+            </Form.Item>
+          </Form>
 
-              <Form.Item>
-                <Button type="primary" htmlType="submit" loading={isSubmit}>
-                  Đăng nhập
-                </Button>
-              </Form.Item>
-              <Divider>Or</Divider>
-              <div
-                onClick={() => loginGoogle()}
-                title="Đăng nhập với tài khoản Google"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 10,
-                  textAlign: "center",
-                  marginBottom: 25,
-                  cursor: "pointer"
-                }}
-              >
-                Đăng nhập với
-                <GooglePlusOutlined style={{ fontSize: 30, color: "orange" }} />
-              </div>
+          <div className="social-button" onClick={() => loginGoogle()}>
+            <img src={google} alt="google" />
+            Sign in with Google
+          </div>
 
-              <p className="text text-normal" style={{ textAlign: "center" }}>
-                Chưa có tài khoản ?
-                <span>
-                  <Link to="/register"> Đăng Ký </Link>
-                </span>
-              </p>
-              <br />
-            </Form>
-          </section>
+          <div className="social-button">
+            <img src={facebook} alt="facebook" />
+            Sign in with Facebook
+          </div>
+
+          <p className="text-normal text-center">
+            Don’t have an account?
+            <Link to="/register" style={{ marginLeft: 4 }}>
+              Sign up to free!
+            </Link>
+          </p>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
