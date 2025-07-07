@@ -18,7 +18,6 @@
 
   .login-right {
     flex: 1;
-    background-color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -27,28 +26,37 @@
     .login-box {
       width: 100%;
       max-width: 420px;
-      .ant-form-item {
-            width: 100%;
-        }
 
-        .ant-input,
-        .ant-input-password {
-            width: 100%;
-            height: 40px;
-            font-size: 15px;
-        }
+      .ant-form-item {
+        width: 100%;
+      }
+
+      .ant-input,
+      .ant-input-password {
+        width: 100%;
+        height: 40px;
+        font-size: 15px;
+      }
     }
 
     .text-large {
       font-size: 2rem;
       font-weight: 700;
       margin-bottom: 0.5rem;
+
+      &.dark {
+        color: #fff;
+      }
     }
 
     .text-normal {
       font-size: 1rem;
-      color: #555;
       margin-bottom: 1.5rem;
+      color: var(--ant-color-text-secondary);
+
+      &.dark {
+        color: #fff;
+      }
     }
 
     .text-center {
@@ -65,8 +73,6 @@
     .login-button {
       width: 100%;
       height: 44px;
-    //   background-color: #f44336;
-    //   border-color: #f44336;
       font-weight: bold;
       font-size: 16px;
     }
@@ -84,7 +90,6 @@
       font-size: 15px;
       margin-bottom: 12px;
       cursor: pointer;
-      background-color: #fff;
       transition: all 0.2s;
 
       img {
@@ -93,8 +98,23 @@
         object-fit: contain;
       }
 
-      &:hover {
-        background-color: #f1f1f1;
+      &.light {
+        background-color: #fff;
+        color: #000;
+
+        &:hover {
+          background-color: #f1f1f1;
+        }
+      }
+
+      &.dark {
+        background-color: #1f1f1f;
+        color: #fff;
+        border: 1px solid #3a3a3a;
+
+        &:hover {
+          background-color: #333;
+        }
       }
     }
   }
@@ -111,7 +131,7 @@
     }
 
     .login-left {
-      order: 2; // chuyển ảnh xuống dưới
+      order: 2;
       padding: 1rem;
 
       img {
@@ -145,4 +165,3 @@
     font-size: 1.5rem;
   }
 }
-

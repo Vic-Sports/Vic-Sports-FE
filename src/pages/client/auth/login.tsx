@@ -9,6 +9,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import google from "@/assets/svg/images/google-logo.png";
 import facebook from "@/assets/svg/images/facebook-logo.png";
+import { useTranslation } from "react-i18next";
 
 type FieldType = {
   username: string;
@@ -19,7 +20,8 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [isSubmit, setIsSubmit] = useState(false);
   const { message, notification } = App.useApp();
-  const { setIsAuthenticated, setUser } = useCurrentApp();
+  const { theme, setIsAuthenticated, setUser } = useCurrentApp();
+  const { t } = useTranslation();
 
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     const { username, password } = values;
@@ -30,11 +32,11 @@ const LoginPage = () => {
       setIsAuthenticated(true);
       setUser(res.data.user);
       localStorage.setItem("access_token", res.data.access_token);
-      message.success("Login successful!");
+      message.success(t("login.login_success"));
       navigate("/");
     } else {
       notification.error({
-        message: "An error occurred",
+        message: t("login.login_err"),
         description:
           res.message && Array.isArray(res.message)
             ? res.message[0]
@@ -60,11 +62,11 @@ const LoginPage = () => {
           setIsAuthenticated(true);
           setUser(res.data.user);
           localStorage.setItem("access_token", res.data.access_token);
-          message.success("Login successful!");
+          message.success(t("login.login_success"));
           navigate("/");
         } else {
           notification.error({
-            message: "An error occurred",
+            message: t("login.login_err"),
             description:
               res.message && Array.isArray(res.message)
                 ? res.message[0]
@@ -84,10 +86,8 @@ const LoginPage = () => {
 
       <div className="login-right">
         <div className="login-box">
-          <h2 className="text-large">WELCOME BACK</h2>
-          <p className="text-normal">
-            Welcome back! Please enter your details.
-          </p>
+          <h2 className={`text-large ${theme}`}>{t("login.login_title")}</h2>
+          <p className={`text-normal ${theme}`}>{t("login.login_text")}</p>
 
           <Form
             name="login-form"
@@ -99,26 +99,24 @@ const LoginPage = () => {
               label="Email"
               name="username"
               rules={[
-                { required: true, message: "Email number is required!" },
-                { type: "email", message: "Email is not in correct format!" }
+                { required: true, message: t("login.message_email1") },
+                { type: "email", message: t("login.message_email2") }
               ]}
             >
-              <Input placeholder="Enter your email" />
+              <Input placeholder={t("login.placeholder_email")} />
             </Form.Item>
 
             <Form.Item<FieldType>
-              label="Password"
+              label={t("login.password")}
               name="password"
-              rules={[
-                { required: true, message: "Password number is required!" }
-              ]}
+              rules={[{ required: true, message: t("login.message_password") }]}
             >
               <Input.Password placeholder="************" />
             </Form.Item>
 
             <div className="login-options">
-              <Checkbox>Remember me</Checkbox>
-              <Link to="#">Forgot password</Link>
+              <Checkbox>{t("login.remember")}</Checkbox>
+              <Link to="#">{t("login.forgot")}</Link>
             </div>
 
             <Form.Item>
@@ -128,25 +126,28 @@ const LoginPage = () => {
                 loading={isSubmit}
                 className="login-button"
               >
-                Sign in
+                {t("login.signin")}
               </Button>
             </Form.Item>
           </Form>
 
-          <div className="social-button" onClick={() => loginGoogle()}>
+          <div
+            className={`social-button ${theme}`}
+            onClick={() => loginGoogle()}
+          >
             <img src={google} alt="google" />
-            Sign in with Google
+            {t("login.google")}
           </div>
 
-          <div className="social-button">
+          <div className={`social-button ${theme}`} onClick={() => alert("me")}>
             <img src={facebook} alt="facebook" />
-            Sign in with Facebook
+            {t("login.facebook")}
           </div>
 
-          <p className="text-normal text-center">
-            Don’t have an account?
+          <p className={`text-normal text-center ${theme}`}>
+            {t("login.account")}
             <Link to="/register" style={{ marginLeft: 4 }}>
-              Sign up to free!
+              {t("login.signup")}
             </Link>
           </p>
         </div>

@@ -1,6 +1,8 @@
 import { fetchAccountAPI } from "@/services/api";
 import { createContext, useContext, useEffect, useState } from "react";
-import RingLoader from "react-spinners/PacmanLoader";
+import { ConfigProvider, theme as antdTheme } from "antd";
+import RingLoader from "react-spinners/RingLoader";
+import enUS from "antd/locale/en_US";
 
 interface IAppContext {
   isAuthenticated: boolean;
@@ -26,16 +28,13 @@ export const AppProvider = (props: TProps) => {
   const [user, setUser] = useState<IUser | null>(null);
   const [isAppLoading, setIsAppLoading] = useState<boolean>(false);
   const [theme, setTheme] = useState<ThemeContextType>(() => {
-    const initialTheme =
-      (localStorage.getItem("theme") as ThemeContextType) || "light";
-    return initialTheme;
+    return (localStorage.getItem("theme") as ThemeContextType) || "light";
   });
 
   useEffect(() => {
     const mode = localStorage.getItem("theme") as ThemeContextType;
     if (mode) {
       setTheme(mode);
-      document.documentElement.setAttribute("data-bs-theme", mode);
     }
   }, []);
 
@@ -52,6 +51,14 @@ export const AppProvider = (props: TProps) => {
     fetchAccount();
   }, []);
 
+  useEffect(() => {
+    document.documentElement.setAttribute("data-bs-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const algorithm =
+    theme === "dark" ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm;
+
   return (
     <>
       {isAppLoading === false ? (
@@ -67,7 +74,17 @@ export const AppProvider = (props: TProps) => {
             setTheme
           }}
         >
-          {props.children}
+          <ConfigProvider
+            locale={enUS}
+            theme={{
+              algorithm,
+              token: {
+                colorPrimary: "#1f6feb"
+              }
+            }}
+          >
+            {props.children}
+          </ConfigProvider>
         </CurrentAppContext.Provider>
       ) : (
         <div
@@ -78,7 +95,7 @@ export const AppProvider = (props: TProps) => {
             transform: "translate(-50%, -50%)"
           }}
         >
-          <RingLoader size={30} color="" />
+          <RingLoader size={30} color="#1f6feb" />
         </div>
       )}
     </>

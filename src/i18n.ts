@@ -21,6 +21,9 @@ i18n
     lng: "en", // default language
     interpolation: {
       escapeValue: false // not needed for react as it escapes by default
+    },
+    backend: {
+      loadPath: "/locales/{{lng}}/{{ns}}.json" // nơi chứa file json
     }
   });
 

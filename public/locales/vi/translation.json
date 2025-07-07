@@ -2,16 +2,50 @@
   "appHeader": {
     "home": "Trang chủ"
   },
-  "auth": {
+  "register": {
     "register_title": "TẠO TÀI KHOẢN",
     "register_text": "Vui lòng điền thông tin để đăng ký.",
+    "register_success": "Tạo tài khoản thành công!",
     "fullname": "Họ và tên",
+    "message_fullname":"Vui lòng nhập họ và tên!",
+    "placeholder_fullname":"Họ và tên",
+    "message_email1": "Vui lòng nhập email!",
+    "message_email2": "Email không đúng định dạng!",
+    "placeholder_email":"Email",
     "password": "Mật khẩu",
+    "message_password":"Vui lòng nhập mật khẩu!",
     "phone": "Số điện thoại",
+    "message_phone1":"Vui lòng nhập số điện thoại!",
+    "message_phone2":"Vui lòng nhập số điện thoại hợp lệ gồm 10 chữ số!",
+    "placeholder_phone":"Số điện thoại",
     "signup": "Đăng ký",
     "register_google": "Đăng ký với Google",
     "register_facebook": "Đăng ký với Facebook",
     "already": "Bạn đã có tài khoản?",
-    "login_route": "Đăng nhập"
+    "login_route": "Đăng nhập",
+    "message_password_required": "Vui lòng nhập mật khẩu!",
+    "message_password_length": "Mật khẩu phải có ít nhất 8 ký tự!",
+    "message_password_uppercase": "Mật khẩu phải chứa ít nhất một chữ cái viết hoa!",
+    "message_password_lowercase": "Mật khẩu phải chứa ít nhất một chữ cái thường!",
+    "message_password_number": "Mật khẩu phải chứa ít nhất một số!",
+    "message_password_special": "Mật khẩu phải chứa ít nhất một ký tự đặc biệt (@$!%*?&)!"
+  },
+  "login": {
+    "login_success": "Đăng nhâp thành công!",
+    "login_err": "Đã xảy ra lỗi!",
+    "login_title": "WELCOME BACK",
+    "login_text": "Chào mừng bạn trở lại! Vui lòng nhập thông tin của bạn.",
+    "message_email1": "Vui lòng nhập email!",
+    "message_email2": "Email không đúng định dạng!",
+    "placeholder_email": "Email",
+    "password": "Mật khẩu",
+    "message_password": "Vui lòng nhật mật khẩu!",
+    "remember": "Nhớ mật khẩu",
+    "forgot": "Quên mật khẩu",
+    "signin": "Đăng nhập",
+    "google": "Đăng nhập với Google",
+    "facebook": "Đăng nhập với Facebook",
+    "account": "Bạn chưa có tài khoản?",
+    "signup": "Đăng ký miễn phí!"
   }
 }

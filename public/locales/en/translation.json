@@ -2,16 +2,50 @@
   "appHeader": {
     "home": "Home"
   },
-  "auth": {
+  "register": {
     "register_title": "CREATE ACCOUNT",
     "register_text": "Please fill in the details to sign up.",
+    "register_success": "Create account successful!",
     "fullname": "Full Name",
+    "message_fullname": "Full name is required!",
+    "placeholder_fullname": "Enter your full name",
+    "message_email1": "Email is required!",
+    "message_email2": "Email is not valid!",
+    "placeholder_email": "Enter your email",
     "password": "Password",
+    "message_password": "Password is required!",
     "phone": "Phone",
+    "message_phone1": "Phone number is required!",
+    "message_phone2": "Please enter a valid 10-digit phone number!",
+    "placeholder_phone": "Enter your phone number",
     "signup": "Sign up",
     "register_google": "Sign up with Google",
     "register_facebook": "Sign up with Facebook",
     "already": "Already have an account?",
-    "login_route": "Sign in here"
+    "login_route": "Sign in here",
+    "message_password_required": "Please input your password!",
+    "message_password_length": "Password must be at least 8 characters!",
+    "message_password_uppercase": "Password must contain at least one uppercase letter!",
+    "message_password_lowercase": "Password must contain at least one lowercase letter!",
+    "message_password_number": "Password must contain at least one number!",
+    "message_password_special": "Password must contain at least one special character (@$!%*?&)!"
+  },
+  "login": {
+    "login_success": "Login successful!",
+    "login_err": "An error occurred!",
+    "login_title": "WELCOME BACK",
+    "login_text": "Welcome back! Please enter your details.",
+    "message_email1": "Email is required!",
+    "message_email2": "Email is not valid!",
+    "placeholder_email": "Enter your email",
+    "password": "Password",
+    "message_password": "Password is required!",
+    "remember": "Remember me",
+    "forgot": "Forgot password",
+    "signin": "Sign in",
+    "google": "Sign in with Google",
+    "facebook": "Sign in with Facebook",
+    "account": "Don’t have an account?",
+    "signup": "Sign up to free!"
   }
 }
