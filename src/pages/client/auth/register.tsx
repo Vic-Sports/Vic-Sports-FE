@@ -4,9 +4,8 @@ import type { FormProps } from "antd";
 import { useState } from "react";
 import { registerAPI } from "@/services/api";
 import "./register.scss";
-// import google from "@/assets/svg/images/google-logo.png";
-// import facebook from "@/assets/svg/images/facebook-logo.png";
 import { useTranslation } from "react-i18next";
+import { useCurrentApp } from "@/components/context/app.context";
 import type { RuleObject } from "antd/es/form";
 
 type FieldType = {
@@ -21,6 +20,7 @@ const RegisterPage = () => {
   const { message } = App.useApp();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { theme } = useCurrentApp();
 
   const validatePassword = (_: RuleObject, value: string): Promise<void> => {
     if (!value) {
@@ -60,10 +60,15 @@ const RegisterPage = () => {
 
   return (
     <div className="register-container">
-      <div className="register-left">
+      <div className={`register-left ${theme}`}>
         <div className="register-box">
-          <h2 className="text-large">{t("register.register_title")}</h2>
-          <p className="text-normal">{t("register.register_text")}</p>
+          <h2 className={`text-large ${theme}`}>
+            {t("register.register_title")}
+          </h2>
+          <p className={`text-normal ${theme}`}>
+            {t("register.register_text")}
+          </p>
+
           <Form
             name="register-form"
             onFinish={onFinish}
@@ -109,7 +114,7 @@ const RegisterPage = () => {
                 { required: true, message: t("register.message_phone1") },
                 {
                   pattern: /^[0-9]{10}$/,
-                  message: "Please enter a valid 10-digit phone number!"
+                  message: t("register.message_phone2")
                 }
               ]}
             >
@@ -131,17 +136,7 @@ const RegisterPage = () => {
             </Form.Item>
           </Form>
 
-          {/* <div className="social-button">
-            <img src={google} alt="google" />
-            {t("register.register_google")}
-          </div>
-
-          <div className="social-button">
-            <img src={facebook} alt="facebook" />
-            {t("register.register_facebook")}
-          </div> */}
-
-          <p className="text-normal text-center">
+          <p className={`text-normal text-center ${theme}`}>
             {t("register.already")}
             <Link to="/login" style={{ marginLeft: 4 }}>
               {t("register.login_route")}
@@ -150,7 +145,7 @@ const RegisterPage = () => {
         </div>
       </div>
 
-      <div className="register-right">
+      <div className={`register-right ${theme}`}>
         <img src="/register-illustration.png" alt="register" />
       </div>
     </div>
