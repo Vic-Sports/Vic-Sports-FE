@@ -1,6 +1,7 @@
 {
   "appHeader": {
-    "home": "Trang chủ"
+    "home": "Trang chủ",
+    "login": "Tài khoản"
   },
   "register": {
     "register_title": "TẠO TÀI KHOẢN",

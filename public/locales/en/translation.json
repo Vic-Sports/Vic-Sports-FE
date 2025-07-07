@@ -1,6 +1,7 @@
 {
   "appHeader": {
-    "home": "Home"
+    "home": "Home",
+    "login": "Account"
   },
   "register": {
     "register_title": "CREATE ACCOUNT",
