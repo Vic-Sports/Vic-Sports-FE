@@ -1,7 +1,35 @@
 {
   "appHeader": {
     "home": "Home",
-    "login": "Account"
+    "login": "Login",
+    "sports": "Sports",
+    "introduction": "Introduction",
+    "policy": "Policy",
+    "term": "Terms",
+    "owner": "For owners"
+  },
+  "sports": {
+    "football": "Football",
+    "badminton": "Badminton",
+    "pickleball": "Pickleball",
+    "volleyball": "Volleyball",
+    "basketball": "Basketball"
+  },
+  "footer": {
+    "desciption": "Smart sports field booking platform, connecting sports-loving communities.",
+    "link": "Links",
+    "link1": "Home",
+    "link2": "About",
+    "link3": "Services",
+    "link4": "Contact",
+    "service": "Services",
+    "service1": "Book a field",
+    "service2": "Find teammates",
+    "service3": "Field management",
+    "service4": "Payment",
+    "contact": "Contact",
+    "contact1": "Danang, Vietnam",
+    "author": "© 2024 VIC. All rights reserved."
   },
   "register": {
     "register_title": "CREATE ACCOUNT",

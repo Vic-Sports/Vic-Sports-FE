@@ -1,7 +1,35 @@
 {
   "appHeader": {
     "home": "Trang chủ",
-    "login": "Tài khoản"
+    "login": "Đăng nhập",
+    "sports": "Môn thể thao",
+    "introduction": "Giới thiệu",
+    "policy": "Chính Sách",
+    "term": "Điều khoản",
+    "owner": "Dành cho chủ sân"
+  },
+  "sports": {
+    "football": "Bóng đá",
+    "badminton": "Cầu lông",
+    "pickleball": "Pickleball",
+    "volleyball": "Bóng chuyền",
+    "basketball": "Bóng rổ"
+  },
+  "footer": {
+    "desciption": "Nền tảng đặt sân thể thao thông minh, kết nối cộng đồng yêu thể thao.",
+    "link": "Liên kết",
+    "link1": "Trang chủ",
+    "link2": "Giới thiệu",
+    "link3": "Dịch vụ",
+    "link4": "Liên hệ",
+    "service": "Dịch vụ",
+    "service1": "Đặt sân",
+    "service2": "Tìm đồng đội",
+    "service3": "Quản lý sân",
+    "service4": "Thanh toán",
+    "contact": "Liên hệ",
+    "contact1": "Đà Nẵng, Việt Nam",
+    "author": "© 2024 VIC. Tất cả quyền được bảo lưu."
   },
   "register": {
     "register_title": "TẠO TÀI KHOẢN",

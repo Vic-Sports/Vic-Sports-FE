@@ -1,92 +1,71 @@
-// LIGHT THEME VARIABLES
 $light-theme: (
-  // Backgrounds
-  bg-primary: #ffffff,
-  bg-secondary: #f8f9fa,
-  bg-tertiary: #f1f3f5,
-  bg-hero-right: linear-gradient(to right, #fff, #eee),
-
-  // Text colors
-  text-primary: #0d1224,
-  text-secondary: #6c757d,
-  text-accent: #ec4899,
-  text-white: #000,
-  text-red: #f96f73,
-  text-yellow: #fa9348,
-  text-green: #56b10e,
-  text-blue: #1dd2ec,
-
-  // Borders
-  border-default: #ddd,
-  border-hero-right: #eee,
-
-  // Scroll
-  scroll-track-bg: #fff,
-  scroll-thumb-bg: #ccc,
-  scroll-thumb-hover: #9e9e9e,
-
-  // Navbar & Branding
-  brand-name-100: blue,
-  brand-name-200: #ec4899,
-  brand-social: #ec4899,
-
-  // Effects
-  button-gradient: linear-gradient(to right, #ec4899, #8b5cf6),
-  border-top-hero-right: linear-gradient(to right, transparent, #fff, #fff, transparent),
-  card-glow-bg: #f5f6f7,
-  skill-card-bg: #f5f6f7,
-  border-top-skill-card: linear-gradient(to right, transparent, #fff, #fff, transparent)
+    background-body: #F2F4F7,
+    background-body-tertiary : #FFFFFF,
+    scroll-track-background: #fff,
+    scroll-thumb-background: #ccc,
+    scroll-thumb-hover: #9e9e9e,
+    brand-name-100: #0d1224,
+    brand-name-200: #ec4899,
+    brand-social:#ec4899,
+    border-hero-right: #eee,
+    background-hero-right: linear-gradient(to right, #fff, #eee),
+    border-top-hero-right: linear-gradient(to right, transparent, #fff, #fff, transparent),
+    text-red-500: #f96f73,
+    text-yellow-500: #fa9348,
+    text-green-500: #b6f9d2,
+    text-green-700: #56b10e,
+    text-pink-100: #ec4899,
+    text-pink-200: #bd21b8,
+    text-blue-100: #1dd2ec,
+    text-white: #000,
+    line-blue-500: #1a1443,
+    resize-button: linear-gradient(to right, #ec4899, #8b5cf6),
+    glow-card-background: #f5f6f7,
+    skill-card-background: #f5f6f7,
+    border-top-skill-card: linear-gradient(to right, transparent, #fff, #fff, transparent),
 );
 
-// DARK THEME VARIABLES
 $dark-theme: (
-  // Backgrounds
-  bg-primary: #0d1224,
-  bg-secondary: #1a1b2e,
-  bg-tertiary: transparent,
-  bg-hero-right: linear-gradient(to right, #0d1224, #0a0d37),
+    background-body: #1C1C1D,
+    background-body-tertiary : #252728,
+    scroll-track-background: #0d1224,
+    scroll-thumb-background: #606060,
+    scroll-thumb-hover: #d6d6d6,
+    brand-name-100: #7AA3FF,
+    brand-name-200: #ec4899,
+    brand-social: #ec4899,
 
-  // Text colors
-  text-primary: #ffffff,
-  text-secondary: #ccc,
-  text-accent: #ec4899,
-  text-white: #fff,
-  text-red: #f96f73,
-  text-yellow: #fa9348,
-  text-green: #56b10e,
-  text-blue: #1dd2ec,
+    border-hero-right: #1b2c68a0,
+    background-hero-right: linear-gradient(to right, #0d1224, #0a0d37),
+    border-top-hero-right: linear-gradient(to right, transparent, #ec4899, #8b5cf6, transparent),
 
-  // Borders
-  border-default: #303c5a,
-  border-hero-right: #1b2c68a0,
+    text-red-500: #f96f73,
+    text-yellow-500: #fa9348,
+    text-green-500: #b6f9d2,
+    text-green-700: #56b10e,
+    text-pink-100: #ec4899,
+    text-pink-200: #bd21b8,
+    text-blue-100: #1dd2ec,
+    text-white: #fff,
 
-  // Scroll
-  scroll-track-bg: #0d1224,
-  scroll-thumb-bg: #606060,
-  scroll-thumb-hover: #d6d6d6,
+    line-blue-500: #1a1443,
+    resize-button: linear-gradient(to right, #ec4899, #8b5cf6),
 
-  // Navbar & Branding
-  brand-name-100: #16f2b3,
-  brand-name-200: #ec4899,
-  brand-social: #ec4899,
+    glow-card-background: #101123,
+    skill-card-background: #11152c,
+    border-top-skill-card: linear-gradient(to right, transparent,#8b5cf6, #8b5cf6, transparent),
 
-  // Effects
-  button-gradient: linear-gradient(to right, #ec4899, #8b5cf6),
-  border-top-hero-right: linear-gradient(to right, transparent, #ec4899, #8b5cf6, transparent),
-  card-glow-bg: #101123,
-  skill-card-bg: #11152c,
-  border-top-skill-card: linear-gradient(to right, transparent, #8b5cf6, #8b5cf6, transparent)
+
 );
 
-// === Generate CSS Variables ===
 :root {
-  @each $name, $value in $light-theme {
-    --#{$name}: #{$value};
-  }
+    @each $name, $color in $light-theme {
+        --#{$name}: #{$color};
+    }
 }
 
 [data-bs-theme="dark"] {
-  @each $name, $value in $dark-theme {
-    --#{$name}: #{$value};
-  }
+    @each $name, $color in $dark-theme {
+        --#{$name}: #{$color};
+    }
 }

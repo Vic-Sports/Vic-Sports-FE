@@ -13,6 +13,7 @@ import LayoutAdmin from "./components/layout/layout.dashboard";
 import LoginPage from "./pages/client/auth/login";
 import RegisterPage from "./pages/client/auth/register";
 import "bootstrap/dist/css/bootstrap.min.css";
+import HomePage from "./pages/client/home";
 
 const router = createBrowserRouter([
   {
@@ -21,7 +22,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <>home</>
+        element: <HomePage />
       }
     ]
   },

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Divider, Drawer, Avatar, Dropdown, Space } from "antd";
+import { Divider, Drawer, Avatar, Dropdown, Space, Menu } from "antd";
 import { NavLink, useNavigate, Link } from "react-router-dom";
 import { useCurrentApp } from "components/context/app.context";
 import { logoutAPI } from "services/api";
@@ -10,7 +10,6 @@ import viFlag from "../../assets/svg/language/vi.svg";
 import enFlag from "../../assets/svg/language/en.svg";
 import { useTranslation } from "react-i18next";
 import { Dropdown as AntDropdown } from "antd";
-
 type ThemeContextType = "dark" | "light";
 
 const Header = () => {
@@ -41,6 +40,51 @@ const Header = () => {
     document.documentElement.setAttribute("data-bs-theme", mode);
     setTheme(mode);
   };
+
+  const sportsMenu = (
+    <Menu>
+      <Menu.Item key="football">
+        <Link
+          to="/football"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          {t("sports.football")}
+        </Link>
+      </Menu.Item>
+      <Menu.Item key="badminton">
+        <Link
+          to="/badminton"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          {t("sports.badminton")}
+        </Link>
+      </Menu.Item>
+      <Menu.Item key="pickleball">
+        <Link
+          to="/pickleball"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          {t("sports.pickleball")}
+        </Link>
+      </Menu.Item>
+      <Menu.Item key="volleyball">
+        <Link
+          to="/volleyball"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          {t("sports.volleyball")}
+        </Link>
+      </Menu.Item>
+      <Menu.Item key="basketball">
+        <Link
+          to="/basketball"
+          style={{ textDecoration: "none", color: "inherit" }}
+        >
+          {t("sports.basketball")}
+        </Link>
+      </Menu.Item>
+    </Menu>
+  );
 
   const handleLogout = async () => {
     try {
@@ -104,11 +148,14 @@ const Header = () => {
     <>
       <Navbar
         data-bs-theme={theme}
+        className="custom-navbar-theme"
         expand="lg"
-        className="bg-body-tertiary"
-        style={{ zIndex: 1, fontWeight: "600" }}
+        style={{
+          zIndex: 1,
+          fontWeight: "600"
+        }}
       >
-        <Container>
+        <Container className="text-uppercase">
           <Link className="navbar-brand" to="/">
             <span className="brand-green">Vic Sports</span>
           </Link>
@@ -117,6 +164,25 @@ const Header = () => {
             <Nav className="me-auto">
               <NavLink className="nav-link" to="/">
                 {t("appHeader.home")}
+              </NavLink>
+              <Nav.Item>
+                <Dropdown overlay={sportsMenu} trigger={["hover"]}>
+                  <span className="nav-link" style={{ cursor: "pointer" }}>
+                    {t("appHeader.sports")}
+                  </span>
+                </Dropdown>
+              </Nav.Item>
+              <NavLink className="nav-link" to="/">
+                {t("appHeader.introduction")}
+              </NavLink>
+              <NavLink className="nav-link" to="/">
+                {t("appHeader.policy")}
+              </NavLink>
+              <NavLink className="nav-link" to="/">
+                {t("appHeader.term")}
+              </NavLink>
+              <NavLink className="nav-link" to="/">
+                {t("appHeader.owner")}
               </NavLink>
             </Nav>
 

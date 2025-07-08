@@ -7,6 +7,8 @@ import "./register.scss";
 import { useTranslation } from "react-i18next";
 import { useCurrentApp } from "@/components/context/app.context";
 import type { RuleObject } from "antd/es/form";
+import AnimationLottie from "@/share/animation-lottie";
+import registerAnimation from "@/assets/lottie/register-animation.json";
 
 type FieldType = {
   fullName: string;
@@ -59,7 +61,7 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="register-container">
+    <div className={`register-container ${theme}`}>
       <div className={`register-left ${theme}`}>
         <div className="register-box">
           <h2 className={`text-large ${theme}`}>
@@ -146,7 +148,12 @@ const RegisterPage = () => {
       </div>
 
       <div className={`register-right ${theme}`}>
-        <img src="/register-illustration.png" alt="register" />
+        <AnimationLottie
+          width="100%"
+          //animation with rp => convert sang text
+          // https://github.com/airbnb/lottie-web/issues/2070
+          animationPath={registerAnimation}
+        />
       </div>
     </div>
   );

@@ -1,6 +1,17 @@
 .register-container {
   display: flex;
   min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+
+  &.dark {
+    background-color: var(--background-body);
+  }
+
+  &.light {
+    background-color: #ffffff;
+  }
 
   .register-left {
     flex: 1;
@@ -33,6 +44,10 @@
       &.dark {
         color: #fff;
       }
+
+      &.light {
+        color: #000;
+      }
     }
 
     .text-normal {
@@ -42,6 +57,10 @@
 
       &.dark {
         color: #fff;
+      }
+
+      &.light {
+        color: #000;
       }
     }
 
@@ -59,30 +78,38 @@
 
   .register-right {
     flex: 1;
-    background-color: #f6f6f6;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 2rem;
 
-    img {
+    background-color: #ffffff;
+
+    &.dark {
+      background-color: var(--background-body);
+    }
+
+    &.light {
+      background-color: #ffffff;
+    }
+
+    img,
+    svg,
+    canvas {
       max-width: 90%;
       height: auto;
     }
   }
 }
 
+/* Responsive */
 @media (max-width: 768px) {
   .register-container {
     flex-direction: column;
-
-    .register-left,
-    .register-right {
-      flex: none;
-      width: 100%;
-    }
+    gap: 0;
 
     .register-left {
+      width: 100%;
       order: 1;
       padding: 2rem 1rem;
 
@@ -92,12 +119,7 @@
     }
 
     .register-right {
-      order: 2;
-      padding: 1rem;
-
-      img {
-        max-width: 60%;
-      }
+      display: none; // ✅ chỉ ẩn animation
     }
   }
 }
@@ -107,8 +129,7 @@
     padding: 1.5rem 1rem;
   }
 
-  .register-button,
-  .social-button {
+  .register-button {
     height: 42px;
     font-size: 14px;
   }

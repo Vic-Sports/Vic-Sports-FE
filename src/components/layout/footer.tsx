@@ -3,16 +3,35 @@ import {
   FaFacebookSquare,
   FaInstagram,
   FaYoutube,
-  FaPaw,
   FaMapMarkerAlt,
   FaPhone,
-  FaEnvelope
+  FaEnvelope,
+  FaHome,
+  FaInfoCircle,
+  FaConciergeBell,
+  FaCalendarCheck,
+  FaUsers,
+  FaTools,
+  FaCreditCard
 } from "react-icons/fa";
+import { useCurrentApp } from "../context/app.context";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import Divider from "@/share/divider";
 
 const Footer = () => {
+  const { theme } = useCurrentApp();
+  const { t } = useTranslation();
   return (
     <div className="my-5">
-      <footer className="bg-primary text-white text-center text-lg-start">
+      <footer
+        data-bs-theme={theme}
+        className="custom-navbar-theme"
+        style={{
+          zIndex: 1,
+          fontWeight: "600"
+        }}
+      >
         <Container className="p-4">
           <Row className="my-4">
             {/* Logo and Description */}
@@ -23,90 +42,170 @@ const Footer = () => {
             >
               <div
                 className="rounded-circle bg-white d-flex align-items-center justify-content-center mb-4"
-                style={{ width: 150, height: 150 }}
+                style={{ width: 120, height: 120 }}
               >
                 <img
                   src="https://mdbootstrap.com/img/Photos/new-templates/animal-shelter/logo.png"
                   alt="Logo"
-                  height={70}
+                  height={60}
                   loading="lazy"
                 />
               </div>
-              <p className="text-center">
-                Homless animal shelter — The budgetary unit of the Capital City
-                of Warsaw
-              </p>
+              <p className="text-center">{t("footer.desciption")}</p>
               <ul className="list-unstyled d-flex justify-content-center gap-3 mb-0">
                 <li>
-                  <a className="text-white" href="#">
+                  <a
+                    className={`text-decoration-none ${
+                      theme === "dark" ? "text-white" : "text-dark"
+                    }`}
+                    href="#"
+                  >
                     <FaFacebookSquare size={20} />
                   </a>
                 </li>
                 <li>
-                  <a className="text-white" href="#">
+                  <a
+                    className={`text-decoration-none ${
+                      theme === "dark" ? "text-white" : "text-dark"
+                    }`}
+                    href="#"
+                  >
                     <FaInstagram size={20} />
                   </a>
                 </li>
                 <li>
-                  <a className="text-white" href="#">
+                  <a
+                    className={`text-decoration-none ${
+                      theme === "dark" ? "text-white" : "text-dark"
+                    }`}
+                    href="#"
+                  >
                     <FaYoutube size={20} />
                   </a>
                 </li>
               </ul>
             </Col>
 
-            {/* Animals 1 */}
-            <Col lg={3} md={6} className="mb-4 mb-md-0">
-              <h5 className="text-uppercase mb-4">Animals</h5>
+            <Col
+              lg={3}
+              md={6}
+              className="mb-4 mb-md-0 d-flex flex-column align-items-center align-items-md-start text-center text-md-start"
+            >
+              <h5 className="text-uppercase mb-4">{t("footer.link")}</h5>
               <ul className="list-unstyled">
-                {[
-                  "When your pet is missing",
-                  "Recently found",
-                  "How to adopt?",
-                  "Pets for adoption",
-                  "Material gifts",
-                  "Help with walks",
-                  "Volunteer activities"
-                ].map((item, index) => (
-                  <li key={index} className="mb-2">
-                    <a href="#" className="text-white text-decoration-none">
-                      <FaPaw className="me-2" />
-                      {item}
-                    </a>
-                  </li>
-                ))}
+                <li className="mb-2">
+                  <Link
+                    to="/"
+                    className={`text-decoration-none ${
+                      theme === "dark" ? "text-white" : "text-dark"
+                    }`}
+                  >
+                    <FaHome className="me-2" />
+                    {t("footer.link1")}
+                  </Link>
+                </li>
+                <li className="mb-2">
+                  <Link
+                    to="/about"
+                    className={`text-decoration-none ${
+                      theme === "dark" ? "text-white" : "text-dark"
+                    }`}
+                  >
+                    <FaInfoCircle className="me-2" />
+                    {t("footer.link2")}
+                  </Link>
+                </li>
+                <li className="mb-2">
+                  <Link
+                    to="/services"
+                    className={`text-decoration-none ${
+                      theme === "dark" ? "text-white" : "text-dark"
+                    }`}
+                  >
+                    <FaConciergeBell className="me-2" />
+                    {t("footer.link3")}
+                  </Link>
+                </li>
+                <li className="mb-2">
+                  <Link
+                    to="/contact"
+                    className={`text-decoration-none ${
+                      theme === "dark" ? "text-white" : "text-dark"
+                    }`}
+                  >
+                    <FaEnvelope className="me-2" />
+                    {t("footer.link4")}
+                  </Link>
+                </li>
               </ul>
             </Col>
 
             {/* Animals 2 */}
-            <Col lg={3} md={6} className="mb-4 mb-md-0">
-              <h5 className="text-uppercase mb-4">Animals</h5>
+            <Col
+              lg={3}
+              md={6}
+              className="mb-4 mb-md-0 d-flex flex-column align-items-center align-items-md-start text-center text-md-start"
+            >
+              <h5 className="text-uppercase mb-4">{t("footer.service")}</h5>
               <ul className="list-unstyled">
-                {[
-                  "General information",
-                  "About the shelter",
-                  "Statistic data",
-                  "Job",
-                  "Tenders",
-                  "Contact"
-                ].map((item, index) => (
-                  <li key={index} className="mb-2">
-                    <a href="#" className="text-white text-decoration-none">
-                      <FaPaw className="me-2" />
-                      {item}
-                    </a>
-                  </li>
-                ))}
+                <li className="mb-2">
+                  <Link
+                    to="/"
+                    className={`text-decoration-none ${
+                      theme === "dark" ? "text-white" : "text-dark"
+                    }`}
+                  >
+                    <FaCalendarCheck className="me-2" />
+                    {t("footer.service1")}
+                  </Link>
+                </li>
+                <li className="mb-2">
+                  <Link
+                    to="/about"
+                    className={`text-decoration-none ${
+                      theme === "dark" ? "text-white" : "text-dark"
+                    }`}
+                  >
+                    <FaUsers className="me-2" />
+                    {t("footer.service2")}
+                  </Link>
+                </li>
+                <li className="mb-2">
+                  <Link
+                    to="/services"
+                    className={`text-decoration-none ${
+                      theme === "dark" ? "text-white" : "text-dark"
+                    }`}
+                  >
+                    <FaTools className="me-2" />
+                    {t("footer.service3")}
+                  </Link>
+                </li>
+                <li className="mb-2">
+                  <Link
+                    to="/contact"
+                    className={`text-decoration-none ${
+                      theme === "dark" ? "text-white" : "text-dark"
+                    }`}
+                  >
+                    <FaCreditCard className="me-2" />
+                    {t("footer.service4")}
+                  </Link>
+                </li>
               </ul>
             </Col>
 
             {/* Contact */}
-            <Col lg={3} md={6} className="mb-4 mb-md-0">
-              <h5 className="text-uppercase mb-4">Contact</h5>
+            <Col
+              lg={3}
+              md={6}
+              className="mb-4 mb-md-0 d-flex flex-column align-items-center align-items-md-start text-center text-md-start"
+            >
+              <h5 className="text-uppercase mb-4">{t("footer.contact")}</h5>
               <ul className="list-unstyled">
                 <li className="mb-2">
                   <FaMapMarkerAlt className="me-2" />
-                  Warsaw, 57 Street, Poland
+                  {t("footer.contact1")}
                 </li>
                 <li className="mb-2">
                   <FaPhone className="me-2" />
@@ -121,17 +220,16 @@ const Footer = () => {
           </Row>
         </Container>
 
+        <Divider />
+
         <div
           className="text-center p-3"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.2)" }}
+          style={{
+            backgroundColor: theme === "dark" ? "#6c757d" : "#407BFF",
+            color: theme === "light" ? "black" : "#fff"
+          }}
         >
-          © 2020 Copyright:{" "}
-          <a
-            className="text-white text-decoration-none"
-            href="https://mdbootstrap.com/"
-          >
-            MDBootstrap.com
-          </a>
+          {t("footer.author")}
         </div>
       </footer>
     </div>

@@ -10,6 +10,8 @@ import axios from "axios";
 import google from "@/assets/svg/images/google-logo.png";
 import facebook from "@/assets/svg/images/facebook-logo.png";
 import { useTranslation } from "react-i18next";
+import loginAnimation from "@/assets/lottie/login-animation.json";
+import AnimationLottie from "@/share/animation-lottie";
 
 type FieldType = {
   username: string;
@@ -79,9 +81,14 @@ const LoginPage = () => {
   });
 
   return (
-    <div className="login-container">
-      <div className="login-left">
-        <img src="/login-illustration.png" alt="login" />
+    <div className={`login-container ${theme}`}>
+      <div className={`login-left ${theme}`}>
+        <AnimationLottie
+          width="100%"
+          //animation with rp => convert sang text
+          // https://github.com/airbnb/lottie-web/issues/2070
+          animationPath={loginAnimation}
+        />
       </div>
 
       <div className="login-right">
