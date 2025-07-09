@@ -17,20 +17,21 @@ $spacers: (
     padding: 0;
 }
 
-.brand-green {
+.brand-blue {
     color: var(--brand-name-100);
+    font-weight: bold;
 }
 
 .brand-red {
     color: var(--brand-name-200);
 }
 
-a {
-    &.highlight {
-        color: var(--brand-social);
-    }
+// a {
+//     &.highlight {
+//         color: var(--brand-social);
+//     }
 
-}
+// }
 
 
 .body {
@@ -152,4 +153,12 @@ a {
     padding-left: 25px !important;
     padding-right: 25px !important;
     height: auto !important;
+}
+
+
+
+
+.nav-link.active {
+  color: var(--brand-social) !important; // hoặc màu bạn muốn
+  font-weight: bold;
 }

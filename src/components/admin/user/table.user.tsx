@@ -14,8 +14,8 @@ import { useRef, useState } from "react";
 import DetailUser from "./detail.user";
 import CreateUser from "./create.user";
 import ImportUser from "./data/import.user";
-import { CSVLink } from "react-csv";
 import UpdateUser from "./update.user";
+import { CSVLink } from "react-csv";
 
 type TSearch = {
   fullName: string;

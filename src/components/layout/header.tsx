@@ -44,44 +44,44 @@ const Header = () => {
   const sportsMenu = (
     <Menu>
       <Menu.Item key="football">
-        <Link
+        <NavLink
           to="/football"
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {t("sports.football")}
-        </Link>
+        </NavLink>
       </Menu.Item>
       <Menu.Item key="badminton">
-        <Link
+        <NavLink
           to="/badminton"
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {t("sports.badminton")}
-        </Link>
+        </NavLink>
       </Menu.Item>
       <Menu.Item key="pickleball">
-        <Link
+        <NavLink
           to="/pickleball"
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {t("sports.pickleball")}
-        </Link>
+        </NavLink>
       </Menu.Item>
       <Menu.Item key="volleyball">
-        <Link
+        <NavLink
           to="/volleyball"
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {t("sports.volleyball")}
-        </Link>
+        </NavLink>
       </Menu.Item>
       <Menu.Item key="basketball">
-        <Link
+        <NavLink
           to="/basketball"
           style={{ textDecoration: "none", color: "inherit" }}
         >
           {t("sports.basketball")}
-        </Link>
+        </NavLink>
       </Menu.Item>
     </Menu>
   );
@@ -148,7 +148,7 @@ const Header = () => {
     <>
       <Navbar
         data-bs-theme={theme}
-        className="custom-navbar-theme"
+        className="custom-navbar-theme sticky-top"
         expand="lg"
         style={{
           zIndex: 1,
@@ -157,7 +157,7 @@ const Header = () => {
       >
         <Container className="text-uppercase">
           <Link className="navbar-brand" to="/">
-            <span className="brand-green">Vic Sports</span>
+            <span className="brand-blue">Vic Sports</span>
           </Link>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
@@ -172,16 +172,16 @@ const Header = () => {
                   </span>
                 </Dropdown>
               </Nav.Item>
-              <NavLink className="nav-link" to="/">
+              <NavLink className="nav-link" to="/introduction">
                 {t("appHeader.introduction")}
               </NavLink>
-              <NavLink className="nav-link" to="/">
+              <NavLink className="nav-link" to="/policy">
                 {t("appHeader.policy")}
               </NavLink>
-              <NavLink className="nav-link" to="/">
+              <NavLink className="nav-link" to="/terms">
                 {t("appHeader.term")}
               </NavLink>
-              <NavLink className="nav-link" to="/">
+              <NavLink className="nav-link" to="/for-owners">
                 {t("appHeader.owner")}
               </NavLink>
             </Nav>

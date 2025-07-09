@@ -6,14 +6,18 @@
     "introduction": "Giới thiệu",
     "policy": "Chính Sách",
     "term": "Điều khoản",
-    "owner": "Dành cho chủ sân"
+    "owner": "Dành cho chủ sân",
+    "dashboard": "Trang quản trị",
+    "profile": "Trang cá nhân",
+    "history": "Lịch sử mua hàng",
+    "logout": "Đăng xuất"
   },
   "sports": {
-    "football": "Bóng đá",
-    "badminton": "Cầu lông",
-    "pickleball": "Pickleball",
-    "volleyball": "Bóng chuyền",
-    "basketball": "Bóng rổ"
+    "football": "BÓNG ĐÁ",
+    "badminton": "CẦU LÔNG",
+    "pickleball": "PICKLEBALL",
+    "volleyball": "BÓNG CHUYỀN",
+    "basketball": "BÓNG RỔ"
   },
   "footer": {
     "desciption": "Nền tảng đặt sân thể thao thông minh, kết nối cộng đồng yêu thể thao.",

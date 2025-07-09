@@ -6,14 +6,18 @@
     "introduction": "Introduction",
     "policy": "Policy",
     "term": "Terms",
-    "owner": "For owners"
+    "owner": "For owners",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "history": "History",
+    "logout": "Logout"
   },
   "sports": {
-    "football": "Football",
-    "badminton": "Badminton",
-    "pickleball": "Pickleball",
-    "volleyball": "Volleyball",
-    "basketball": "Basketball"
+    "football": "FOOTBALL",
+    "badminton": "BADMINTON",
+    "pickleball": "PICKLEBALL",
+    "volleyball": "VOLLEYBALL",
+    "basketball": "BASKETBALL"
   },
   "footer": {
     "desciption": "Smart sports field booking platform, connecting sports-loving communities.",

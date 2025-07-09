@@ -14,6 +14,12 @@ import LoginPage from "./pages/client/auth/login";
 import RegisterPage from "./pages/client/auth/register";
 import "bootstrap/dist/css/bootstrap.min.css";
 import HomePage from "./pages/client/home";
+import IntroductionPage from "./pages/client/introduction";
+import PolicyPage from "./pages/client/policy";
+import TermsPage from "./pages/client/terms";
+import ForOwnersPage from "./pages/client/for.owners";
+import DashBoardPage from "./pages/admin/dashboard";
+import ManageUserPage from "./pages/admin/manage.user";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +29,22 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <HomePage />
+      },
+      {
+        path: "/introduction",
+        element: <IntroductionPage />
+      },
+      {
+        path: "/policy",
+        element: <PolicyPage />
+      },
+      {
+        path: "/terms",
+        element: <TermsPage />
+      },
+      {
+        path: "/for-owners",
+        element: <ForOwnersPage />
       }
     ]
   },
@@ -31,12 +53,20 @@ const router = createBrowserRouter([
     element: <LayoutAdmin />,
     children: [
       {
-        path: "/admin",
+        index: true,
         element: (
           <ProtectedRoute>
-            <div>admin page</div>
+            <DashBoardPage />
           </ProtectedRoute>
         )
+      },
+      {
+        // path: "user",
+        // element: (
+        //   <ProtectedRoute>
+        //     {/* <ManageUserPage /> */}
+        //   </ProtectedRoute>
+        // )
       }
     ]
   },
