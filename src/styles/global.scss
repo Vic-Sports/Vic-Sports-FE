@@ -9,156 +9,294 @@ $spacers: (
     6: $spacer * 4,
     7: $spacer * 5,
 );
-@import "./variable.scss"; // 👈 Trước
-@import "bootstrap/scss/bootstrap.scss"; // 👈 Sau
+@import "variable.scss";
+@import "bootstrap/scss/bootstrap.scss";
 
 * {
     margin: 0;
     padding: 0;
 }
 
-.brand-blue {
-    color: var(--brand-name-100);
-    font-weight: bold;
+// Global styles
+body {
+  background-color: var(--background-body);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  transition: all 0.3s ease;
 }
 
-.brand-red {
-    color: var(--brand-name-200);
+// Theme-aware utility classes
+.bg-theme-body {
+  background-color: var(--background-body) !important;
 }
 
-// a {
-//     &.highlight {
-//         color: var(--brand-social);
-//     }
-
-// }
-
-
-.body {
-    background-color: var(--background-body);
+.bg-theme-card {
+  background-color: var(--background-card) !important;
 }
 
+.bg-theme-section {
+  background-color: var(--background-section) !important;
+}
+
+.bg-theme-hero {
+  background: var(--background-hero) !important;
+}
+
+.text-theme-primary {
+  color: var(--text-primary) !important;
+}
+
+.text-theme-secondary {
+  color: var(--text-secondary) !important;
+}
+
+.text-theme-muted {
+  color: var(--text-muted) !important;
+}
+
+.text-theme-dark {
+  color: var(--text-dark) !important;
+}
+
+.text-theme-light {
+  color: var(--text-light) !important;
+}
+
+.border-theme-card {
+  border-color: var(--border-card) !important;
+}
+
+.border-theme-light {
+  border-color: var(--border-light) !important;
+}
+
+.shadow-theme-light {
+  box-shadow: 0 2px 10px var(--shadow-light) !important;
+}
+
+.shadow-theme-medium {
+  box-shadow: 0 4px 20px var(--shadow-medium) !important;
+}
+
+.shadow-theme-dark {
+  box-shadow: 0 8px 30px var(--shadow-dark) !important;
+}
+
+// Component classes
+.theme-card {
+  background-color: var(--background-card);
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background-color: var(--background-card-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--shadow-medium);
+  }
+}
+
+.theme-card-title {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.theme-card-text {
+  color: var(--text-secondary);
+}
+
+.theme-section {
+  background-color: var(--background-section);
+  padding: 4rem 0;
+}
+
+.theme-section-title {
+  color: var(--text-primary);
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.theme-section-subtitle {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+.btn-theme-primary {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--shadow-medium);
+    color: white;
+  }
+}
+
+.btn-theme-outline {
+  background: transparent;
+  border: 2px solid var(--brand-primary);
+  color: var(--brand-primary);
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: var(--brand-primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--shadow-medium);
+  }
+}
+
+// Custom navbar theme
 .custom-navbar-theme {
   background-color: var(--background-body-tertiary) !important;
-}
-
-.text-pink-100 {
-    color: var(--text-pink-100);
-}
-
-.text-pink-200 {
-    color: var(--text-pink-200);
-}
-
-.text-yellow-500 {
-    color: var(--text-yellow-500);
-}
-
-.text-red-500 {
-    color: var(--text-red-500);
-}
-
-.text-green-700 {
-    color: var(--text-green-700);
-}
-
-.text-blue-100 {
-    color: var(--text-blue-100);
-}
-
-.text-white-0 {
-    color: var(--text-white);
-}
-
-.resize-button {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    border-radius: 9999px;
-    background-image: var(--resize-button);
-    padding: 15px 25px;
-    text-align: center;
-    color: white;
-    text-decoration: none;
-    border: none;
-    font-weight: 600;
-
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(10px);
+  
+  .navbar-brand {
+    color: var(--brand-primary) !important;
+    font-weight: 700;
+  }
+  
+  .nav-link {
+    color: var(--text-primary) !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    
     &:hover {
-        gap: 10px;
-        text-decoration: none;
+      color: var(--brand-primary) !important;
     }
+    
+    &.active {
+      color: var(--brand-primary) !important;
+      font-weight: 600;
+    }
+  }
 }
 
-.divider {
-    height: 1px;
-    border-top: 1px solid var(--border-hero-right);
-}
-
-/* --------- */
-/*Scrollbar   */
-/* --------- */
-
-::-webkit-scrollbar {
-    width: 7px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-    background: var(--scroll-track-background);
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-    background: var(--scroll-thumb-background);
-    border-radius: 12px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-    background: var(--scroll-thumb-hover);
-    border-radius: 12px;
-}
-
-.dropdown-toggle::after {
-    display: none;
-}
-
-
-.project-card {
-    padding-top: 50px !important;
-    padding-bottom: 50px !important;
-    padding-left: 25px !important;
-    padding-right: 25px !important;
-    height: auto !important;
-    cursor: pointer;
-}
-
+// Project card view
 .project-card-view {
-    box-shadow: 0 3px 3px 3px var(--border-hero-right);
-    color: var(--text-white);
-    background-color: transparent !important;
-    opacity: 0.9 !important;
-    transition: all 0.5s ease 0s !important;
-    height: 100% !important;
-
-    &:hover {
-        border-color: var(--brand-social);
-    }
+  background-color: var(--background-card);
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px var(--shadow-medium);
+  }
 }
 
-
-.blog-card {
-    padding-top: 50px !important;
-    padding-bottom: 50px !important;
-    padding-left: 25px !important;
-    padding-right: 25px !important;
-    height: auto !important;
+// Brand colors
+.brand-blue {
+  color: var(--brand-primary) !important;
 }
 
+.brand-gradient {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
+// Status colors
+.text-success {
+  color: var(--brand-success) !important;
+}
 
+.text-warning {
+  color: var(--brand-warning) !important;
+}
 
-.nav-link.active {
-  color: var(--brand-social) !important; // hoặc màu bạn muốn
-  font-weight: bold;
+.text-danger {
+  color: var(--brand-danger) !important;
+}
+
+.text-info {
+  color: var(--brand-accent) !important;
+}
+
+// Custom scrollbar
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scroll-track-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb-background);
+  border-radius: 4px;
+  
+  &:hover {
+    background: var(--scroll-thumb-hover);
+  }
+}
+
+// Focus styles
+*:focus {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+// Selection styles
+::selection {
+  background-color: var(--brand-primary);
+  color: white;
+}
+
+// Loading states
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+// Animation classes
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+.slide-up {
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive utilities
+@media (max-width: 768px) {
+  .theme-section {
+    padding: 2rem 0;
+  }
+  
+  .btn-theme-primary,
+  .btn-theme-outline {
+    padding: 0.5rem 1.5rem;
+    font-size: 0.9rem;
+  }
 }

@@ -12,6 +12,89 @@
     "history": "Lịch sử mua hàng",
     "logout": "Đăng xuất"
   },
+  "home": {
+    "hero": {
+      "title": "ĐẶT SÂN TRỰC TUYẾN",
+      "subtitle": "KẾT BẠN BỐN PHƯƠNG",
+      "description": "Khám phá hệ thống đặt sân bóng đá thông minh hàng đầu Việt Nam. Đặt sân nhanh chóng, thanh toán an toàn, trải nghiệm tuyệt vời.",
+      "bookNow": "ĐẶT SÂN NGAY",
+      "learnMore": "TÌM HIỂU THÊM"
+    },
+    "features": {
+      "title": "Tại sao chọn chúng tôi?",
+      "subtitle": "Chúng tôi cam kết mang đến trải nghiệm đặt sân tốt nhất cho bạn",
+      "locations": {
+        "title": "Đa dạng địa điểm",
+        "description": "Hơn 50 sân bóng đá chất lượng cao tại TP.HCM"
+      },
+      "availability": {
+        "title": "Hoạt động 24/7",
+        "description": "Đặt sân mọi lúc, mọi nơi với hệ thống tự động"
+      },
+      "support": {
+        "title": "Hỗ trợ tận tâm",
+        "description": "Đội ngũ hỗ trợ chuyên nghiệp, sẵn sàng phục vụ"
+      }
+    },
+    "services": {
+      "title": "Dịch vụ của chúng tôi",
+      "subtitle": "Khám phá các tính năng độc đáo của hệ thống đặt sân thông minh",
+      "onlineBooking": {
+        "title": "Đặt sân trực tuyến",
+        "description": "Đặt sân nhanh chóng 24/7 với giao diện thân thiện"
+      },
+      "onlinePayment": {
+        "title": "Thanh toán online",
+        "description": "Thanh toán an toàn qua nhiều phương thức khác nhau"
+      },
+      "guestSearch": {
+        "title": "Tìm kiếm vãng lai",
+        "description": "Tìm kiếm và đặt sân cho khách vãng lai dễ dàng"
+      },
+      "quickPass": {
+        "title": "Pass sân nhanh chóng",
+        "description": "Hệ thống pass sân thông minh, tiết kiệm thời gian"
+      },
+      "community": {
+        "title": "Cộng đồng trực tuyến",
+        "description": "Kết nối với cộng đồng bóng đá địa phương"
+      },
+      "revenueManagement": {
+        "title": "Quản lý doanh thu",
+        "description": "Theo dõi và quản lý doanh thu hiệu quả"
+      },
+      "bookingManagement": {
+        "title": "Quản lý đặt sân online",
+        "description": "Hệ thống quản lý đặt sân chuyên nghiệp"
+      },
+      "customerManagement": {
+        "title": "Quản lý khách hàng",
+        "description": "Quản lý thông tin khách hàng một cách hệ thống"
+      },
+      "otherFeatures": {
+        "title": "Chức năng khác",
+        "description": "Nhiều tính năng hữu ích khác đang chờ bạn khám phá"
+      }
+    },
+    "gallery": {
+      "title": "Sân bóng chất lượng",
+      "subtitle": "Khám phá các sân bóng đá chất lượng cao của chúng tôi"
+    },
+    "testimonials": {
+      "title": "Khách hàng nói gì?",
+      "subtitle": "Những đánh giá chân thực từ khách hàng của chúng tôi"
+    },
+    "cta": {
+      "title": "Sẵn sàng trải nghiệm?",
+      "subtitle": "Tham gia cùng hàng nghìn người đã tin tưởng và sử dụng dịch vụ của chúng tôi",
+      "button": "BẮT ĐẦU NGAY"
+    },
+    "stats": {
+      "fields": "Sân bóng",
+      "customers": "Khách hàng",
+      "satisfaction": "Hài lòng"
+    }
+  },
   "sports": {
     "football": "BÓNG ĐÁ",
     "badminton": "CẦU LÔNG",

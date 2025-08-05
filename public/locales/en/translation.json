@@ -12,6 +12,89 @@
     "history": "History",
     "logout": "Logout"
   },
+  "home": {
+    "hero": {
+      "title": "ONLINE FIELD BOOKING",
+      "subtitle": "CONNECT WITH FOUR DIRECTIONS",
+      "description": "Discover Vietnam's leading smart football field booking system. Book fields quickly, pay safely, and have an excellent experience.",
+      "bookNow": "BOOK NOW",
+      "learnMore": "LEARN MORE"
+    },
+    "features": {
+      "title": "Why choose us?",
+      "subtitle": "We are committed to bringing you the best field booking experience",
+      "locations": {
+        "title": "Diverse locations",
+        "description": "Over 50 high-quality football fields in Ho Chi Minh City"
+      },
+      "availability": {
+        "title": "24/7 operation",
+        "description": "Book fields anytime, anywhere with automated system"
+      },
+      "support": {
+        "title": "Dedicated support",
+        "description": "Professional support team, ready to serve"
+      }
+    },
+    "services": {
+      "title": "Our services",
+      "subtitle": "Discover unique features of the smart field booking system",
+      "onlineBooking": {
+        "title": "Online booking",
+        "description": "Book fields quickly 24/7 with user-friendly interface"
+      },
+      "onlinePayment": {
+        "title": "Online payment",
+        "description": "Secure payment through multiple methods"
+      },
+      "guestSearch": {
+        "title": "Guest search",
+        "description": "Easily search and book fields for guests"
+      },
+      "quickPass": {
+        "title": "Quick field pass",
+        "description": "Smart field pass system, saving time"
+      },
+      "community": {
+        "title": "Online community",
+        "description": "Connect with local football community"
+      },
+      "revenueManagement": {
+        "title": "Revenue management",
+        "description": "Track and manage revenue effectively"
+      },
+      "bookingManagement": {
+        "title": "Online booking management",
+        "description": "Professional field booking management system"
+      },
+      "customerManagement": {
+        "title": "Customer management",
+        "description": "Systematically manage customer information"
+      },
+      "otherFeatures": {
+        "title": "Other features",
+        "description": "Many other useful features waiting for you to discover"
+      }
+    },
+    "gallery": {
+      "title": "Quality fields",
+      "subtitle": "Discover our high-quality football fields"
+    },
+    "testimonials": {
+      "title": "What customers say?",
+      "subtitle": "Genuine reviews from our customers"
+    },
+    "cta": {
+      "title": "Ready to experience?",
+      "subtitle": "Join thousands of people who have trusted and used our services",
+      "button": "START NOW"
+    },
+    "stats": {
+      "fields": "Fields",
+      "customers": "Customers",
+      "satisfaction": "Satisfied"
+    }
+  },
   "sports": {
     "football": "FOOTBALL",
     "badminton": "BADMINTON",
@@ -78,7 +161,7 @@
     "signin": "Sign in",
     "google": "Sign in with Google",
     "facebook": "Sign in with Facebook",
-    "account": "Don’t have an account?",
+    "account": "Don't have an account?",
     "signup": "Sign up to free!"
   }
 }

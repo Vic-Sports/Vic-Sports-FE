@@ -18,17 +18,14 @@ import { useCurrentApp } from "../context/app.context";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import Divider from "@/share/divider";
+import "./footer.scss";
 
 const Footer = () => {
   const { theme } = useCurrentApp();
   const { t } = useTranslation();
 
   return (
-    <footer
-      data-bs-theme={theme}
-      className="custom-navbar-theme"
-      style={{ zIndex: 1, fontWeight: "600" }}
-    >
+    <footer data-bs-theme={theme} className="footer-main">
       <Container className="p-4">
         <Row className="my-4">
           {/* Logo and Description */}
@@ -37,35 +34,23 @@ const Footer = () => {
             md={6}
             className="mb-4 mb-md-0 d-flex flex-column align-items-center"
           >
-            <div
-              className="rounded-circle bg-white d-flex align-items-center justify-content-center mb-4"
-              style={{ width: 120, height: 120 }}
-            >
-              <img
-                src="https://mdbootstrap.com/img/Photos/new-templates/animal-shelter/logo.png"
-                alt="Logo"
-                height={60}
-                loading="lazy"
-              />
+            <div className="footer-logo mb-4">
+              <span className="brand-blue fw-bold fs-3">Vic Sports</span>
             </div>
-            <p className="text-center text-body">{t("footer.desciption")}</p>
-            <ul className="list-unstyled d-flex justify-content-center gap-3 mb-0">
-              <li>
-                <a href="#" className="text-decoration-none text-body">
-                  <FaFacebookSquare size={20} />
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-decoration-none text-body">
-                  <FaInstagram size={20} />
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-decoration-none text-body">
-                  <FaYoutube size={20} />
-                </a>
-              </li>
-            </ul>
+            <p className="text-center footer-description">
+              {t("footer.desciption")}
+            </p>
+            <div className="social-links">
+              <a href="#" className="social-link">
+                <FaFacebookSquare size={24} />
+              </a>
+              <a href="#" className="social-link">
+                <FaInstagram size={24} />
+              </a>
+              <a href="#" className="social-link">
+                <FaYoutube size={24} />
+              </a>
+            </div>
           </Col>
 
           {/* Links */}
@@ -74,30 +59,28 @@ const Footer = () => {
             md={6}
             className="mb-4 mb-md-0 d-flex flex-column align-items-center align-items-md-start text-center text-md-start"
           >
-            <h5 className="text-uppercase mb-4 text-body">
-              {t("footer.link")}
-            </h5>
-            <ul className="list-unstyled">
-              <li className="mb-2">
-                <Link to="/" className="text-decoration-none text-body">
+            <h5 className="footer-section-title mb-4">{t("footer.link")}</h5>
+            <ul className="footer-links">
+              <li>
+                <Link to="/" className="footer-link">
                   <FaHome className="me-2" />
                   {t("footer.link1")}
                 </Link>
               </li>
-              <li className="mb-2">
-                <Link to="/about" className="text-decoration-none text-body">
+              <li>
+                <Link to="/about" className="footer-link">
                   <FaInfoCircle className="me-2" />
                   {t("footer.link2")}
                 </Link>
               </li>
-              <li className="mb-2">
-                <Link to="/services" className="text-decoration-none text-body">
+              <li>
+                <Link to="/services" className="footer-link">
                   <FaConciergeBell className="me-2" />
                   {t("footer.link3")}
                 </Link>
               </li>
-              <li className="mb-2">
-                <Link to="/contact" className="text-decoration-none text-body">
+              <li>
+                <Link to="/contact" className="footer-link">
                   <FaEnvelope className="me-2" />
                   {t("footer.link4")}
                 </Link>
@@ -111,30 +94,28 @@ const Footer = () => {
             md={6}
             className="mb-4 mb-md-0 d-flex flex-column align-items-center align-items-md-start text-center text-md-start"
           >
-            <h5 className="text-uppercase mb-4 text-body">
-              {t("footer.service")}
-            </h5>
-            <ul className="list-unstyled">
-              <li className="mb-2">
-                <Link to="/" className="text-decoration-none text-body">
+            <h5 className="footer-section-title mb-4">{t("footer.service")}</h5>
+            <ul className="footer-links">
+              <li>
+                <Link to="/" className="footer-link">
                   <FaCalendarCheck className="me-2" />
                   {t("footer.service1")}
                 </Link>
               </li>
-              <li className="mb-2">
-                <Link to="/about" className="text-decoration-none text-body">
+              <li>
+                <Link to="/about" className="footer-link">
                   <FaUsers className="me-2" />
                   {t("footer.service2")}
                 </Link>
               </li>
-              <li className="mb-2">
-                <Link to="/services" className="text-decoration-none text-body">
+              <li>
+                <Link to="/services" className="footer-link">
                   <FaTools className="me-2" />
                   {t("footer.service3")}
                 </Link>
               </li>
-              <li className="mb-2">
-                <Link to="/contact" className="text-decoration-none text-body">
+              <li>
+                <Link to="/contact" className="footer-link">
                   <FaCreditCard className="me-2" />
                   {t("footer.service4")}
                 </Link>
@@ -148,19 +129,17 @@ const Footer = () => {
             md={6}
             className="mb-4 mb-md-0 d-flex flex-column align-items-center align-items-md-start text-center text-md-start"
           >
-            <h5 className="text-uppercase mb-4 text-body">
-              {t("footer.contact")}
-            </h5>
-            <ul className="list-unstyled text-body">
-              <li className="mb-2">
+            <h5 className="footer-section-title mb-4">{t("footer.contact")}</h5>
+            <ul className="footer-contact">
+              <li>
                 <FaMapMarkerAlt className="me-2" />
                 {t("footer.contact1")}
               </li>
-              <li className="mb-2">
+              <li>
                 <FaPhone className="me-2" />
                 +01 234 567 89
               </li>
-              <li className="mb-2">
+              <li>
                 <FaEnvelope className="me-2" />
                 contact@example.com
               </li>
@@ -171,7 +150,7 @@ const Footer = () => {
 
       <Divider />
 
-      <div className="text-center p-3 text-body">{t("footer.author")}</div>
+      <div className="footer-copyright">{t("footer.author")}</div>
     </footer>
   );
 };

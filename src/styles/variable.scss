@@ -1,61 +1,129 @@
 $light-theme: (
-    background-body: #F2F4F7,
-    background-body-tertiary : #FFFFFF,
-    scroll-track-background: #fff,
-    scroll-thumb-background: #ccc,
-    scroll-thumb-hover: #9e9e9e,
-    brand-name-100: #4C3BCF,
-    brand-name-200: #ec4899,
-    brand-social:#4B70F5,
-    border-hero-right: #eee,
-    background-hero-right: linear-gradient(to right, #fff, #eee),
+    // Background colors
+    background-body: #F8FAFC,
+    background-body-tertiary: #FFFFFF,
+    background-card: #FFFFFF,
+    background-card-hover: #F1F5F9,
+    background-section: #F8FAFC,
+    background-hero: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%),
+    
+    // Text colors
+    text-primary: #1E293B,
+    text-secondary: #64748B,
+    text-muted: #94A3B8,
+    text-white: #FFFFFF,
+    text-dark: #0F172A,
+    text-light: #64748B,
+    
+    // Brand colors - Blue palette
+    brand-name-100: #3B82F6,
+    brand-name-200: #1E40AF,
+    brand-social: #3B82F6,
+    brand-primary: #3B82F6,
+    brand-secondary: #1E40AF,
+    brand-accent: #06B6D4,
+    brand-success: #10B981,
+    brand-warning: #F59E0B,
+    brand-danger: #EF4444,
+    
+    // Border colors
+    border-hero-right: #E2E8F0,
+    border-card: #E2E8F0,
+    border-light: #F1F5F9,
+    
+    // Background gradients
+    background-hero-right: linear-gradient(to right, #fff, #F8FAFC),
     border-top-hero-right: linear-gradient(to right, transparent, #fff, #fff, transparent),
-    text-red-500: #f96f73,
-    text-yellow-500: #fa9348,
-    text-green-500: #b6f9d2,
-    text-green-700: #56b10e,
-    text-pink-100: #ec4899,
-    text-pink-200: #bd21b8,
-    text-blue-100: #1dd2ec,
-    text-white: #000,
-    line-blue-500: #1a1443,
-    resize-button: linear-gradient(to right, #ec4899, #8b5cf6),
-    glow-card-background: #f5f6f7,
-    skill-card-background: #f5f6f7,
+    
+    // Text colors
+    text-red-500: #EF4444,
+    text-yellow-500: #F59E0B,
+    text-green-500: #10B981,
+    text-green-700: #059669,
+    text-pink-100: #EC4899,
+    text-pink-200: #DB2777,
+    text-blue-100: #06B6D4,
+    
+    // Other colors
+    line-blue-500: #1E40AF,
+    resize-button: linear-gradient(to right, #3B82F6, #1E40AF),
+    glow-card-background: #F8FAFC,
+    skill-card-background: #F1F5F9,
     border-top-skill-card: linear-gradient(to right, transparent, #fff, #fff, transparent),
+    
+    // Scrollbar
+    scroll-track-background: #F1F5F9,
+    scroll-thumb-background: #CBD5E1,
+    scroll-thumb-hover: #94A3B8,
+    
+    // Shadow
+    shadow-light: rgba(59, 130, 246, 0.1),
+    shadow-medium: rgba(59, 130, 246, 0.15),
+    shadow-dark: rgba(59, 130, 246, 0.2),
 );
 
 $dark-theme: (
-    background-body: #1C1C1D,
-    background-body-tertiary : #252728,
-    scroll-track-background: #1C1C1D,
-    scroll-thumb-background: #606060,
-    scroll-thumb-hover: #d6d6d6,
-    brand-name-100: #4C3BCF,
-    brand-name-200: #ec4899,
-    brand-social: #4B70F5,
-
-    border-hero-right: #1C1C1D,
-    background-hero-right: linear-gradient(to right, #0d1224, #0a0d37),
-    border-top-hero-right: linear-gradient(to right, transparent, #ec4899, #8b5cf6, transparent),
-
-    text-red-500: #f96f73,
-    text-yellow-500: #fa9348,
-    text-green-500: #b6f9d2,
-    text-green-700: #56b10e,
-    text-pink-100: #ec4899,
-    text-pink-200: #bd21b8,
-    text-blue-100: #1dd2ec,
-    text-white: #fff,
-
-    line-blue-500: #1a1443,
-    resize-button: linear-gradient(to right, #ec4899, #8b5cf6),
-
-    glow-card-background: #101123,
-    skill-card-background: #11152c,
-    border-top-skill-card: linear-gradient(to right, transparent,#8b5cf6, #8b5cf6, transparent),
-
-
+    // Background colors - Modern dark theme
+    background-body: #0F172A,
+    background-body-tertiary: #1E293B,
+    background-card: #334155,
+    background-card-hover: #475569,
+    background-section: #1E293B,
+    background-hero: linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%),
+    
+    // Text colors
+    text-primary: #F8FAFC,
+    text-secondary: #CBD5E1,
+    text-muted: #94A3B8,
+    text-white: #FFFFFF,
+    text-dark: #F1F5F9,
+    text-light: #CBD5E1,
+    
+    // Brand colors - Blue palette for dark
+    brand-name-100: #60A5FA,
+    brand-name-200: #3B82F6,
+    brand-social: #60A5FA,
+    brand-primary: #60A5FA,
+    brand-secondary: #3B82F6,
+    brand-accent: #22D3EE,
+    brand-success: #34D399,
+    brand-warning: #FBBF24,
+    brand-danger: #F87171,
+    
+    // Border colors
+    border-hero-right: #334155,
+    border-card: #475569,
+    border-light: #475569,
+    
+    // Background gradients
+    background-hero-right: linear-gradient(to right, #0F172A, #1E293B),
+    border-top-hero-right: linear-gradient(to right, transparent, #3B82F6, #1E40AF, transparent),
+    
+    // Text colors
+    text-red-500: #F87171,
+    text-yellow-500: #FBBF24,
+    text-green-500: #34D399,
+    text-green-700: #10B981,
+    text-pink-100: #F472B6,
+    text-pink-200: #EC4899,
+    text-blue-100: #22D3EE,
+    
+    // Other colors
+    line-blue-500: #1E40AF,
+    resize-button: linear-gradient(to right, #60A5FA, #3B82F6),
+    glow-card-background: #0F172A,
+    skill-card-background: #1E293B,
+    border-top-skill-card: linear-gradient(to right, transparent, #3B82F6, #1E40AF, transparent),
+    
+    // Scrollbar
+    scroll-track-background: #1E293B,
+    scroll-thumb-background: #475569,
+    scroll-thumb-hover: #64748B,
+    
+    // Shadow
+    shadow-light: rgba(96, 165, 250, 0.1),
+    shadow-medium: rgba(96, 165, 250, 0.15),
+    shadow-dark: rgba(96, 165, 250, 0.2),
 );
 
 :root {

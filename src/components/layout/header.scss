@@ -1,0 +1,198 @@
+.header-navbar {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1050 !important;
+  background-color: var(--background-body-tertiary) !important;
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid var(--border-light);
+  transition: all 0.3s ease;
+  padding: 0.75rem 0;
+  
+  &.scrolled {
+    box-shadow: 0 4px 25px var(--shadow-light);
+  }
+}
+
+.header-nav-link {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+  padding: 0.5rem 1rem !important;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+  background: transparent !important;
+  
+  &:hover {
+    color: var(--brand-primary) !important;
+    background: transparent !important;
+    transform: translateY(-1px);
+  }
+  
+  &.active {
+    color: var(--brand-primary) !important;
+    background: transparent !important;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 2px;
+      background-color: var(--brand-primary);
+      border-radius: 1px;
+    }
+  }
+}
+
+.login-btn {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  color: white !important;
+  border-radius: 25px;
+  padding: 0.5rem 1.5rem !important;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px var(--shadow-medium);
+    color: white !important;
+  }
+}
+
+.user-menu {
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  background: transparent !important;
+  border: none;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: transparent !important;
+    transform: translateY(-1px);
+  }
+  
+  .user-name {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+}
+
+.theme-toggle {
+  padding: 0.5rem !important;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  color: var(--text-primary);
+  background: transparent !important;
+  border: none;
+  
+  &:hover {
+    background: transparent !important;
+    transform: scale(1.1);
+    color: var(--brand-primary);
+  }
+}
+
+.language-toggle {
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  background: transparent !important;
+  border: none;
+  
+  &:hover {
+    background: transparent !important;
+    transform: scale(1.1);
+  }
+}
+
+.language-dropdown {
+  background-color: var(--background-card) !important;
+  border: 1px solid var(--border-light);
+  border-radius: 15px;
+  box-shadow: 0 8px 30px var(--shadow-medium);
+  
+  .dropdown-item {
+    color: var(--text-primary);
+    border-radius: 10px;
+    margin: 0.25rem;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: var(--background-card-hover);
+      color: var(--brand-primary);
+      transform: translateX(5px);
+    }
+  }
+}
+
+.sports-dropdown-menu {
+  background-color: var(--background-card) !important;
+  border: 1px solid var(--border-light);
+  border-radius: 15px;
+  box-shadow: 0 8px 30px var(--shadow-medium);
+  
+  .ant-dropdown-menu-item {
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: var(--background-card-hover);
+      color: var(--brand-primary);
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 991.98px) {
+  .header-navbar {
+    padding: 0.5rem 0;
+  }
+  
+  .header-nav-link {
+    padding: 1rem 1.5rem !important;
+    text-align: center;
+    margin: 0.25rem 0;
+  }
+  
+  .user-menu {
+    margin: 0.75rem 0;
+    justify-content: center;
+  }
+  
+  .theme-toggle,
+  .language-toggle {
+    margin: 0.5rem;
+  }
+}
+
+// Animation for navbar brand
+.navbar-brand {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+// Custom navbar toggle
+.navbar-toggler {
+  border: none;
+  padding: 0.5rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  background: transparent !important;
+  border: none;
+  
+  &:focus {
+    box-shadow: none;
+  }
+  
+  &:hover {
+    background: transparent !important;
+    transform: scale(1.05);
+  }
+} 
