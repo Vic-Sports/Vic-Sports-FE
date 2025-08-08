@@ -40,7 +40,7 @@ const RegisterPage = () => {
     if (!/[0-9]/.test(value)) {
       return Promise.reject(t("register.message_password_number"));
     }
-    if (!/[@$!%*?&]/.test(value)) {
+    if (!/[@#$!%*?&]/.test(value)) {
       return Promise.reject(t("register.message_password_special"));
     }
     return Promise.resolve();
@@ -49,14 +49,21 @@ const RegisterPage = () => {
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     setIsSubmit(true);
     const { email, fullName, password, phone } = values;
+
+    // Debug logging
+    console.log("Form values:", { fullName, email, password, phone });
+
     const res = await registerAPI(fullName, email, password, phone);
     setIsSubmit(false);
+
+    // Debug response
+    console.log("API Response:", res);
 
     if (res.data) {
       message.success(t("register.register_success"));
       navigate("/login");
     } else {
-      message.error(res.message);
+      message.error(res.message || "Registration failed");
     }
   };
 

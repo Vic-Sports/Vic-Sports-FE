@@ -24,9 +24,9 @@ type TProps = {
 };
 
 export const AppProvider = (props: TProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<IUser | null>(null);
-  const [isAppLoading, setIsAppLoading] = useState<boolean>(false);
+  const [isAppLoading, setIsAppLoading] = useState<boolean>(true);
   const [theme, setTheme] = useState<ThemeContextType>(() => {
     return (localStorage.getItem("theme") as ThemeContextType) || "light";
   });
@@ -40,12 +40,26 @@ export const AppProvider = (props: TProps) => {
 
   useEffect(() => {
     const fetchAccount = async () => {
-      const res = await fetchAccountAPI();
-      if (res.data) {
-        setUser(res.data.user);
-        setIsAuthenticated(true);
+      try {
+        const res = await fetchAccountAPI();
+        if (res.data) {
+          setUser(res.data.user);
+          setIsAuthenticated(true);
+        }
+      } catch (error: any) {
+        // 401 Unauthorized là bình thường khi user chưa login
+        if (error?.response?.status === 401) {
+          console.log("User not authenticated - this is normal");
+        } else {
+          console.error("Failed to fetch account:", error);
+        }
+        // Nếu API call thất bại, đảm bảo user không được authenticate
+        setIsAuthenticated(false);
+        setUser(null);
+      } finally {
+        // Đảm bảo luôn set loading = false dù API thành công hay thất bại
+        setIsAppLoading(false);
       }
-      setIsAppLoading(false);
     };
 
     fetchAccount();
@@ -95,7 +109,7 @@ export const AppProvider = (props: TProps) => {
             transform: "translate(-50%, -50%)"
           }}
         >
-          <RingLoader size={30} color="#1f6feb" />
+          <RingLoader size={60} color="#1f6feb" />
         </div>
       )}
     </>
