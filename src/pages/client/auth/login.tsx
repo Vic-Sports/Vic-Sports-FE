@@ -22,7 +22,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [isSubmit, setIsSubmit] = useState(false);
   const { message, notification } = App.useApp();
-  const { theme, setIsAuthenticated, setUser } = useCurrentApp();
+  const { setIsAuthenticated, setUser } = useCurrentApp();
   const { t } = useTranslation();
 
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
@@ -81,8 +81,8 @@ const LoginPage = () => {
   });
 
   return (
-    <div className={`login-container ${theme}`}>
-      <div className={`login-left ${theme}`}>
+    <div className="login-container">
+      <div className="login-left">
         <AnimationLottie
           width="100%"
           //animation with rp => convert sang text
@@ -93,8 +93,8 @@ const LoginPage = () => {
 
       <div className="login-right">
         <div className="login-box">
-          <h2 className={`text-large ${theme}`}>{t("login.login_title")}</h2>
-          <p className={`text-normal ${theme}`}>{t("login.login_text")}</p>
+          <h2 className="text-large">{t("login.login_title")}</h2>
+          <p className="text-normal">{t("login.login_text")}</p>
 
           <Form
             name="login-form"
@@ -138,20 +138,17 @@ const LoginPage = () => {
             </Form.Item>
           </Form>
 
-          <div
-            className={`social-button ${theme}`}
-            onClick={() => loginGoogle()}
-          >
+          <div className="social-button" onClick={() => loginGoogle()}>
             <img src={google} alt="google" />
             {t("login.google")}
           </div>
 
-          <div className={`social-button ${theme}`} onClick={() => alert("me")}>
+          <div className="social-button" onClick={() => alert("me")}>
             <img src={facebook} alt="facebook" />
             {t("login.facebook")}
           </div>
 
-          <p className={`text-normal text-center ${theme}`}>
+          <p className="text-normal text-center">
             {t("login.account")}
             <Link to="/register" style={{ marginLeft: 4 }}>
               {t("login.signup")}

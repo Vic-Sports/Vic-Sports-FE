@@ -1,7 +1,7 @@
 {
   "appHeader": {
     "home": "Trang chủ",
-    "login": "Đăng nhập",
+    "login": "ĐĂNG NHẬP",
     "sports": "Môn thể thao",
     "introduction": "Giới thiệu",
     "policy": "Chính Sách",
@@ -17,12 +17,26 @@
       "title": "ĐẶT SÂN TRỰC TUYẾN",
       "subtitle": "KẾT BẠN BỐN PHƯƠNG",
       "description": "Khám phá hệ thống đặt sân bóng đá thông minh hàng đầu Việt Nam. Đặt sân nhanh chóng, thanh toán an toàn, trải nghiệm tuyệt vời.",
+      "futuristicDescription": "Trải nghiệm thể thao trong kỷ nguyên số với AI, VR và công nghệ blockchain",
       "bookNow": "ĐẶT SÂN NGAY",
       "learnMore": "TÌM HIỂU THÊM"
     },
     "features": {
       "title": "Tính Năng Nổi Bật",
       "subtitle": "Chúng tôi cam kết mang đến trải nghiệm đặt sân tốt nhất cho bạn",
+      "futuristicSubtitle": "Khám phá những tính năng đột phá sẽ thay đổi cách bạn chơi thể thao",
+      "aiCoach": {
+        "title": "AI COACH",
+        "description": "Huấn luyện viên AI phân tích chuyển động real-time, đưa ra lời khuyên cá nhân hóa để nâng cao kỹ năng"
+      },
+      "vrTraining": {
+        "title": "VR TRAINING",
+        "description": "Luyện tập trong môi trường ảo với đối thủ AI, mô phỏng các tình huống thực tế một cách hoàn hảo"
+      },
+      "cryptoRewards": {
+        "title": "CRYPTO REWARDS",
+        "description": "Kiếm token VIC khi chơi, tham gia giải đấu. Sử dụng để mua NFT, đặt sân premium và nhiều hơn nữa"
+      },
       "locations": {
         "title": "Đa dạng địa điểm",
         "description": "Hơn 50 sân bóng đá chất lượng cao tại TP.HCM"
@@ -35,6 +49,34 @@
         "title": "Hỗ trợ tận tâm",
         "description": "Đội ngũ hỗ trợ chuyên nghiệp, sẵn sàng phục vụ"
       }
+    },
+    "courts": {
+      "subtitle": "Sân thể thao thông minh với công nghệ IoT và AI tích hợp",
+      "nexusFootball": {
+        "name": "NEXUS FOOTBALL ARENA",
+        "location": "Quận 1, TP. Hồ Chí Minh"
+      },
+      "quantumTennis": {
+        "name": "QUANTUM TENNIS COURT",
+        "location": "Quận 3, TP. Hồ Chí Minh"
+      },
+      "features": {
+        "motionTracking": "Theo dõi chuyển động",
+        "performanceAnalytics": "Phân tích hiệu suất",
+        "5gConnected": "Kết nối 5G",
+        "smartSecurity": "Bảo mật thông minh",
+        "shotAnalysis": "Phân tích cú đánh",
+        "speedDetection": "Phát hiện tốc độ",
+        "matchRecording": "Ghi hình trận đấu",
+        "aiReferee": "Trọng tài AI"
+      }
+    },
+    "community": {
+      "subtitle": "Kết nối với cộng đồng thể thao toàn cầu trong metaverse"
+    },
+    "footer": {
+      "description": "Nền tảng thể thao thông minh đầu tiên tại Việt Nam, kết hợp AI, VR và Blockchain để tạo ra trải nghiệm thể thao hoàn toàn mới.",
+      "copyright": "© 2024 VIC SPORTS. Tất cả quyền được bảo lưu. Được xây dựng cho tương lai của thể thao."
     },
     "services": {
       "title": "Dịch vụ của chúng tôi",

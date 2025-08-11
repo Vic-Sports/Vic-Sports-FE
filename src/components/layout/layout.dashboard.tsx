@@ -156,7 +156,7 @@ const LayoutAdmin = () => {
   return (
     <Layout style={{ minHeight: "100vh" }} className="layout-admin">
       <Sider
-        theme="light"
+        theme="dark"
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}

@@ -1,138 +1,94 @@
-$light-theme: (
-    // Background colors
-    background-body: #F8FAFC,
-    background-body-tertiary: #FFFFFF,
-    background-card: #FFFFFF,
-    background-card-hover: #F1F5F9,
-    background-section: #F8FAFC,
-    background-hero: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%),
-    
-    // Text colors
-    text-primary: #1E293B,
-    text-secondary: #64748B,
-    text-muted: #94A3B8,
-    text-white: #FFFFFF,
-    text-dark: #0F172A,
-    text-light: #64748B,
-    
-    // Brand colors - Blue palette
-    brand-name-100: #3B82F6,
-    brand-name-200: #1E40AF,
-    brand-social: #3B82F6,
-    brand-primary: #3B82F6,
-    brand-secondary: #1E40AF,
-    brand-accent: #06B6D4,
-    brand-success: #10B981,
-    brand-warning: #F59E0B,
-    brand-danger: #EF4444,
-    
-    // Border colors
-    border-hero-right: #E2E8F0,
-    border-card: #E2E8F0,
-    border-light: #F1F5F9,
-    
-    // Background gradients
-    background-hero-right: linear-gradient(to right, #fff, #F8FAFC),
-    border-top-hero-right: linear-gradient(to right, transparent, #fff, #fff, transparent),
-    
-    // Text colors
-    text-red-500: #EF4444,
-    text-yellow-500: #F59E0B,
-    text-green-500: #10B981,
-    text-green-700: #059669,
-    text-pink-100: #EC4899,
-    text-pink-200: #DB2777,
-    text-blue-100: #06B6D4,
-    
-    // Other colors
-    line-blue-500: #1E40AF,
-    resize-button: linear-gradient(to right, #3B82F6, #1E40AF),
-    glow-card-background: #F8FAFC,
-    skill-card-background: #F1F5F9,
-    border-top-skill-card: linear-gradient(to right, transparent, #fff, #fff, transparent),
-    
-    // Scrollbar
-    scroll-track-background: #F1F5F9,
-    scroll-thumb-background: #CBD5E1,
-    scroll-thumb-hover: #94A3B8,
-    
-    // Shadow
-    shadow-light: rgba(59, 130, 246, 0.1),
-    shadow-medium: rgba(59, 130, 246, 0.15),
-    shadow-dark: rgba(59, 130, 246, 0.2),
-);
-
+// Fixed Dark Theme Variables - Futuristic Sports Platform
 $dark-theme: (
-    // Background colors - Modern dark theme
-    background-body: #0F172A,
-    background-body-tertiary: #1E293B,
-    background-card: #334155,
-    background-card-hover: #475569,
-    background-section: #1E293B,
-    background-hero: linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%),
+    // Background colors - Futuristic dark theme
+    background-body: #000000,
+    background-body-tertiary: #0a0a0a,
+    background-card: rgba(255, 255, 255, 0.1),
+    background-card-hover: rgba(255, 255, 255, 0.15),
+    background-section: #000000,
+    background-hero: #000000,
     
     // Text colors
-    text-primary: #F8FAFC,
-    text-secondary: #CBD5E1,
-    text-muted: #94A3B8,
+    text-primary: #FFFFFF,
+    text-secondary: rgba(255, 255, 255, 0.7),
+    text-muted: rgba(255, 255, 255, 0.6),
     text-white: #FFFFFF,
-    text-dark: #F1F5F9,
-    text-light: #CBD5E1,
+    text-dark: #FFFFFF,
+    text-light: rgba(255, 255, 255, 0.8),
     
-    // Brand colors - Blue palette for dark
-    brand-name-100: #60A5FA,
-    brand-name-200: #3B82F6,
-    brand-social: #60A5FA,
-    brand-primary: #60A5FA,
-    brand-secondary: #3B82F6,
-    brand-accent: #22D3EE,
-    brand-success: #34D399,
-    brand-warning: #FBBF24,
-    brand-danger: #F87171,
+    // Brand colors - Neon and Electric palette
+    brand-name-100: #0ea5e9,
+    brand-name-200: #d946ef,
+    brand-social: #0ea5e9,
+    brand-primary: #0ea5e9,
+    brand-secondary: #d946ef,
+    brand-accent: #38bdf8,
+    brand-success: #10b981,
+    brand-warning: #fbbf24,
+    brand-danger: #ef4444,
+    
+    // Neon colors
+    neon-50: #f0f9ff,
+    neon-100: #e0f2fe,
+    neon-200: #bae6fd,
+    neon-300: #7dd3fc,
+    neon-400: #38bdf8,
+    neon-500: #0ea5e9,
+    neon-600: #0284c7,
+    neon-700: #0369a1,
+    neon-800: #075985,
+    neon-900: #0c4a6e,
+    
+    // Electric colors
+    electric-50: #fdf4ff,
+    electric-100: #fae8ff,
+    electric-200: #f5d0fe,
+    electric-300: #f0abfc,
+    electric-400: #e879f9,
+    electric-500: #d946ef,
+    electric-600: #c026d3,
+    electric-700: #a21caf,
+    electric-800: #86198f,
+    electric-900: #701a75,
     
     // Border colors
-    border-hero-right: #334155,
-    border-card: #475569,
-    border-light: #475569,
+    border-hero-right: rgba(255, 255, 255, 0.1),
+    border-card: rgba(255, 255, 255, 0.1),
+    border-light: rgba(255, 255, 255, 0.1),
     
     // Background gradients
-    background-hero-right: linear-gradient(to right, #0F172A, #1E293B),
-    border-top-hero-right: linear-gradient(to right, transparent, #3B82F6, #1E40AF, transparent),
+    background-hero-right: linear-gradient(to right, #000, rgba(14, 165, 233, 0.1)),
+    border-top-hero-right: linear-gradient(to right, transparent, #0ea5e9, #d946ef, transparent),
     
     // Text colors
-    text-red-500: #F87171,
-    text-yellow-500: #FBBF24,
-    text-green-500: #34D399,
-    text-green-700: #10B981,
-    text-pink-100: #F472B6,
-    text-pink-200: #EC4899,
-    text-blue-100: #22D3EE,
+    text-red-500: #ef4444,
+    text-yellow-500: #fbbf24,
+    text-green-500: #10b981,
+    text-green-700: #059669,
+    text-pink-100: #d946ef,
+    text-pink-200: #c026d3,
+    text-blue-100: #0ea5e9,
     
     // Other colors
-    line-blue-500: #1E40AF,
-    resize-button: linear-gradient(to right, #60A5FA, #3B82F6),
-    glow-card-background: #0F172A,
-    skill-card-background: #1E293B,
-    border-top-skill-card: linear-gradient(to right, transparent, #3B82F6, #1E40AF, transparent),
+    line-blue-500: #0ea5e9,
+    resize-button: linear-gradient(to right, #0ea5e9, #d946ef),
+    glow-card-background: #000000,
+    skill-card-background: rgba(255, 255, 255, 0.05),
+    border-top-skill-card: linear-gradient(to right, transparent, #0ea5e9, #d946ef, transparent),
     
     // Scrollbar
-    scroll-track-background: #1E293B,
-    scroll-thumb-background: #475569,
-    scroll-thumb-hover: #64748B,
+    scroll-track-background: rgba(255, 255, 255, 0.1),
+    scroll-thumb-background: rgba(14, 165, 233, 0.5),
+    scroll-thumb-hover: rgba(14, 165, 233, 0.8),
     
     // Shadow
-    shadow-light: rgba(96, 165, 250, 0.1),
-    shadow-medium: rgba(96, 165, 250, 0.15),
-    shadow-dark: rgba(96, 165, 250, 0.2),
+    shadow-light: rgba(14, 165, 233, 0.1),
+    shadow-medium: rgba(14, 165, 233, 0.2),
+    shadow-dark: rgba(14, 165, 233, 0.3),
 );
 
+// Set dark theme as default and only theme
 :root {
-    @each $name, $color in $light-theme {
-        --#{$name}: #{$color};
-    }
-}
-
-[data-bs-theme="dark"] {
     @each $name, $color in $dark-theme {
         --#{$name}: #{$color};
     }

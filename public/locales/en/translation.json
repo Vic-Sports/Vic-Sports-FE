@@ -1,7 +1,7 @@
 {
   "appHeader": {
-    "home": "Home",
-    "login": "Login",
+    "home": "HOME",
+    "login": "LOGIN",
     "sports": "Sports",
     "introduction": "Introduction",
     "policy": "Policy",
@@ -17,12 +17,26 @@
       "title": "ONLINE FIELD BOOKING",
       "subtitle": "CONNECT WITH FOUR DIRECTIONS",
       "description": "Discover Vietnam's leading smart football field booking system. Book fields quickly, pay safely, and have an excellent experience.",
+      "futuristicDescription": "Experience sports in the digital age with AI, VR and blockchain technology",
       "bookNow": "BOOK NOW",
       "learnMore": "LEARN MORE"
     },
     "features": {
       "title": "Key Features",
       "subtitle": "We are committed to bringing you the best field booking experience",
+      "futuristicSubtitle": "Discover breakthrough features that will change the way you play sports",
+      "aiCoach": {
+        "title": "AI COACH",
+        "description": "AI trainer analyzes real-time movement, provides personalized advice to improve skills"
+      },
+      "vrTraining": {
+        "title": "VR TRAINING",
+        "description": "Train in virtual environment with AI opponents, perfectly simulate real situations"
+      },
+      "cryptoRewards": {
+        "title": "CRYPTO REWARDS",
+        "description": "Earn VIC tokens when playing, participating in tournaments. Use to buy NFTs, book premium courts and more"
+      },
       "locations": {
         "title": "Diverse locations",
         "description": "Over 50 high-quality football fields in Ho Chi Minh City"
@@ -35,6 +49,34 @@
         "title": "Dedicated support",
         "description": "Professional support team, ready to serve"
       }
+    },
+    "courts": {
+      "subtitle": "Smart sports courts with integrated IoT and AI technology",
+      "nexusFootball": {
+        "name": "NEXUS FOOTBALL ARENA",
+        "location": "District 1, Ho Chi Minh City"
+      },
+      "quantumTennis": {
+        "name": "QUANTUM TENNIS COURT",
+        "location": "District 3, Ho Chi Minh City"
+      },
+      "features": {
+        "motionTracking": "Motion Tracking",
+        "performanceAnalytics": "Performance Analytics",
+        "5gConnected": "5G Connected",
+        "smartSecurity": "Smart Security",
+        "shotAnalysis": "Shot Analysis",
+        "speedDetection": "Speed Detection",
+        "matchRecording": "Match Recording",
+        "aiReferee": "AI Referee"
+      }
+    },
+    "community": {
+      "subtitle": "Connect with global sports community in metaverse"
+    },
+    "footer": {
+      "description": "Vietnam's first smart sports platform, combining AI, VR and Blockchain to create a completely new sports experience.",
+      "copyright": "© 2024 VIC SPORTS. All rights reserved. Built for the future of sports."
     },
     "services": {
       "title": "Our services",

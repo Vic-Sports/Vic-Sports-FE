@@ -1,277 +1,329 @@
-import { Container, Row, Col, Button, Card } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import {
-  FaCalendarCheck,
-  FaCreditCard,
-  FaSearch,
-  FaRunning,
-  FaUsers,
+  FaBrain,
+  FaBitcoin,
+  FaEye,
   FaChartLine,
-  FaClipboardList,
-  FaUserFriends,
-  FaCogs,
-  FaArrowRight,
+  FaTachometerAlt,
+  FaVideo,
+  FaRobot,
+  FaBullseye,
+  FaShieldAlt,
+  FaWifi,
+  FaUsers,
+  FaGamepad,
+  FaPaperPlane,
+  FaTrophy,
   FaStar,
   FaMapMarkerAlt,
-  FaClock,
-  FaPhone
+  FaThermometerHalf,
+  FaWind,
+  FaTimes
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { Select, Input, DatePicker, TimePicker, Button } from "antd";
+import {
+  SearchOutlined,
+  EnvironmentOutlined,
+  CalendarOutlined,
+  ClockCircleOutlined
+} from "@ant-design/icons";
 import "./home.scss";
 
 const HomePage = () => {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
+  const [showChatBot, setShowChatBot] = useState(false);
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
-  const services = [
+  const futureFeatures = [
     {
-      icon: <FaCalendarCheck />,
-      label: t("home.services.onlineBooking.title"),
-      description: t("home.services.onlineBooking.description")
+      icon: <FaBrain />,
+      title: t("home.features.aiCoach.title"),
+      description: t("home.features.aiCoach.description"),
+      tags: ["MACHINE LEARNING", "REAL-TIME"],
+      gradient: "from-neon-500 to-electric-500"
     },
     {
-      icon: <FaCreditCard />,
-      label: t("home.services.onlinePayment.title"),
-      description: t("home.services.onlinePayment.description")
+      icon: <FaEye />,
+      title: t("home.features.vrTraining.title"),
+      description: t("home.features.vrTraining.description"),
+      tags: ["VIRTUAL REALITY", "IMMERSIVE"],
+      gradient: "from-electric-500 to-neon-500"
     },
     {
-      icon: <FaSearch />,
-      label: t("home.services.guestSearch.title"),
-      description: t("home.services.guestSearch.description")
-    },
-    {
-      icon: <FaRunning />,
-      label: t("home.services.quickPass.title"),
-      description: t("home.services.quickPass.description")
-    },
-    {
-      icon: <FaUsers />,
-      label: t("home.services.community.title"),
-      description: t("home.services.community.description")
-    },
-    {
-      icon: <FaChartLine />,
-      label: t("home.services.revenueManagement.title"),
-      description: t("home.services.revenueManagement.description")
-    },
-    {
-      icon: <FaClipboardList />,
-      label: t("home.services.bookingManagement.title"),
-      description: t("home.services.bookingManagement.description")
-    },
-    {
-      icon: <FaUserFriends />,
-      label: t("home.services.customerManagement.title"),
-      description: t("home.services.customerManagement.description")
-    },
-    {
-      icon: <FaCogs />,
-      label: t("home.services.otherFeatures.title"),
-      description: t("home.services.otherFeatures.description")
+      icon: <FaBitcoin />,
+      title: t("home.features.cryptoRewards.title"),
+      description: t("home.features.cryptoRewards.description"),
+      tags: ["BLOCKCHAIN", "NFT"],
+      gradient: "from-neon-500 to-electric-500"
     }
   ];
 
-  const features = [
+  const smartCourts = [
     {
-      icon: <FaMapMarkerAlt />,
-      title: t("home.features.locations.title"),
-      description: t("home.features.locations.description")
+      id: 1,
+      name: t("home.courts.nexusFootball.name"),
+      type: "football",
+      location: t("home.courts.nexusFootball.location"),
+      rating: 4.9,
+      price: "300K VIC",
+      earnTokens: "50 VIC tokens",
+      features: [
+        { icon: <FaEye />, name: t("home.courts.features.motionTracking") },
+        {
+          icon: <FaChartLine />,
+          name: t("home.courts.features.performanceAnalytics")
+        },
+        { icon: <FaWifi />, name: t("home.courts.features.5gConnected") },
+        { icon: <FaShieldAlt />, name: t("home.courts.features.smartSecurity") }
+      ],
+      bgGradient: "from-green-900 via-green-800 to-green-900",
+      techBadge: "⚡ SMART FIELD",
+      players: "16 players online",
+      temperature: "25°C"
     },
     {
-      icon: <FaClock />,
-      title: t("home.features.availability.title"),
-      description: t("home.features.availability.description")
-    },
-    {
-      icon: <FaPhone />,
-      title: t("home.features.support.title"),
-      description: t("home.features.support.description")
+      id: 2,
+      name: t("home.courts.quantumTennis.name"),
+      type: "tennis",
+      location: t("home.courts.quantumTennis.location"),
+      rating: 4.8,
+      price: "250K VIC",
+      earnTokens: "40 VIC tokens",
+      features: [
+        { icon: <FaBullseye />, name: t("home.courts.features.shotAnalysis") },
+        {
+          icon: <FaTachometerAlt />,
+          name: t("home.courts.features.speedDetection")
+        },
+        { icon: <FaVideo />, name: t("home.courts.features.matchRecording") },
+        { icon: <FaRobot />, name: t("home.courts.features.aiReferee") }
+      ],
+      bgGradient: "from-orange-900 via-orange-800 to-red-900",
+      techBadge: "🎾 SMART TENNIS",
+      players: "4 players active",
+      temperature: "5 km/h"
     }
   ];
 
-  const testimonials = [
+  const livePlayers = [
     {
-      name: "Nguyễn Văn A",
-      role: "Cầu thủ nghiệp dư",
-      content:
-        "Rất hài lòng với dịch vụ đặt sân online. Giao diện dễ sử dụng, thanh toán nhanh chóng.",
-      rating: 5
+      name: "Alex Chen",
+      avatar: "A",
+      sport: "⚽ Looking for football match",
+      level: 23,
+      tags: ["PRO PLAYER", "VR READY"],
+      gradient: "from-neon-500 to-electric-500"
     },
     {
-      name: "Trần Thị B",
-      role: "Chủ sân bóng",
-      content:
-        "Hệ thống quản lý rất hiệu quả, giúp tôi tiết kiệm thời gian và tăng doanh thu.",
-      rating: 5
+      name: "Maria Santos",
+      avatar: "M",
+      sport: "🎾 Tennis doubles partner needed",
+      level: 18,
+      tags: ["COACH", "AI TRAINED"],
+      gradient: "from-electric-500 to-neon-500"
     },
     {
-      name: "Lê Văn C",
-      role: "Huấn luyện viên",
-      content:
-        "Dễ dàng tìm kiếm và đặt sân cho đội bóng. Dịch vụ rất chuyên nghiệp.",
-      rating: 5
+      name: "Kevin Park",
+      avatar: "K",
+      sport: "🏓 Pickleball tournament prep",
+      level: 31,
+      tags: ["CHAMPION", "NFT HOLDER"],
+      gradient: "from-neon-500 to-electric-500"
+    }
+  ];
+
+  const tournaments = [
+    {
+      name: "VIC CUP 2024",
+      description: "Global Football Championship",
+      prizePool: "1,000,000",
+      status: "LIVE",
+      isLive: true
+    },
+    {
+      name: "AI Tennis Masters",
+      description: "Human vs AI Championship",
+      prizePool: "500,000",
+      startsIn: "2 days"
+    },
+    {
+      name: "Metaverse Olympics",
+      description: "VR Multi-Sport Event",
+      prizePool: "2,000,000",
+      startsIn: "1 week"
     }
   ];
 
   return (
-    <div className="home-page bg-theme-body">
+    <div className="futuristic-home">
+      {/* Animated Background */}
+      <div className="animated-background">
+        <div className="floating-orb orb-1"></div>
+        <div className="floating-orb orb-2"></div>
+        <div className="floating-orb orb-3"></div>
+      </div>
+
       {/* Hero Section */}
-      <section className="hero-section position-relative overflow-hidden bg-theme-hero">
-        <div className="hero-background"></div>
-        <Container className="position-relative z-3">
-          <Row className="min-vh-100 align-items-center">
-            <Col lg={6} className="text-white">
-              <div className={`hero-content ${isVisible ? "fade-in" : ""}`}>
-                <h1 className="hero-title display-3 fw-bold mb-4">
-                  {t("home.hero.title")}
-                  <span className="d-block text-primary">
-                    {t("home.hero.subtitle")}
-                  </span>
-                </h1>
-                <p className="hero-subtitle lead mb-4 opacity-75">
-                  {t("home.hero.description")}
-                </p>
-                <div className="hero-buttons d-flex gap-3 flex-wrap">
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    className="fw-semibold px-4 py-3 rounded-pill shadow-lg"
-                  >
-                    {t("home.hero.bookNow")}
-                    <FaArrowRight className="ms-2" />
-                  </Button>
-                  <Button
-                    variant="outline-light"
-                    size="lg"
-                    className="fw-semibold px-4 py-3 rounded-pill"
-                  >
-                    {t("home.hero.learnMore")}
-                  </Button>
-                </div>
-              </div>
-            </Col>
-            <Col lg={6} className="d-none d-lg-block">
-              <div className={`hero-image ${isVisible ? "slide-in" : ""}`}>
-                <div className="floating-card">
-                  <div className="card-stats">
-                    <div className="stat-item">
-                      <h3 className="stat-number">500+</h3>
-                      <p className="stat-label">{t("home.stats.fields")}</p>
-                    </div>
-                    <div className="stat-item">
-                      <h3 className="stat-number">10K+</h3>
-                      <p className="stat-label">{t("home.stats.customers")}</p>
-                    </div>
-                    <div className="stat-item">
-                      <h3 className="stat-number">99%</h3>
-                      <p className="stat-label">
-                        {t("home.stats.satisfaction")}
-                      </p>
-                    </div>
+      <section className="futuristic-hero">
+        <Container>
+          <div className={`text-center ${isVisible ? "fade-in" : ""}`}>
+            <div className="hero-badge mb-4">
+              <span>🚀 NEXT-GEN SPORTS PLATFORM</span>
+            </div>
+
+            <h1 className="hero-title">
+              <span className="title-line-1">PLAY</span>
+              <br />
+              <span className="title-line-2">BEYOND</span>
+            </h1>
+
+            <p className="hero-description">
+              {t("home.hero.futuristicDescription")}
+            </p>
+
+            {/* Futuristic Search with Ant Design */}
+            <div className="futuristic-search">
+              <div className="search-container">
+                <div className="search-grid">
+                  <div className="search-field">
+                    <Select
+                      defaultValue="sport-type"
+                      style={{
+                        width: "100%",
+                        height: "50px"
+                      }}
+                      size="large"
+                      placeholder="🎯 SPORT TYPE"
+                      options={[
+                        { value: "football", label: "⚽ Football" },
+                        { value: "tennis", label: "🎾 Tennis" },
+                        { value: "pickleball", label: "🏓 Pickleball" },
+                        { value: "badminton", label: "🏸 Badminton" },
+                        { value: "basketball", label: "🏀 Basketball" }
+                      ]}
+                    />
                   </div>
+
+                  <div className="search-field">
+                    <Input
+                      size="large"
+                      placeholder="📍 LOCATION"
+                      prefix={
+                        <EnvironmentOutlined style={{ color: "#0ea5e9" }} />
+                      }
+                      style={{ height: "50px" }}
+                    />
+                  </div>
+
+                  <div className="search-field">
+                    <DatePicker
+                      size="large"
+                      placeholder="Select Date"
+                      style={{
+                        width: "100%",
+                        height: "50px"
+                      }}
+                      suffixIcon={
+                        <CalendarOutlined style={{ color: "#0ea5e9" }} />
+                      }
+                    />
+                  </div>
+
+                  <div className="search-field">
+                    <TimePicker
+                      size="large"
+                      placeholder="Select Time"
+                      format="HH:mm"
+                      style={{
+                        width: "100%",
+                        height: "50px"
+                      }}
+                      suffixIcon={
+                        <ClockCircleOutlined style={{ color: "#0ea5e9" }} />
+                      }
+                    />
+                  </div>
+
+                  <Button
+                    type="primary"
+                    size="large"
+                    icon={<SearchOutlined />}
+                    style={{
+                      height: "50px",
+                      background: "linear-gradient(45deg, #0ea5e9, #d946ef)",
+                      border: "none",
+                      borderRadius: "25px",
+                      fontWeight: "600",
+                      fontSize: "16px",
+                      minWidth: "120px"
+                    }}
+                  >
+                    SEARCH
+                  </Button>
                 </div>
               </div>
-            </Col>
-          </Row>
+            </div>
+
+            {/* Stats */}
+            <div className="hero-stats">
+              <div className="stat-item">
+                <div className="stat-number">1K+</div>
+                <div className="stat-label">SMART COURTS</div>
+              </div>
+              <div className="stat-item">
+                <div className="stat-number">50K+</div>
+                <div className="stat-label">ACTIVE PLAYERS</div>
+              </div>
+              <div className="stat-item">
+                <div className="stat-number">100K+</div>
+                <div className="stat-label">MATCHES PLAYED</div>
+              </div>
+            </div>
+          </div>
         </Container>
       </section>
 
       {/* Features Section */}
-      <section className="features-section py-5 theme-section">
+      <section className="future-features-section">
         <Container>
-          <Row className="justify-content-center mb-5">
-            <Col lg={8} className="text-center">
-              <h2 className="theme-section-title display-5 fw-bold mb-3">
-                {t("home.features.title")}
-              </h2>
-              <p className="theme-section-subtitle lead">
-                {t("home.features.subtitle")}
-              </p>
-            </Col>
-          </Row>
+          <div className="text-center mb-5">
+            <h2 className="section-title">
+              <span className="gradient-text">FUTURE FEATURES</span>
+            </h2>
+            <p className="section-subtitle">
+              {t("home.features.futuristicSubtitle")}
+            </p>
+          </div>
+
           <Row className="g-4">
-            {features.map((feature, index) => (
-              <Col lg={4} key={index}>
-                <Card className="theme-card feature-card h-100 border-0 shadow-theme-medium">
-                  <Card.Body className="text-center p-4">
-                    <div className="feature-icon mb-3">{feature.icon}</div>
-                    <Card.Title className="theme-card-title fw-bold mb-3">
+            {futureFeatures.map((feature, index) => (
+              <Col md={6} lg={4} key={index}>
+                <div className="future-feature-card">
+                  <div className="feature-glow"></div>
+                  <div className="feature-content">
+                    <div
+                      className={`feature-icon-futuristic bg-gradient-to-r ${feature.gradient}`}
+                    >
+                      {feature.icon}
+                    </div>
+                    <h3 className="feature-title-futuristic">
                       {feature.title}
-                    </Card.Title>
-                    <Card.Text className="theme-card-text">
+                    </h3>
+                    <p className="feature-description-futuristic">
                       {feature.description}
-                    </Card.Text>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </Container>
-      </section>
-
-      {/* Services Section */}
-      <section className="services-section py-5 bg-theme-section">
-        <Container>
-          <Row className="justify-content-center mb-5">
-            <Col lg={8} className="text-center">
-              <h2 className="theme-section-title display-5 fw-bold mb-3">
-                {t("home.services.title")}
-              </h2>
-              <p className="theme-section-subtitle lead">
-                {t("home.services.subtitle")}
-              </p>
-            </Col>
-          </Row>
-          <Row className="g-4">
-            {services.map((service, index) => (
-              <Col xs={12} md={6} lg={4} key={index}>
-                <Card className="theme-card service-card h-100 border-0 shadow-theme-medium">
-                  <Card.Body className="p-4">
-                    <div className="service-icon mb-3">{service.icon}</div>
-                    <Card.Title className="theme-card-title fw-bold mb-3">
-                      {service.label}
-                    </Card.Title>
-                    <Card.Text className="theme-card-text">
-                      {service.description}
-                    </Card.Text>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </Container>
-      </section>
-
-      {/* Gallery Section */}
-      <section className="gallery-section py-5 theme-section">
-        <Container>
-          <Row className="justify-content-center mb-5">
-            <Col lg={8} className="text-center">
-              <h2 className="theme-section-title display-5 fw-bold mb-3">
-                {t("home.gallery.title")}
-              </h2>
-              <p className="theme-section-subtitle lead">
-                {t("home.gallery.subtitle")}
-              </p>
-            </Col>
-          </Row>
-          <Row className="g-3">
-            {["1.jpg", "2.jpg", "3.jpg", "4.jpg"].map((img, i) => (
-              <Col xs={6} md={3} key={i}>
-                <div className="gallery-item">
-                  <img
-                    src={`https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center`}
-                    alt={`Sân bóng ${i + 1}`}
-                    className="img-fluid rounded shadow-theme-light"
-                  />
-                  <div className="gallery-overlay">
-                    <div className="gallery-info">
-                      <h5>Sân bóng {i + 1}</h5>
-                      <p>Chất lượng cao</p>
+                    </p>
+                    <div className="feature-tags">
+                      {feature.tags.map((tag, tagIndex) => (
+                        <span key={tagIndex} className="feature-tag">
+                          {tag}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -281,67 +333,306 @@ const HomePage = () => {
         </Container>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="testimonials-section py-5 bg-primary text-white">
+      {/* Smart Courts Section */}
+      <section className="smart-courts-section">
         <Container>
-          <Row className="justify-content-center mb-5">
-            <Col lg={8} className="text-center">
-              <h2 className="section-title display-5 fw-bold mb-3">
-                {t("home.testimonials.title")}
-              </h2>
-              <p className="section-subtitle lead opacity-75">
-                {t("home.testimonials.subtitle")}
-              </p>
-            </Col>
-          </Row>
+          <div className="text-center mb-5">
+            <h2 className="section-title">
+              <span className="gradient-text-alt">SMART COURTS</span>
+            </h2>
+            <p className="section-subtitle">{t("home.courts.subtitle")}</p>
+          </div>
+
           <Row className="g-4">
-            {testimonials.map((testimonial, index) => (
-              <Col lg={4} key={index}>
-                <Card className="testimonial-card h-100 border-0 bg-white text-dark">
-                  <Card.Body className="p-4">
-                    <div className="testimonial-rating mb-3">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <FaStar key={i} className="text-warning" />
+            {smartCourts.map((court, index) => (
+              <Col lg={6} key={index}>
+                <div className="smart-court-card">
+                  <div className="court-glow"></div>
+
+                  {/* Court Visual */}
+                  <div
+                    className={`court-visual bg-gradient-to-br ${court.bgGradient}`}
+                  >
+                    <div className="court-overlay"></div>
+
+                    {/* Field Lines */}
+                    <div className="field-lines">
+                      {court.type === "football" ? (
+                        <div className="football-field">
+                          <div className="center-circle"></div>
+                        </div>
+                      ) : (
+                        <div className="tennis-court">
+                          <div className="net-line"></div>
+                          <div className="service-line-1"></div>
+                          <div className="service-line-2"></div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Tech Overlays */}
+                    <div className="tech-overlays">
+                      <div className="tech-badge-left">
+                        <div className="status-dot"></div>
+                        <span>AI TRACKING</span>
+                      </div>
+                      <div className="tech-badge-right">
+                        <span>{court.techBadge}</span>
+                      </div>
+                      <div className="court-info">
+                        <div className="info-left">
+                          <FaUsers className="me-2" />
+                          <span>{court.players}</span>
+                        </div>
+                        <div className="info-right">
+                          {court.type === "football" ? (
+                            <>
+                              <FaThermometerHalf className="me-2" />
+                              <span>{court.temperature}</span>
+                            </>
+                          ) : (
+                            <>
+                              <FaWind className="me-2" />
+                              <span>{court.temperature}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Court Details */}
+                  <div className="court-details">
+                    <div className="court-header">
+                      <h3 className="court-name">{court.name}</h3>
+                      <div className="court-rating">
+                        <FaStar className="text-warning" />
+                        <span>{court.rating}</span>
+                      </div>
+                    </div>
+
+                    <p className="court-location">
+                      <FaMapMarkerAlt className="me-2" />
+                      {court.location}
+                    </p>
+
+                    {/* Tech Features */}
+                    <div className="tech-features">
+                      {court.features.map((feature, featureIndex) => (
+                        <div key={featureIndex} className="tech-feature">
+                          {feature.icon}
+                          <span>{feature.name}</span>
+                        </div>
                       ))}
                     </div>
-                    <Card.Text className="mb-3 fst-italic">
-                      "{testimonial.content}"
-                    </Card.Text>
-                    <div className="testimonial-author">
-                      <h6 className="fw-bold mb-1">{testimonial.name}</h6>
-                      <small className="text-muted">{testimonial.role}</small>
+
+                    <div className="court-pricing">
+                      <div className="price-info">
+                        <span className="price">{court.price}</span>
+                        <span className="price-unit">/hour</span>
+                      </div>
+                      <div className="earn-info">
+                        <div className="earn-label">Earn up to</div>
+                        <div className="earn-amount">{court.earnTokens}</div>
+                      </div>
                     </div>
-                  </Card.Body>
-                </Card>
+
+                    <button className="book-court-btn">
+                      <FaRobot className="me-2" />
+                      BOOK SMART COURT
+                    </button>
+                  </div>
+                </div>
               </Col>
             ))}
           </Row>
         </Container>
       </section>
 
-      {/* CTA Section */}
-      <section className="cta-section py-5 bg-theme-section">
+      {/* Community Hub Section */}
+      <section className="community-hub-section">
         <Container>
-          <Row className="justify-content-center">
-            <Col lg={8} className="text-center">
-              <h2 className="theme-section-title display-5 fw-bold mb-4">
-                {t("home.cta.title")}
-              </h2>
-              <p className="theme-section-subtitle lead mb-4">
-                {t("home.cta.subtitle")}
-              </p>
-              <Button
-                variant="primary"
-                size="lg"
-                className="fw-semibold px-5 py-3 rounded-pill shadow-lg"
-              >
-                {t("home.cta.button")}
-                <FaArrowRight className="ms-2" />
-              </Button>
+          <div className="text-center mb-5">
+            <h2 className="section-title">
+              <span className="gradient-text">COMMUNITY HUB</span>
+            </h2>
+            <p className="section-subtitle">{t("home.community.subtitle")}</p>
+          </div>
+
+          <Row className="g-4">
+            {/* Live Players */}
+            <Col lg={8}>
+              <div className="community-card">
+                <div className="community-header">
+                  <h3 className="community-title">LIVE PLAYERS</h3>
+                  <div className="online-indicator">
+                    <div className="online-dot"></div>
+                    <span className="online-count">2,847 ONLINE</span>
+                  </div>
+                </div>
+
+                <div className="players-list">
+                  {livePlayers.map((player, index) => (
+                    <div key={index} className="player-item">
+                      <div className="player-info">
+                        <div
+                          className={`player-avatar bg-gradient-to-r ${player.gradient}`}
+                        >
+                          {player.avatar}
+                          <div className="player-status"></div>
+                        </div>
+                        <div className="player-details">
+                          <p className="player-name">{player.name}</p>
+                          <p className="player-sport">
+                            {player.sport} • Level {player.level}
+                          </p>
+                          <div className="player-tags">
+                            {player.tags.map((tag, tagIndex) => (
+                              <span key={tagIndex} className="player-tag">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="player-actions">
+                        <button className="action-btn game-btn">
+                          <FaGamepad />
+                        </button>
+                        <button className="action-btn message-btn">
+                          <FaPaperPlane />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Col>
+
+            {/* Tournaments */}
+            <Col lg={4}>
+              <div className="tournaments-card">
+                <h3 className="tournaments-title">TOURNAMENTS</h3>
+
+                <div className="tournaments-list">
+                  {tournaments.map((tournament, index) => (
+                    <div
+                      key={index}
+                      className={`tournament-item ${
+                        tournament.isLive ? "live" : ""
+                      }`}
+                    >
+                      {tournament.isLive && (
+                        <div className="live-badge">LIVE</div>
+                      )}
+                      <h4 className="tournament-name">{tournament.name}</h4>
+                      <p className="tournament-description">
+                        {tournament.description}
+                      </p>
+                      <div className="tournament-footer">
+                        <div className="prize-pool">
+                          <div className="prize-amount">
+                            {tournament.prizePool}
+                          </div>
+                          <div className="prize-label">VIC Prize Pool</div>
+                        </div>
+                        {tournament.isLive ? (
+                          <button className="join-btn">JOIN NOW</button>
+                        ) : (
+                          <div className="tournament-time">
+                            <div className="time-label">Starts in</div>
+                            <div className="time-value">
+                              {tournament.startsIn}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <button className="view-all-tournaments">
+                  <FaTrophy className="me-2" />
+                  VIEW ALL TOURNAMENTS
+                </button>
+              </div>
             </Col>
           </Row>
         </Container>
       </section>
+
+      {/* Floating Chat Bot */}
+      <div className="floating-chatbot">
+        <button
+          className="chatbot-toggle"
+          onClick={() => setShowChatBot(!showChatBot)}
+        >
+          <FaRobot />
+          <div className="ai-badge">AI</div>
+        </button>
+
+        {showChatBot && (
+          <div className="chatbot-window">
+            <div className="chatbot-header">
+              <div className="chatbot-info">
+                <div className="chatbot-avatar">
+                  <FaRobot />
+                </div>
+                <div className="chatbot-details">
+                  <h3>VIC AI Assistant</h3>
+                  <p>Powered by GPT-4 & Sports AI</p>
+                </div>
+              </div>
+              <button
+                className="chatbot-close"
+                onClick={() => setShowChatBot(false)}
+              >
+                <FaTimes />
+              </button>
+            </div>
+
+            <div className="chatbot-messages">
+              <div className="message ai-message">
+                <div className="message-avatar">
+                  <FaRobot />
+                </div>
+                <div className="message-content">
+                  <p>
+                    🚀 Welcome to VIC Sports! I'm your AI assistant powered by
+                    advanced sports analytics.
+                  </p>
+                  <p>I can help you with:</p>
+                  <ul>
+                    <li>• Smart court booking</li>
+                    <li>• Performance analysis</li>
+                    <li>• Finding training partners</li>
+                    <li>• Tournament recommendations</li>
+                  </ul>
+                  <span className="message-time">Just now</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="chatbot-input">
+              <div className="input-group">
+                <input
+                  type="text"
+                  placeholder="Ask me anything about sports..."
+                  className="chatbot-text-input"
+                />
+                <button className="send-btn">
+                  <FaPaperPlane />
+                </button>
+              </div>
+              <div className="quick-actions">
+                <button className="quick-action">Book smart court</button>
+                <button className="quick-action">Find players</button>
+                <button className="quick-action">VIC tokens</button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

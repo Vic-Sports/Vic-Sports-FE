@@ -5,7 +5,7 @@ import { useState } from "react";
 import { registerAPI } from "@/services/api";
 import "./register.scss";
 import { useTranslation } from "react-i18next";
-import { useCurrentApp } from "@/components/context/app.context";
+
 import type { RuleObject } from "antd/es/form";
 import AnimationLottie from "@/share/animation-lottie";
 import registerAnimation from "@/assets/lottie/register-animation.json";
@@ -22,7 +22,6 @@ const RegisterPage = () => {
   const { message } = App.useApp();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { theme } = useCurrentApp();
 
   const validatePassword = (_: RuleObject, value: string): Promise<void> => {
     if (!value) {
@@ -68,15 +67,11 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className={`register-container ${theme}`}>
-      <div className={`register-left ${theme}`}>
+    <div className="register-container">
+      <div className="register-left">
         <div className="register-box">
-          <h2 className={`text-large ${theme}`}>
-            {t("register.register_title")}
-          </h2>
-          <p className={`text-normal ${theme}`}>
-            {t("register.register_text")}
-          </p>
+          <h2 className="text-large">{t("register.register_title")}</h2>
+          <p className="text-normal">{t("register.register_text")}</p>
 
           <Form
             name="register-form"
@@ -145,7 +140,7 @@ const RegisterPage = () => {
             </Form.Item>
           </Form>
 
-          <p className={`text-normal text-center ${theme}`}>
+          <p className="text-normal text-center">
             {t("register.already")}
             <Link to="/login" style={{ marginLeft: 4 }}>
               {t("register.login_route")}
@@ -154,7 +149,7 @@ const RegisterPage = () => {
         </div>
       </div>
 
-      <div className={`register-right ${theme}`}>
+      <div className="register-right">
         <AnimationLottie
           width="100%"
           //animation with rp => convert sang text
