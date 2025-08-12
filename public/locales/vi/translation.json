@@ -1,12 +1,11 @@
 {
   "appHeader": {
-    "home": "Trang chủ",
+    "home": "TRANG CHỦ",
+    "courts": "SÂN THỂ THAO",
+    "coaches": "HUẤN LUYỆN VIÊN",
+    "community": "CỘNG ĐỒNG",
+    "menu": "Menu",
     "login": "ĐĂNG NHẬP",
-    "sports": "Môn thể thao",
-    "introduction": "Giới thiệu",
-    "policy": "Chính Sách",
-    "term": "Điều khoản",
-    "owner": "Dành cho chủ sân",
     "dashboard": "Trang quản trị",
     "profile": "Trang cá nhân",
     "history": "Lịch sử mua hàng",

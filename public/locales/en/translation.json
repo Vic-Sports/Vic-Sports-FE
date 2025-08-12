@@ -1,12 +1,11 @@
 {
   "appHeader": {
     "home": "HOME",
+    "courts": "COURTS",
+    "coaches": "COACHES",
+    "community": "COMMUNITY",
+    "menu": "Menu",
     "login": "LOGIN",
-    "sports": "Sports",
-    "introduction": "Introduction",
-    "policy": "Policy",
-    "term": "Terms",
-    "owner": "For owners",
     "dashboard": "Dashboard",
     "profile": "Profile",
     "history": "History",

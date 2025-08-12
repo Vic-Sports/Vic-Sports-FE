@@ -55,7 +55,7 @@ const Header = () => {
     ...(user?.role === "ADMIN"
       ? [
           {
-            label: <Link to="/admin">Trang quản trị</Link>,
+            label: <Link to="/admin">{t("appHeader.dashboard")}</Link>,
             key: "admin"
           }
         ]
@@ -66,19 +66,19 @@ const Header = () => {
           style={{ cursor: "pointer" }}
           onClick={() => setOpenManageAccount(true)}
         >
-          Quản lý tài khoản
+          {t("appHeader.profile")}
         </span>
       ),
       key: "account"
     },
     {
-      label: <Link to="/history">Lịch sử mua hàng</Link>,
+      label: <Link to="/history">{t("appHeader.history")}</Link>,
       key: "history"
     },
     {
       label: (
         <span style={{ cursor: "pointer" }} onClick={handleLogout}>
-          Đăng xuất
+          {t("appHeader.logout")}
         </span>
       ),
       key: "logout"
@@ -197,58 +197,52 @@ const Header = () => {
                     </Button>
                   )}
                 </NavLink>
-                <NavLink to="/field" className="nav-button-wrapper">
+                <NavLink to="/courts" className="nav-button-wrapper">
                   {({ isActive }) => (
                     <Button
                       type="text"
                       className={`nav-button ${isActive ? "active" : ""}`}
                     >
-                      {t("appHeader.sports")}
+                      {t("appHeader.courts")}
                     </Button>
                   )}
                 </NavLink>
-                <NavLink to="/introduction" className="nav-button-wrapper">
+                <NavLink to="/coaches" className="nav-button-wrapper">
                   {({ isActive }) => (
                     <Button
                       type="text"
                       className={`nav-button ${isActive ? "active" : ""}`}
                     >
-                      {t("appHeader.introduction")}
+                      {t("appHeader.coaches")}
                     </Button>
                   )}
                 </NavLink>
-                <NavLink to="/policy" className="nav-button-wrapper">
+                <NavLink to="/community" className="nav-button-wrapper">
                   {({ isActive }) => (
                     <Button
                       type="text"
                       className={`nav-button ${isActive ? "active" : ""}`}
                     >
-                      {t("appHeader.policy")}
-                    </Button>
-                  )}
-                </NavLink>
-                <NavLink to="/terms" className="nav-button-wrapper">
-                  {({ isActive }) => (
-                    <Button
-                      type="text"
-                      className={`nav-button ${isActive ? "active" : ""}`}
-                    >
-                      {t("appHeader.term")}
-                    </Button>
-                  )}
-                </NavLink>
-                <NavLink to="/for-owners" className="nav-button-wrapper">
-                  {({ isActive }) => (
-                    <Button
-                      type="text"
-                      className={`nav-button ${isActive ? "active" : ""}`}
-                    >
-                      {t("appHeader.owner")}
+                      {t("appHeader.community")}
                     </Button>
                   )}
                 </NavLink>
               </div>
             </nav>
+
+            {/* Mobile Menu Button */}
+            <Button
+              className="d-lg-none"
+              type="text"
+              onClick={() => setOpenDrawer(true)}
+              style={{
+                color: "white",
+                fontSize: "18px",
+                padding: "8px 12px"
+              }}
+            >
+              ☰
+            </Button>
 
             {/* Right Side Actions */}
             <div className="d-flex align-items-center gap-3">
@@ -346,7 +340,7 @@ const Header = () => {
       </header>
 
       <Drawer
-        title="Menu chức năng"
+        title={t("appHeader.menu")}
         placement="left"
         onClose={() => setOpenDrawer(false)}
         open={openDrawer}
@@ -359,9 +353,44 @@ const Header = () => {
           }
         }}
       >
-        <p onClick={() => setOpenManageAccount(true)}>Quản lý tài khoản</p>
-        <Divider />
-        <p onClick={handleLogout}>Đăng xuất</p>
+        <div className="d-flex flex-column gap-3">
+          <NavLink 
+            to="/" 
+            className="text-decoration-none"
+            style={{ color: "white" }}
+            onClick={() => setOpenDrawer(false)}
+          >
+            {t("appHeader.home")}
+          </NavLink>
+          <NavLink 
+            to="/courts" 
+            className="text-decoration-none"
+            style={{ color: "white" }}
+            onClick={() => setOpenDrawer(false)}
+          >
+            {t("appHeader.courts")}
+          </NavLink>
+          <NavLink 
+            to="/coaches" 
+            className="text-decoration-none"
+            style={{ color: "white" }}
+            onClick={() => setOpenDrawer(false)}
+          >
+            {t("appHeader.coaches")}
+          </NavLink>
+          <NavLink 
+            to="/community" 
+            className="text-decoration-none"
+            style={{ color: "white" }}
+            onClick={() => setOpenDrawer(false)}
+          >
+            {t("appHeader.community")}
+          </NavLink>
+          <Divider style={{ borderColor: "rgba(255,255,255,0.2)" }} />
+          <p onClick={() => setOpenManageAccount(true)}>{t("appHeader.profile")}</p>
+          <Divider style={{ borderColor: "rgba(255,255,255,0.2)" }} />
+          <p onClick={handleLogout}>{t("appHeader.logout")}</p>
+        </div>
       </Drawer>
 
       <ManageAccount
