@@ -30,6 +30,7 @@ import {
   ClockCircleOutlined
 } from "@ant-design/icons";
 import "./home.scss";
+import { Link } from "react-router-dom";
 
 const HomePage = () => {
   const { t } = useTranslation();
@@ -294,7 +295,9 @@ const HomePage = () => {
         <Container>
           <div className="text-center mb-5">
             <h2 className="section-title">
-              <span className="gradient-text">FUTURE FEATURES</span>
+              <span className="gradient-text">
+                {t("home.features.futuristicTitle")}
+              </span>
             </h2>
             <p className="section-subtitle">
               {t("home.features.futuristicSubtitle")}
@@ -338,7 +341,9 @@ const HomePage = () => {
         <Container>
           <div className="text-center mb-5">
             <h2 className="section-title">
-              <span className="gradient-text-alt">SMART COURTS</span>
+              <span className="gradient-text-alt">
+                {t("home.courts.title")}
+              </span>
             </h2>
             <p className="section-subtitle">{t("home.courts.subtitle")}</p>
           </div>
@@ -454,7 +459,7 @@ const HomePage = () => {
         <Container>
           <div className="text-center mb-5">
             <h2 className="section-title">
-              <span className="gradient-text">COMMUNITY HUB</span>
+              <span className="gradient-text">{t("home.community.title")}</span>
             </h2>
             <p className="section-subtitle">{t("home.community.subtitle")}</p>
           </div>

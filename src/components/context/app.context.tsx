@@ -84,7 +84,7 @@ export const AppProvider = (props: TProps) => {
             transform: "translate(-50%, -50%)"
           }}
         >
-          <RingLoader size={60} color="#0ea5e9" />
+          <RingLoader size={80} color="#0ea5e9" />
         </div>
       )}
     </>

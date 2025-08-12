@@ -15,14 +15,15 @@
     "hero": {
       "title": "ONLINE FIELD BOOKING",
       "subtitle": "CONNECT WITH FOUR DIRECTIONS",
-      "description": "Discover Vietnam's leading smart football field booking system. Book fields quickly, pay safely, and have an excellent experience.",
-      "futuristicDescription": "Experience sports in the digital age with AI, VR and blockchain technology",
+      "description": "Discover Vietnam's leading smart football field booking system. With advanced AI technology, user-friendly interface, and secure payment systems, we deliver fast, convenient, and reliable field booking experiences. Let us help you enjoy amazing sports moments with friends and family.",
+      "futuristicDescription": "Find a course, book a schedule, connect with the sports community - All in one modern platform",
       "bookNow": "BOOK NOW",
       "learnMore": "LEARN MORE"
     },
     "features": {
       "title": "Key Features",
       "subtitle": "We are committed to bringing you the best field booking experience",
+      "futuristicTitle": "FUTURE FEATURES",
       "futuristicSubtitle": "Discover breakthrough features that will change the way you play sports",
       "aiCoach": {
         "title": "AI COACH",
@@ -50,7 +51,9 @@
       }
     },
     "courts": {
+      "title": "SMART COURTS",
       "subtitle": "Smart sports courts with integrated IoT and AI technology",
+      "viewAll": "View all",
       "nexusFootball": {
         "name": "NEXUS FOOTBALL ARENA",
         "location": "District 1, Ho Chi Minh City"
@@ -71,6 +74,7 @@
       }
     },
     "community": {
+      "title": "COMMUNITY HUB",
       "subtitle": "Connect with global sports community in metaverse"
     },
     "footer": {
