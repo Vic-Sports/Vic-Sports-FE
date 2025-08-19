@@ -1,7 +1,7 @@
 import { App, Button, Form, Input, Checkbox } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import "./login.scss";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { FormProps } from "antd";
 import { loginAPI, loginWithGoogleAPI } from "@/services/api";
 import { useCurrentApp } from "@/components/context/app.context";
@@ -12,6 +12,13 @@ import facebook from "@/assets/svg/images/facebook-logo.png";
 import { useTranslation } from "react-i18next";
 import loginAnimation from "@/assets/lottie/login-animation.json";
 import AnimationLottie from "@/share/animation-lottie";
+import {
+  FaEye,
+  FaLock,
+  FaEnvelope,
+  FaGoogle,
+  FaFacebook
+} from "react-icons/fa";
 
 type FieldType = {
   username: string;
@@ -21,9 +28,14 @@ type FieldType = {
 const LoginPage = () => {
   const navigate = useNavigate();
   const [isSubmit, setIsSubmit] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const { message, notification } = App.useApp();
   const { setIsAuthenticated, setUser } = useCurrentApp();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
 
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     const { username, password } = values;
@@ -81,79 +93,139 @@ const LoginPage = () => {
   });
 
   return (
-    <div className="login-container">
-      <div className="login-left">
-        <AnimationLottie
-          width="100%"
-          //animation with rp => convert sang text
-          // https://github.com/airbnb/lottie-web/issues/2070
-          animationPath={loginAnimation}
-        />
+    <div className="futuristic-auth">
+      {/* Animated Background */}
+      <div className="animated-background">
+        <div className="floating-orb orb-1"></div>
+        <div className="floating-orb orb-2"></div>
+        <div className="floating-orb orb-3"></div>
       </div>
 
-      <div className="login-right">
-        <div className="login-box">
-          <h2 className="text-large">{t("login.login_title")}</h2>
-          <p className="text-normal">{t("login.login_text")}</p>
+      <div className="auth-container">
+        <div className="auth-left">
+          <div className="auth-content">
+            <div className={`auth-header ${isVisible ? "fade-in" : ""}`}>
+              <div className="auth-badge">
+                <span>🔐 SECURE ACCESS</span>
+              </div>
 
-          <Form
-            name="login-form"
-            onFinish={onFinish}
-            autoComplete="off"
-            layout="vertical"
-          >
-            <Form.Item<FieldType>
-              label="Email"
-              name="username"
-              rules={[
-                { required: true, message: t("login.message_email1") },
-                { type: "email", message: t("login.message_email2") }
-              ]}
-            >
-              <Input placeholder={t("login.placeholder_email")} />
-            </Form.Item>
+              <h1 className="auth-title">
+                <span className="title-line-1">WELCOME</span>
+                <br />
+                <span className="title-line-2">BACK</span>
+              </h1>
 
-            <Form.Item<FieldType>
-              label={t("login.password")}
-              name="password"
-              rules={[{ required: true, message: t("login.message_password") }]}
-            >
-              <Input.Password placeholder="************" />
-            </Form.Item>
-
-            <div className="login-options">
-              <Checkbox>{t("login.remember")}</Checkbox>
-              <Link to="#">{t("login.forgot")}</Link>
+              <p className="auth-description">{t("login.login_text")}</p>
             </div>
 
-            <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={isSubmit}
-                className="login-button"
+            <div
+              className={`auth-form-container ${isVisible ? "slide-up" : ""}`}
+            >
+              <Form
+                name="login-form"
+                onFinish={onFinish}
+                autoComplete="off"
+                layout="vertical"
+                className="futuristic-form"
               >
-                {t("login.signin")}
-              </Button>
-            </Form.Item>
-          </Form>
+                <Form.Item<FieldType>
+                  label={
+                    <span className="form-label">
+                      <FaEnvelope className="label-icon" />
+                      Email
+                    </span>
+                  }
+                  name="username"
+                  rules={[
+                    { required: true, message: t("login.message_email1") },
+                    { type: "email", message: t("login.message_email2") }
+                  ]}
+                >
+                  <Input
+                    placeholder={t("login.placeholder_email")}
+                    className="futuristic-input"
+                    prefix={<FaEnvelope className="input-icon" />}
+                  />
+                </Form.Item>
 
-          <div className="social-button" onClick={() => loginGoogle()}>
-            <img src={google} alt="google" />
-            {t("login.google")}
+                <Form.Item<FieldType>
+                  label={
+                    <span className="form-label">
+                      <FaLock className="label-icon" />
+                      {t("login.password")}
+                    </span>
+                  }
+                  name="password"
+                  rules={[
+                    { required: true, message: t("login.message_password") }
+                  ]}
+                >
+                  <Input.Password
+                    placeholder="************"
+                    className="futuristic-input"
+                    prefix={<FaLock className="input-icon" />}
+                  />
+                </Form.Item>
+
+                <div className="auth-options">
+                  <Checkbox className="futuristic-checkbox">
+                    {t("login.remember")}
+                  </Checkbox>
+                  <Link to="#" className="forgot-link">
+                    {t("login.forgot")}
+                  </Link>
+                </div>
+
+                <Form.Item>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={isSubmit}
+                    className="auth-button primary"
+                  >
+                    {t("login.signin")}
+                  </Button>
+                </Form.Item>
+              </Form>
+
+              <div className="social-section">
+                <div className="divider">
+                  <span>or continue with</span>
+                </div>
+
+                <div className="social-buttons">
+                  <Button
+                    className="social-button google"
+                    onClick={() => loginGoogle()}
+                    icon={<FaGoogle />}
+                  >
+                    {t("login.google")}
+                  </Button>
+
+                  <Button
+                    className="social-button facebook"
+                    onClick={() => alert("me")}
+                    icon={<FaFacebook />}
+                  >
+                    {t("login.facebook")}
+                  </Button>
+                </div>
+              </div>
+
+              <p className="auth-footer">
+                {t("login.account")}
+                <Link to="/register" className="auth-link">
+                  {t("login.signup")}
+                </Link>
+              </p>
+            </div>
           </div>
+        </div>
 
-          <div className="social-button" onClick={() => alert("me")}>
-            <img src={facebook} alt="facebook" />
-            {t("login.facebook")}
+        <div className="auth-right">
+          <div className="animation-container">
+            <AnimationLottie width="100%" animationPath={loginAnimation} />
           </div>
-
-          <p className="text-normal text-center">
-            {t("login.account")}
-            <Link to="/register" style={{ marginLeft: 4 }}>
-              {t("login.signup")}
-            </Link>
-          </p>
         </div>
       </div>
     </div>

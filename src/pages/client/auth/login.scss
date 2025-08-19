@@ -1,188 +1,473 @@
-.login-container {
+// Futuristic Auth Styles - Shared between Login and Register
+.futuristic-auth {
+  background: #000;
+  color: #fff;
+  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+// Animated Background
+.animated-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+
+  .floating-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.6;
+    animation: float 6s ease-in-out infinite;
+
+    &.orb-1 {
+      top: 80px;
+      left: 80px;
+      width: 384px;
+      height: 384px;
+      background: rgba(14, 165, 233, 0.2);
+      animation-delay: 0s;
+    }
+
+    &.orb-2 {
+      bottom: 80px;
+      right: 80px;
+      width: 320px;
+      height: 320px;
+      background: rgba(217, 70, 239, 0.2);
+      animation-delay: -2s;
+    }
+
+    &.orb-3 {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background: linear-gradient(45deg, rgba(14, 165, 233, 0.1), rgba(217, 70, 239, 0.1));
+      animation: morph 8s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes morph {
+  0%, 100% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+  50% {
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+  }
+}
+
+// Auth Container
+.auth-container {
   display: flex;
   min-height: 100vh;
+  position: relative;
+  z-index: 10;
+}
+
+.auth-left {
+  flex: 1;
+  display: flex;
   align-items: center;
   justify-content: center;
+  padding: 4rem 2rem;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
+}
 
-  &.dark {
-    background-color: var(--background-body);
+.auth-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+}
+
+// Auth Content
+.auth-content {
+  width: 100%;
+  max-width: 480px;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-badge {
+  display: inline-block;
+  background: linear-gradient(45deg, #0ea5e9, #d946ef);
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+}
+
+.auth-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(45deg, #fff, #0ea5e9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  .title-line-1 {
+    display: block;
+    background: linear-gradient(45deg, #fff, #0ea5e9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
-  &.light {
-    background-color: #ffffff;
+  .title-line-2 {
+    display: block;
+    background: linear-gradient(45deg, #d946ef, #fff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+.auth-description {
+  font-size: 1.125rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+// Form Container
+.auth-form-container {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transition-delay: 0.2s;
+
+  &.slide-up {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Futuristic Form
+.futuristic-form {
+  .ant-form-item {
+    margin-bottom: 1.5rem;
   }
 
-  .login-left {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-
-    background-color: #ffffff;
-
-    &.dark {
-      background-color: var(--background-body);
-    }
-
-    &.light {
-      background-color: #ffffff;
-    }
-
-    img,
-    svg,
-    canvas {
-      max-width: 90%;
-      height: auto;
-    }
-  }
-
-  .login-right {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-
-    .login-box {
-      width: 100%;
-      max-width: 420px;
-
-      .ant-form-item {
-        width: 100%;
-      }
-
-      .ant-input ,
-      .ant-input-password {
-        width: 100%;
-        height: 40px;
-        font-size: 15px;
-      }
-    }
-
-    .text-large {
-      font-size: 2rem;
-      font-weight: 700;
+  .ant-form-item-label {
+    label {
+      color: #e2e8f0;
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
       margin-bottom: 0.5rem;
-
-      &.dark {
-        color: #ffffff;
-      }
-
-      &.light {
-        color: #000000;
-      }
-    }
-
-    .text-normal {
-      font-size: 1rem;
-      margin-bottom: 1.5rem;
-      color: var(--ant-color-text-secondary);
-
-      &.dark {
-        color: #ffffff;
-      }
-
-      &.light {
-        color: #000000;
-      }
-    }
-
-    .text-center {
-      text-align: center;
-    }
-
-    .login-options {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .login-button {
-      width: 100%;
-      height: 42px;
-      font-weight: bold;
-      font-size: 16px;
-    }
-
-    .social-button {
-      width: 100%;
-      height: 44px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      font-weight: 500;
-      font-size: 15px;
-      margin-bottom: 20px;
-      cursor: pointer;
-      transition: all 0.2s;
-      border: 1px solid #dadce0;
-
-      img {
-        width: 20px;
-        height: 20px;
-        object-fit: contain;
-      }
-
-      &.light {
-        background-color: #ffffff;
-        color: #000000;
-
-        &:hover {
-          background-color: #f1f1f1;
-        }
-      }
-
-      &.dark {
-        background-color: #1f1f1f;
-        color: #ffffff;
-        border: 1px solid #3a3a3a;
-
-        &:hover {
-          background-color: #333333;
-        }
-      }
     }
   }
 }
 
-/* Tablet responsive */
-@media (max-width: 768px) {
-  .login-container {
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #e2e8f0;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  .label-icon {
+    color: #0ea5e9;
+    font-size: 0.75rem;
+  }
+}
+
+// Futuristic Input
+.futuristic-input {
+  background: rgba(15, 23, 42, 0.8) !important;
+  border: 1px solid rgba(14, 165, 233, 0.3) !important;
+  border-radius: 12px !important;
+  height: 48px !important;
+  font-size: 1rem !important;
+  color: #fff !important;
+  transition: all 0.3s ease !important;
+  backdrop-filter: blur(10px) !important;
+
+  &:hover {
+    border-color: rgba(14, 165, 233, 0.6) !important;
+    box-shadow: 0 0 20px rgba(14, 165, 233, 0.2) !important;
+  }
+
+  &:focus {
+    border-color: #0ea5e9 !important;
+    box-shadow: 0 0 30px rgba(14, 165, 233, 0.4) !important;
+    background: rgba(15, 23, 42, 0.9) !important;
+  }
+
+  &::placeholder {
+    color: #64748b !important;
+  }
+
+  .ant-input-prefix {
+    color: #0ea5e9 !important;
+    margin-right: 0.75rem !important;
+  }
+}
+
+.ant-input-password {
+  .ant-input-password-icon {
+    color: #0ea5e9 !important;
+  }
+}
+
+// Auth Options
+.auth-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.futuristic-checkbox {
+  .ant-checkbox-inner {
+    background: rgba(15, 23, 42, 0.8) !important;
+    border: 1px solid rgba(14, 165, 233, 0.3) !important;
+    border-radius: 6px !important;
+  }
+
+  .ant-checkbox-checked .ant-checkbox-inner {
+    background: #0ea5e9 !important;
+    border-color: #0ea5e9 !important;
+  }
+}
+
+.forgot-link {
+  color: #0ea5e9 !important;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #38bdf8 !important;
+  }
+}
+
+// Auth Button
+.auth-button {
+  width: 100% !important;
+  height: 48px !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  transition: all 0.3s ease !important;
+  border: none !important;
+
+  &.primary {
+    background: linear-gradient(45deg, #0ea5e9, #d946ef) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 20px rgba(14, 165, 233, 0.4) !important;
+
+    &:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 30px rgba(14, 165, 233, 0.6) !important;
+    }
+
+    &:active {
+      transform: translateY(0) !important;
+    }
+  }
+}
+
+// Social Section
+.social-section {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.divider {
+  position: relative;
+  margin: 2rem 0;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.875rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.3), transparent);
+  }
+
+  span {
+    background: #000;
+    padding: 0 1rem;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.social-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.social-button {
+  flex: 1 !important;
+  height: 48px !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  border: 1px solid rgba(14, 165, 233, 0.3) !important;
+  background: rgba(15, 23, 42, 0.8) !important;
+  color: #fff !important;
+  transition: all 0.3s ease !important;
+  backdrop-filter: blur(10px) !important;
+
+  &:hover {
+    border-color: rgba(14, 165, 233, 0.6) !important;
+    background: rgba(15, 23, 42, 0.9) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(14, 165, 233, 0.2) !important;
+  }
+
+  &.google {
+    &:hover {
+      border-color: #ea4335 !important;
+      box-shadow: 0 8px 25px rgba(234, 67, 53, 0.2) !important;
+    }
+  }
+
+  &.facebook {
+    &:hover {
+      border-color: #1877f2 !important;
+      box-shadow: 0 8px 25px rgba(24, 119, 242, 0.2) !important;
+    }
+  }
+}
+
+// Auth Footer
+.auth-footer {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  margin-top: 2rem;
+}
+
+.auth-link {
+  color: #0ea5e9 !important;
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #38bdf8 !important;
+  }
+}
+
+// Animation Container
+.animation-container {
+  width: 100%;
+  max-width: 500px;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .auth-container {
     flex-direction: column;
-    gap: 0;
+  }
 
-    .login-left {
-      display: none; // Ẩn luôn animation
-    }
+  .auth-left,
+  .auth-right {
+    flex: none;
+    padding: 2rem 1rem;
+  }
 
-    .login-right {
-      width: 100%;
-      padding: 2rem 1rem;
+  .auth-title {
+    font-size: 2.5rem;
+  }
 
-      .login-box {
-        max-width: 100%;
-      }
-    }
+  .auth-content {
+    max-width: 100%;
   }
 }
 
-/* Mobile responsive */
-@media (max-width: 480px) {
-  .login-right {
-    padding: 1.5rem 1rem;
-
-    .login-button,
-    .social-button {
-      height: 42px;
-      font-size: 14px;
-    }
-
-    .text-large {
-      font-size: 1.5rem;
-    }
+@media (max-width: 768px) {
+  .auth-title {
+    font-size: 2rem;
   }
+
+  .auth-badge {
+    font-size: 0.7rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .social-buttons {
+    flex-direction: column;
+  }
+
+  .animation-container {
+    height: 300px;
+  }
+}
+
+// Loading States
+.ant-btn-loading {
+  .ant-btn-loading-icon {
+    color: #fff !important;
+  }
+}
+
+// Form Validation Styles
+.ant-form-item-has-error .futuristic-input {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.2) !important;
+}
+
+.ant-form-item-explain-error {
+  color: #ef4444 !important;
+  font-size: 0.75rem !important;
+  margin-top: 0.25rem !important;
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.3) !important;
 }

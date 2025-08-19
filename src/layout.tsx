@@ -4,7 +4,13 @@ import Footer from "./components/layout/footer";
 
 function Layout() {
   return (
-    <div>
+    <div
+      style={{
+        backgroundColor: "#000000",
+        minHeight: "100vh",
+        color: "#ffffff"
+      }}
+    >
       <Header />
       <Outlet />
       <Footer />

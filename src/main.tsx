@@ -2,9 +2,11 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import Layout from "@/layout";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import "@/styles/global.scss";
 import "./i18n"; //👈 phải import trước App
 import { App } from "antd";
+import "antd/dist/reset.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "@/styles/global.scss"; // Import sau để override các CSS framework
 import { AppProvider } from "components/context/app.context";
 import ProtectedRoute from "@/components/auth";
 // import viVN from "antd/locale/vi_VN";
@@ -12,14 +14,8 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import LayoutAdmin from "./components/layout/layout.dashboard";
 import LoginPage from "./pages/client/auth/login";
 import RegisterPage from "./pages/client/auth/register";
-import "bootstrap/dist/css/bootstrap.min.css";
 import HomePage from "./pages/client/home";
-import IntroductionPage from "./pages/client/introduction";
-import PolicyPage from "./pages/client/policy";
-import TermsPage from "./pages/client/terms";
-import ForOwnersPage from "./pages/client/for.owners";
 import DashBoardPage from "./pages/admin/dashboard";
-import ManageUserPage from "./pages/admin/manage.user";
 
 const router = createBrowserRouter([
   {
@@ -29,7 +25,7 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <HomePage />
-      },
+      }
     ]
   },
   {
