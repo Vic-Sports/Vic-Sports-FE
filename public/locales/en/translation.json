@@ -11,6 +11,22 @@
     "history": "History",
     "logout": "Logout"
   },
+  "auth": {
+    "loading_title": "Loading...",
+    "loading_subtitle": "Please wait a moment",
+    "unauthorized_title": "Not Logged In",
+    "unauthorized_subtitle": "You need to log in to use this feature",
+    "forbidden_title": "Access Denied",
+    "forbidden_subtitle": "Sorry, you don't have permission to access this page",
+    "user_error_title": "User Information Error",
+    "user_error_subtitle": "Unable to load user information. Please try again",
+    "network_error_title": "No Network Connection",
+    "network_error_subtitle": "Please check your internet connection",
+    "login_button": "Login",
+    "home_button": "Back Home",
+    "relogin_button": "Login Again",
+    "retry_button": "Retry"
+  },
   "home": {
     "hero": {
       "title": "ONLINE FIELD BOOKING",

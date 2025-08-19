@@ -11,6 +11,22 @@
     "history": "Lịch sử mua hàng",
     "logout": "Đăng xuất"
   },
+  "auth": {
+    "loading_title": "Đang tải...",
+    "loading_subtitle": "Vui lòng chờ trong giây lát",
+    "unauthorized_title": "Chưa đăng nhập",
+    "unauthorized_subtitle": "Bạn cần đăng nhập để sử dụng tính năng này",
+    "forbidden_title": "Không có quyền truy cập",
+    "forbidden_subtitle": "Xin lỗi, bạn không có quyền truy cập trang này",
+    "user_error_title": "Lỗi thông tin người dùng",
+    "user_error_subtitle": "Không thể tải thông tin người dùng. Vui lòng thử lại",
+    "network_error_title": "Không có kết nối mạng",
+    "network_error_subtitle": "Vui lòng kiểm tra kết nối internet của bạn",
+    "login_button": "Đăng nhập",
+    "home_button": "Về trang chủ",
+    "relogin_button": "Đăng nhập lại",
+    "retry_button": "Thử lại"
+  },
   "home": {
     "hero": {
       "title": "ĐẶT SÂN TRỰC TUYẾN",
