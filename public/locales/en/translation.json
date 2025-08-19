@@ -51,9 +51,9 @@
       }
     },
     "courts": {
-      "title": "SMART COURTS",
-      "subtitle": "Smart sports courts with integrated IoT and AI technology",
-      "viewAll": "View all",
+      "title": "TOP COURTS",
+      "subtitle": "Most popular sports fields",
+      "viewAll": "VIEW ALL",
       "nexusFootball": {
         "name": "NEXUS FOOTBALL ARENA",
         "location": "District 1, Ho Chi Minh City"

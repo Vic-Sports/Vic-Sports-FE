@@ -338,12 +338,21 @@ const HomePage = () => {
       {/* Smart Courts Section */}
       <section className="smart-courts-section">
         <Container>
-          <div className="text-center mb-5">
-            <h2 className="section-title">
-              <span className="gradient-text">{t("home.courts.title")}</span>
-            </h2>
-            <p className="section-subtitle">{t("home.courts.subtitle")}</p>
-          </div>
+          <Row className="align-items-center mb-5">
+            <Col lg={8}>
+              <h2 className="section-title text-start">
+                <span className="gradient-text">{t("home.courts.title")}</span>
+              </h2>
+              <p className="section-subtitle text-start">
+                {t("home.courts.subtitle")}
+              </p>
+            </Col>
+            <Col lg={4} className="text-end">
+              <button className="view-all-btn">
+                {t("home.courts.viewAll")} 
+              </button>
+            </Col>
+          </Row>
 
           <Row className="g-4">
             {smartCourts.map((court, index) => (

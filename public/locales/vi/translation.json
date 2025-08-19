@@ -51,8 +51,8 @@
       }
     },
     "courts": {
-      "title": "SMART COURTS",
-      "subtitle": "Sân thể thao thông minh với công nghệ IoT và AI tích hợp",
+      "title": "SÂN NỔI BẬT",
+      "subtitle": "Những sân thể thao được yêu thích nhất",
       "viewAll": "Xem tất cả",
       "nexusFootball": {
         "name": "NEXUS FOOTBALL ARENA",
@@ -74,7 +74,7 @@
       }
     },
     "community": {
-      "title": "COMMUNITY HUB",
+      "title": "TRUNG TÂM CỘNG ĐỒNG",
       "subtitle": "Kết nối với cộng đồng thể thao toàn cầu trong metaverse"
     },
     "footer": {
