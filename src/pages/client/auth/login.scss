@@ -86,9 +86,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4rem 2rem;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(20px);
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
 }
 
 .auth-right {
@@ -96,9 +96,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(10px);
+  padding: 4rem 2rem;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
 }
 
 // Auth Content
@@ -120,43 +120,15 @@
   }
 }
 
-.auth-badge {
-  display: inline-block;
-  background: linear-gradient(45deg, #0ea5e9, #d946ef);
-  padding: 0.5rem 1rem;
-  border-radius: 50px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  margin-bottom: 2rem;
-  box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
-}
-
 .auth-title {
-  font-size: 3.5rem;
+  font-size: 3rem;
   font-weight: 800;
-  line-height: 1;
+  line-height: 1.2;
   margin-bottom: 1.5rem;
   background: linear-gradient(45deg, #fff, #0ea5e9);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-
-  .title-line-1 {
-    display: block;
-    background: linear-gradient(45deg, #fff, #0ea5e9);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .title-line-2 {
-    display: block;
-    background: linear-gradient(45deg, #d946ef, #fff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
 }
 
 .auth-description {
@@ -224,16 +196,25 @@
   color: #fff !important;
   transition: all 0.3s ease !important;
   backdrop-filter: blur(10px) !important;
+  outline: none !important;
+  box-shadow: none !important;
 
   &:hover {
     border-color: rgba(14, 165, 233, 0.6) !important;
     box-shadow: 0 0 20px rgba(14, 165, 233, 0.2) !important;
+    outline: none !important;
   }
 
   &:focus {
     border-color: #0ea5e9 !important;
     box-shadow: 0 0 30px rgba(14, 165, 233, 0.4) !important;
     background: rgba(15, 23, 42, 0.9) !important;
+    outline: none !important;
+  }
+
+  &:focus-within {
+    outline: none !important;
+    box-shadow: 0 0 30px rgba(14, 165, 233, 0.4) !important;
   }
 
   &::placeholder {
@@ -244,11 +225,33 @@
     color: #0ea5e9 !important;
     margin-right: 0.75rem !important;
   }
+
+  // Remove default browser outline and focus ring
+  &:focus-visible {
+    outline: none !important;
+  }
 }
 
 .ant-input-password {
+  outline: none !important;
+  box-shadow: none !important;
+  
   .ant-input-password-icon {
     color: #0ea5e9 !important;
+  }
+
+  .ant-input {
+    outline: none !important;
+    box-shadow: none !important;
+    
+    &:focus {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    &:focus-visible {
+      outline: none !important;
+    }
   }
 }
 
@@ -270,6 +273,20 @@
   .ant-checkbox-checked .ant-checkbox-inner {
     background: #0ea5e9 !important;
     border-color: #0ea5e9 !important;
+  }
+
+  .ant-checkbox-wrapper {
+    color: #ffffff !important;
+    font-weight: 500;
+  }
+
+  .ant-checkbox-wrapper span {
+    color: #ffffff !important;
+  }
+
+  // Override any Ant Design default colors
+  &.ant-checkbox-wrapper {
+    color: #ffffff !important;
   }
 }
 
@@ -359,6 +376,10 @@
   color: #fff !important;
   transition: all 0.3s ease !important;
   backdrop-filter: blur(10px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
 
   &:hover {
     border-color: rgba(14, 165, 233, 0.6) !important;
@@ -380,6 +401,12 @@
       box-shadow: 0 8px 25px rgba(24, 119, 242, 0.2) !important;
     }
   }
+}
+
+.social-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
 }
 
 // Auth Footer
@@ -438,11 +465,6 @@
     font-size: 2rem;
   }
 
-  .auth-badge {
-    font-size: 0.7rem;
-    padding: 0.4rem 0.8rem;
-  }
-
   .social-buttons {
     flex-direction: column;
   }
@@ -470,4 +492,58 @@
   font-size: 0.75rem !important;
   margin-top: 0.25rem !important;
   text-shadow: 0 0 10px rgba(239, 68, 68, 0.3) !important;
+}
+
+// Remove all default focus outlines and rings
+.futuristic-auth {
+  input, 
+  input:focus, 
+  input:focus-visible,
+  .ant-input,
+  .ant-input:focus,
+  .ant-input:focus-visible,
+  .ant-input-password,
+  .ant-input-password:focus,
+  .ant-input-password:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  // Override any default browser focus styles
+  * {
+    &:focus {
+      outline: none !important;
+    }
+    
+    &:focus-visible {
+      outline: none !important;
+    }
+  }
+
+  // Hide browser autofill suggestions and password manager popups
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px rgba(15, 23, 42, 0.8) inset !important;
+    -webkit-text-fill-color: #fff !important;
+    background-color: rgba(15, 23, 42, 0.8) !important;
+    background-image: none !important;
+  }
+
+  // Hide password manager dropdowns
+  input[type="password"]::-ms-reveal,
+  input[type="password"]::-ms-clear {
+    display: none;
+  }
+
+  // Hide Chrome password manager
+  input::-webkit-credentials-auto-fill-button {
+    visibility: hidden;
+    display: none !important;
+    pointer-events: none;
+    height: 0;
+    width: 0;
+    margin: 0;
+  }
 }

@@ -207,6 +207,7 @@
     "google": "Sign in with Google",
     "facebook": "Sign in with Facebook",
     "account": "Don't have an account?",
-    "signup": "Sign up to free!"
+    "signup": "Sign up to free!",
+    "or": "or continue with"
   }
 }

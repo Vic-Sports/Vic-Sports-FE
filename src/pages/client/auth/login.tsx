@@ -12,13 +12,7 @@ import facebook from "@/assets/svg/images/facebook-logo.png";
 import { useTranslation } from "react-i18next";
 import loginAnimation from "@/assets/lottie/login-animation.json";
 import AnimationLottie from "@/share/animation-lottie";
-import {
-  FaEye,
-  FaLock,
-  FaEnvelope,
-  FaGoogle,
-  FaFacebook
-} from "react-icons/fa";
+import { FaLock, FaEnvelope } from "react-icons/fa";
 
 type FieldType = {
   username: string;
@@ -102,18 +96,18 @@ const LoginPage = () => {
       </div>
 
       <div className="auth-container">
+        {/* Animation bên trái */}
         <div className="auth-left">
+          <div className="animation-container">
+            <AnimationLottie width="100%" animationPath={loginAnimation} />
+          </div>
+        </div>
+
+        {/* Form bên phải */}
+        <div className="auth-right">
           <div className="auth-content">
             <div className={`auth-header ${isVisible ? "fade-in" : ""}`}>
-              <div className="auth-badge">
-                <span>🔐 SECURE ACCESS</span>
-              </div>
-
-              <h1 className="auth-title">
-                <span className="title-line-1">WELCOME</span>
-                <br />
-                <span className="title-line-2">BACK</span>
-              </h1>
+              <h1 className="auth-title">{t("login.login_title")}</h1>
 
               <p className="auth-description">{t("login.login_text")}</p>
             </div>
@@ -145,6 +139,9 @@ const LoginPage = () => {
                     placeholder={t("login.placeholder_email")}
                     className="futuristic-input"
                     prefix={<FaEnvelope className="input-icon" />}
+                    autoComplete="off"
+                    data-lpignore="true"
+                    data-form-type="other"
                   />
                 </Form.Item>
 
@@ -164,6 +161,9 @@ const LoginPage = () => {
                     placeholder="************"
                     className="futuristic-input"
                     prefix={<FaLock className="input-icon" />}
+                    autoComplete="new-password"
+                    data-lpignore="true"
+                    data-form-type="other"
                   />
                 </Form.Item>
 
@@ -190,23 +190,27 @@ const LoginPage = () => {
 
               <div className="social-section">
                 <div className="divider">
-                  <span>or continue with</span>
+                  <span>{t("login.or")}</span>
                 </div>
 
                 <div className="social-buttons">
                   <Button
                     className="social-button google"
                     onClick={() => loginGoogle()}
-                    icon={<FaGoogle />}
                   >
+                    <img src={google} alt="Google" className="social-logo" />
                     {t("login.google")}
                   </Button>
 
                   <Button
                     className="social-button facebook"
                     onClick={() => alert("me")}
-                    icon={<FaFacebook />}
                   >
+                    <img
+                      src={facebook}
+                      alt="Facebook"
+                      className="social-logo"
+                    />
                     {t("login.facebook")}
                   </Button>
                 </div>
@@ -219,12 +223,6 @@ const LoginPage = () => {
                 </Link>
               </p>
             </div>
-          </div>
-        </div>
-
-        <div className="auth-right">
-          <div className="animation-container">
-            <AnimationLottie width="100%" animationPath={loginAnimation} />
           </div>
         </div>
       </div>
