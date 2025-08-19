@@ -85,15 +85,7 @@ const RegisterPage = () => {
         <div className="auth-left">
           <div className="auth-content">
             <div className={`auth-header ${isVisible ? "fade-in" : ""}`}>
-              <div className="auth-badge">
-                <span>🚀 JOIN THE FUTURE</span>
-              </div>
-
-              <h1 className="auth-title">
-                <span className="title-line-1">CREATE</span>
-                <br />
-                <span className="title-line-2">ACCOUNT</span>
-              </h1>
+              <h1 className="auth-title">{t("register.register_title")}</h1>
 
               <p className="auth-description">{t("register.register_text")}</p>
             </div>
@@ -197,6 +189,7 @@ const RegisterPage = () => {
                     loading={isSubmit}
                     className="auth-button primary"
                     icon={<FaRocket />}
+                    style={{ marginTop: 15 }}
                   >
                     {t("register.signup")}
                   </Button>
@@ -213,6 +206,7 @@ const RegisterPage = () => {
           </div>
         </div>
 
+        {/* Animation bên phải */}
         <div className="auth-right">
           <div className="animation-container">
             <AnimationLottie width="100%" animationPath={registerAnimation} />

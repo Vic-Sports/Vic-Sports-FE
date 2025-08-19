@@ -164,7 +164,7 @@
     "author": "© 2024 VIC. Tất cả quyền được bảo lưu."
   },
   "register": {
-    "register_title": "TẠO TÀI KHOẢN",
+    "register_title": "CREATE ACCOUNT",
     "register_text": "Vui lòng điền thông tin để đăng ký.",
     "register_success": "Tạo tài khoản thành công!",
     "fullname": "Họ và tên",
