@@ -12,7 +12,12 @@ const createInstanceAxios = (baseURL: string) => {
 
   const handleRefreshToken = async () => {
     return await mutex.runExclusive(async () => {
-      const res = await instance.get("/api/v1/auth/refresh");
+      const refreshToken = localStorage.getItem("refresh_token");
+      if (!refreshToken) return null;
+
+      const res = await instance.post("/api/v1/auth/refresh-token", {
+        refreshToken
+      });
       if (res && res.data) return res.data.access_token;
       else return null;
     });

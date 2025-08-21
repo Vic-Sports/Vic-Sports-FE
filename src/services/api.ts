@@ -24,28 +24,15 @@ export const updatePaymentOrderAPI = (
   paymentRef: string
 ) => {
   const urlBackend = "/api/v1/order/update-payment-status";
-  return axios.post<IBackendRes<ILogin>>(
-    urlBackend,
-    { paymentStatus, paymentRef },
-    {
-      headers: {
-        delay: 1000
-      }
-    }
-  );
+  return axios.post<IBackendRes<ILogin>>(urlBackend, {
+    paymentStatus,
+    paymentRef
+  });
 };
 
-export const loginAPI = (username: string, password: string) => {
+export const loginAPI = (email: string, password: string) => {
   const urlBackend = "/api/v1/auth/login";
-  return axios.post<IBackendRes<ILogin>>(
-    urlBackend,
-    { username, password },
-    {
-      headers: {
-        delay: 1000
-      }
-    }
-  );
+  return axios.post<IBackendRes<ILogin>>(urlBackend, { email, password });
 };
 
 export const registerAPI = (
@@ -54,7 +41,7 @@ export const registerAPI = (
   password: string,
   phone: string
 ) => {
-  const urlBackend = "/api/v1/user/register";
+  const urlBackend = "/api/v1/auth/register";
   return axios.post<IBackendRes<IRegister>>(urlBackend, {
     fullName,
     email,
@@ -65,16 +52,22 @@ export const registerAPI = (
 
 export const fetchAccountAPI = () => {
   const urlBackend = "/api/v1/auth/account";
-  return axios.get<IBackendRes<IFetchAccount>>(urlBackend, {
-    headers: {
-      delay: 100
-    }
-  });
+  return axios.get<IBackendRes<IFetchAccount>>(urlBackend);
 };
 
 export const logoutAPI = () => {
   const urlBackend = "/api/v1/auth/logout";
   return axios.post<IBackendRes<IRegister>>(urlBackend);
+};
+
+export const verifyEmailAPI = (token: string) => {
+  const urlBackend = `/api/v1/auth/verify-email?token=${token}`;
+  return axios.get<IBackendRes<any>>(urlBackend);
+};
+
+export const resendVerificationAPI = (email: string) => {
+  const urlBackend = "/api/v1/auth/resend-verification";
+  return axios.post<IBackendRes<any>>(urlBackend, { email });
 };
 
 export const getUsersAPI = (query: string) => {
@@ -125,11 +118,7 @@ export const deleteUserAPI = (_id: string) => {
 
 export const getBooksAPI = (query: string) => {
   const urlBackend = `/api/v1/book?${query}`;
-  return axios.get<IBackendRes<IModelPaginate<IBookTable>>>(urlBackend, {
-    headers: {
-      delay: 100
-    }
-  });
+  return axios.get<IBackendRes<IModelPaginate<IBookTable>>>(urlBackend);
 };
 
 export const getCategoryAPI = () => {
@@ -205,11 +194,7 @@ export const deleteBookAPI = (_id: string) => {
 
 export const getBookByIdAPI = (id: string) => {
   const urlBackend = `/api/v1/book/${id}`;
-  return axios.get<IBackendRes<IBookTable>>(urlBackend, {
-    headers: {
-      delay: 100
-    }
-  });
+  return axios.get<IBackendRes<IBookTable>>(urlBackend);
 };
 
 export const createOrderAPI = (

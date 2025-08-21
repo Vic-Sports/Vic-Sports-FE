@@ -1,9 +1,13 @@
-import { App, Button, Form, Input, Checkbox } from "antd";
+import { App, Button, Form, Input, Checkbox, Modal } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import "./login.scss";
 import { useState, useEffect } from "react";
 import type { FormProps } from "antd";
-import { loginAPI, loginWithGoogleAPI } from "@/services/api";
+import {
+  loginAPI,
+  loginWithGoogleAPI,
+  resendVerificationAPI
+} from "@/services/api";
 import { useCurrentApp } from "@/components/context/app.context";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
@@ -15,7 +19,7 @@ import AnimationLottie from "@/share/animation-lottie";
 import { FaLock, FaEnvelope } from "react-icons/fa";
 
 type FieldType = {
-  username: string;
+  email: string;
   password: string;
 };
 
@@ -23,6 +27,9 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [isSubmit, setIsSubmit] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [showResendModal, setShowResendModal] = useState(false);
+  const [resendEmail, setResendEmail] = useState("");
+  const [isResending, setIsResending] = useState(false);
   const { message, notification } = App.useApp();
   const { setIsAuthenticated, setUser } = useCurrentApp();
   const { t } = useTranslation();
@@ -31,26 +38,56 @@ const LoginPage = () => {
     setIsVisible(true);
   }, []);
 
+  const handleResendVerification = async () => {
+    setIsResending(true);
+    try {
+      const res = await resendVerificationAPI(resendEmail);
+      if (res.success) {
+        message.success(
+          "Verification email sent successfully! Please check your inbox."
+        );
+        setShowResendModal(false);
+      } else {
+        message.error(res.message || "Failed to resend verification email");
+      }
+    } catch (error: any) {
+      message.error("Failed to resend verification email");
+    } finally {
+      setIsResending(false);
+    }
+  };
+
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
-    const { username, password } = values;
+    const { email, password } = values;
     setIsSubmit(true);
-    const res = await loginAPI(username, password);
+    const res = await loginAPI(email, password);
     setIsSubmit(false);
     if (res?.data) {
       setIsAuthenticated(true);
       setUser(res.data.user);
       localStorage.setItem("access_token", res.data.access_token);
+      if (res.data.refresh_token) {
+        localStorage.setItem("refresh_token", res.data.refresh_token);
+      }
       message.success(t("login.login_success"));
       navigate("/");
     } else {
-      notification.error({
-        message: t("login.login_err"),
-        description:
-          res.message && Array.isArray(res.message)
-            ? res.message[0]
-            : res.message,
-        duration: 5
-      });
+      // Check if error is about email verification
+      const errorMessage =
+        res.message && Array.isArray(res.message)
+          ? res.message[0]
+          : res.message;
+
+      if (errorMessage?.includes("verify your email")) {
+        setResendEmail(email);
+        setShowResendModal(true);
+      } else {
+        notification.error({
+          message: t("login.login_err"),
+          description: errorMessage,
+          duration: 5
+        });
+      }
     }
   };
 
@@ -70,6 +107,9 @@ const LoginPage = () => {
           setIsAuthenticated(true);
           setUser(res.data.user);
           localStorage.setItem("access_token", res.data.access_token);
+          if (res.data.refresh_token) {
+            localStorage.setItem("refresh_token", res.data.refresh_token);
+          }
           message.success(t("login.login_success"));
           navigate("/");
         } else {
@@ -129,7 +169,7 @@ const LoginPage = () => {
                       Email
                     </span>
                   }
-                  name="username"
+                  name="email"
                   rules={[
                     { required: true, message: t("login.message_email1") },
                     { type: "email", message: t("login.message_email2") }
@@ -226,6 +266,38 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Resend Verification Modal */}
+      <Modal
+        title="Email Verification Required"
+        open={showResendModal}
+        onCancel={() => setShowResendModal(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setShowResendModal(false)}>
+            Cancel
+          </Button>,
+          <Button
+            key="resend"
+            type="primary"
+            loading={isResending}
+            onClick={handleResendVerification}
+          >
+            Resend Verification Email
+          </Button>
+        ]}
+      >
+        <p>
+          Your email address is not verified yet. Please check your inbox for
+          the verification email.
+        </p>
+        <p>
+          Email: <strong>{resendEmail}</strong>
+        </p>
+        <p>
+          If you didn't receive the email, click "Resend Verification Email" to
+          send it again.
+        </p>
+      </Modal>
     </div>
   );
 };

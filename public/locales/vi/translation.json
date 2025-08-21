@@ -205,7 +205,9 @@
     "message_password_uppercase": "Mật khẩu phải chứa ít nhất một chữ cái viết hoa!",
     "message_password_lowercase": "Mật khẩu phải chứa ít nhất một chữ cái thường!",
     "message_password_number": "Mật khẩu phải chứa ít nhất một số!",
-    "message_password_special": "Mật khẩu phải chứa ít nhất một ký tự đặc biệt (@$!%*?&)!"
+    "message_password_special": "Mật khẩu phải chứa ít nhất một ký tự đặc biệt (@$!%*?&)!",
+    "message_phone_required": "Vui lòng nhập số điện thoại!",
+    "message_phone_format": "Số điện thoại không đúng định dạng Việt Nam!"
   },
   "login": {
     "login_success": "Đăng nhâp thành công!",

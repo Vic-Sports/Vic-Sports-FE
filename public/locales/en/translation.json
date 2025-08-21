@@ -205,7 +205,9 @@
     "message_password_uppercase": "Password must contain at least one uppercase letter!",
     "message_password_lowercase": "Password must contain at least one lowercase letter!",
     "message_password_number": "Password must contain at least one number!",
-    "message_password_special": "Password must contain at least one special character (@$!%*?&)!"
+    "message_password_special": "Password must contain at least one special character (@$!%*?&)!",
+    "message_phone_required": "Phone number is required!",
+    "message_phone_format": "Invalid Vietnamese phone number format!"
   },
   "login": {
     "login_success": "Login successful!",

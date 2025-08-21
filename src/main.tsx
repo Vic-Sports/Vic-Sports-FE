@@ -14,6 +14,8 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import LayoutAdmin from "./components/layout/layout.dashboard";
 import LoginPage from "./pages/client/auth/login";
 import RegisterPage from "./pages/client/auth/register";
+import EmailVerifiedPage from "./pages/client/auth/email-verified";
+import EmailVerificationFailedPage from "./pages/client/auth/email-verification-failed";
 import HomePage from "./pages/client/home";
 import DashBoardPage from "./pages/admin/dashboard";
 
@@ -57,6 +59,14 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <RegisterPage />
+  },
+  {
+    path: "/email-verified",
+    element: <EmailVerifiedPage />
+  },
+  {
+    path: "/email-verification-failed",
+    element: <EmailVerificationFailedPage />
   }
 ]);
 

@@ -349,7 +349,7 @@ const HomePage = () => {
             </Col>
             <Col lg={4} className="text-end">
               <button className="view-all-btn">
-                {t("home.courts.viewAll")} 
+                {t("home.courts.viewAll")}
               </button>
             </Col>
           </Row>

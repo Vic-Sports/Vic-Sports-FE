@@ -34,6 +34,7 @@ const Header = () => {
         setUser(null);
         setIsAuthenticated(false);
         localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
         localStorage.removeItem("carts");
       }
     } catch (error) {
@@ -354,32 +355,32 @@ const Header = () => {
         }}
       >
         <div className="d-flex flex-column gap-3">
-          <NavLink 
-            to="/" 
+          <NavLink
+            to="/"
             className="text-decoration-none"
             style={{ color: "white" }}
             onClick={() => setOpenDrawer(false)}
           >
             {t("appHeader.home")}
           </NavLink>
-          <NavLink 
-            to="/courts" 
+          <NavLink
+            to="/courts"
             className="text-decoration-none"
             style={{ color: "white" }}
             onClick={() => setOpenDrawer(false)}
           >
             {t("appHeader.courts")}
           </NavLink>
-          <NavLink 
-            to="/coaches" 
+          <NavLink
+            to="/coaches"
             className="text-decoration-none"
             style={{ color: "white" }}
             onClick={() => setOpenDrawer(false)}
           >
             {t("appHeader.coaches")}
           </NavLink>
-          <NavLink 
-            to="/community" 
+          <NavLink
+            to="/community"
             className="text-decoration-none"
             style={{ color: "white" }}
             onClick={() => setOpenDrawer(false)}
@@ -387,7 +388,9 @@ const Header = () => {
             {t("appHeader.community")}
           </NavLink>
           <Divider style={{ borderColor: "rgba(255,255,255,0.2)" }} />
-          <p onClick={() => setOpenManageAccount(true)}>{t("appHeader.profile")}</p>
+          <p onClick={() => setOpenManageAccount(true)}>
+            {t("appHeader.profile")}
+          </p>
           <Divider style={{ borderColor: "rgba(255,255,255,0.2)" }} />
           <p onClick={handleLogout}>{t("appHeader.logout")}</p>
         </div>

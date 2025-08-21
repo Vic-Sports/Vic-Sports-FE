@@ -107,6 +107,7 @@ const LayoutAdmin = () => {
       setUser(null);
       setIsAuthenticated(false);
       localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
       localStorage.removeItem("carts");
       navigate("/");
     }

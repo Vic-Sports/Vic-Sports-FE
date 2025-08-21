@@ -51,6 +51,19 @@ const RegisterPage = () => {
     return Promise.resolve();
   };
 
+  const validatePhone = (_: RuleObject, value: string): Promise<void> => {
+    if (!value) {
+      return Promise.resolve(); // Let the required rule handle empty values
+    }
+    // Validate Vietnamese phone number format
+    const vietnamPhoneRegex =
+      /^0((3[2-9])|(5[6|8|9])|(7[0|6-9])|(8[1-5|8|9])|(9[0-9]))\d{7}$/;
+    if (!vietnamPhoneRegex.test(value)) {
+      return Promise.reject(t("register.message_phone_format"));
+    }
+    return Promise.resolve();
+  };
+
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     setIsSubmit(true);
     const { email, fullName, password, phone } = values;
@@ -65,7 +78,9 @@ const RegisterPage = () => {
     console.log("API Response:", res);
 
     if (res.data) {
-      message.success(t("register.register_success"));
+      message.success(
+        "Registration successful! Please check your email to verify your account."
+      );
       navigate("/login");
     } else {
       message.error(res.message || "Registration failed");
@@ -168,11 +183,11 @@ const RegisterPage = () => {
                   }
                   name="phone"
                   rules={[
-                    { required: true, message: t("register.message_phone1") },
                     {
-                      pattern: /^[0-9]{10}$/,
-                      message: t("register.message_phone2")
-                    }
+                      required: true,
+                      message: t("register.message_phone_required")
+                    },
+                    { validator: validatePhone }
                   ]}
                 >
                   <Input
