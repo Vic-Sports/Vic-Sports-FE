@@ -62,7 +62,7 @@ export const logoutAPI = () => {
 
 export const verifyEmailAPI = (token: string) => {
   const urlBackend = `/api/v1/auth/verify-email?token=${token}`;
-  return axios.get<IBackendRes<any>>(urlBackend);
+  return axios.get<IBackendRes<IVerifyEmail>>(urlBackend);
 };
 
 export const resendVerificationAPI = (email: string) => {

@@ -150,7 +150,7 @@ const LayoutAdmin = () => {
   if (isAuthenticated === false) return <Outlet />;
 
   const isAdminRoute = location.pathname.includes("admin");
-  if (isAuthenticated === true && isAdminRoute && user?.role === "USER") {
+  if (isAuthenticated === true && isAdminRoute && user?.role === "customer") {
     return <Outlet />;
   }
 

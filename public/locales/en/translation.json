@@ -25,7 +25,9 @@
     "login_button": "Login",
     "home_button": "Back Home",
     "relogin_button": "Login Again",
-    "retry_button": "Retry"
+    "retry_button": "Retry",
+    "cancel": "Cancel",
+    "resend": "Resend Verification Email"
   },
   "home": {
     "hero": {
@@ -226,6 +228,26 @@
     "facebook": "Sign in with Facebook",
     "account": "Don't have an account?",
     "signup": "Sign up to free!",
-    "or": "or continue with"
+    "or": "or continue with",
+    "error_invalid_credentials": "Invalid email or password",
+    "error_account_not_verified": "Account not verified. Please check your email for verification link",
+    "error_account_locked": "Account is locked. Please contact support",
+    "error_too_many_attempts": "Too many login attempts. Please try again later",
+    "error_network": "Network error. Please check your connection",
+    "error_server": "Server error. Please try again later",
+    "error_unknown": "An unexpected error occurred. Please try again",
+    "resend_instruction": "If you didn't receive the email, click 'Resend Verification Email' to send it again.",
+    "resend_success": "Verification email sent successfully! Please check your inbox.",
+    "resend_error": "Failed to resend verification email"
+  },
+  "verify_email": {
+    "verifying": "Verifying your email...",
+    "success_title": "Email Verified Successfully!",
+    "success_subtitle": "Your email has been verified. You will be redirected shortly.",
+    "success_message": "Email verified successfully! You are now logged in.",
+    "failed_title": "Email Verification Failed",
+    "go_home": "Go to Home",
+    "go_login": "Go to Login",
+    "retry": "Try Again"
   }
 }

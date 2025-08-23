@@ -25,7 +25,9 @@
     "login_button": "Đăng nhập",
     "home_button": "Về trang chủ",
     "relogin_button": "Đăng nhập lại",
-    "retry_button": "Thử lại"
+    "retry_button": "Thử lại",
+    "cancel": "Hủy",
+    "resend": "Gửi lại email xác thực"
   },
   "home": {
     "hero": {
@@ -210,7 +212,7 @@
     "message_phone_format": "Số điện thoại không đúng định dạng Việt Nam!"
   },
   "login": {
-    "login_success": "Đăng nhâp thành công!",
+    "login_success": "Đăng nhập thành công!",
     "login_err": "Đã xảy ra lỗi!",
     "login_title": "WELCOME BACK",
     "login_text": "Chào mừng bạn trở lại! Vui lòng nhập thông tin của bạn.",
@@ -218,7 +220,7 @@
     "message_email2": "Email không đúng định dạng!",
     "placeholder_email": "Email",
     "password": "Mật khẩu",
-    "message_password": "Vui lòng nhật mật khẩu!",
+    "message_password": "Vui lòng nhập mật khẩu!",
     "remember": "Nhớ mật khẩu",
     "forgot": "Quên mật khẩu",
     "signin": "Đăng nhập",
@@ -226,6 +228,26 @@
     "facebook": "Đăng nhập với Facebook",
     "account": "Bạn chưa có tài khoản?",
     "signup": "Đăng ký miễn phí!",
-    "or": "hoặc tiếp tục với"
+    "or": "hoặc tiếp tục với",
+    "error_invalid_credentials": "Email hoặc mật khẩu không đúng",
+    "error_account_not_verified": "Tài khoản chưa được xác thực. Vui lòng kiểm tra email để xác thực",
+    "error_account_locked": "Tài khoản đã bị khóa. Vui lòng liên hệ hỗ trợ",
+    "error_too_many_attempts": "Quá nhiều lần đăng nhập. Vui lòng thử lại sau",
+    "error_network": "Lỗi mạng. Vui lòng kiểm tra kết nối",
+    "error_server": "Lỗi máy chủ. Vui lòng thử lại sau",
+    "error_unknown": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại",
+    "resend_instruction": "Nếu bạn không nhận được email, hãy nhấp vào 'Gửi lại email xác thực' để gửi lại.",
+    "resend_success": "Email xác thực đã được gửi thành công! Vui lòng kiểm tra hộp thư của bạn.",
+    "resend_error": "Không thể gửi lại email xác thực"
+  },
+  "verify_email": {
+    "verifying": "Đang xác thực email của bạn...",
+    "success_title": "Xác thực email thành công!",
+    "success_subtitle": "Email của bạn đã được xác thực. Bạn sẽ được chuyển hướng trong giây lát.",
+    "success_message": "Xác thực email thành công! Bạn đã được đăng nhập.",
+    "failed_title": "Xác thực email thất bại",
+    "go_home": "Về trang chủ",
+    "go_login": "Đăng nhập",
+    "retry": "Thử lại"
   }
 }

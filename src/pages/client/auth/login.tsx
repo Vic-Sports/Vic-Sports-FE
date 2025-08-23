@@ -42,16 +42,23 @@ const LoginPage = () => {
     setIsResending(true);
     try {
       const res = await resendVerificationAPI(resendEmail);
-      if (res.success) {
+      if (res.message) {
         message.success(
-          "Verification email sent successfully! Please check your inbox."
+          t("login.resend_success") ||
+            "Verification email sent successfully! Please check your inbox."
         );
         setShowResendModal(false);
       } else {
-        message.error(res.message || "Failed to resend verification email");
+        message.error(
+          res.message ||
+            t("login.resend_error") ||
+            "Failed to resend verification email"
+        );
       }
-    } catch (error: any) {
-      message.error("Failed to resend verification email");
+    } catch {
+      message.error(
+        t("login.resend_error") || "Failed to resend verification email"
+      );
     } finally {
       setIsResending(false);
     }
@@ -60,31 +67,105 @@ const LoginPage = () => {
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     const { email, password } = values;
     setIsSubmit(true);
-    const res = await loginAPI(email, password);
-    setIsSubmit(false);
-    if (res?.data) {
-      setIsAuthenticated(true);
-      setUser(res.data.user);
-      localStorage.setItem("access_token", res.data.access_token);
-      if (res.data.refresh_token) {
-        localStorage.setItem("refresh_token", res.data.refresh_token);
-      }
-      message.success(t("login.login_success"));
-      navigate("/");
-    } else {
-      // Check if error is about email verification
-      const errorMessage =
-        res.message && Array.isArray(res.message)
-          ? res.message[0]
-          : res.message;
 
-      if (errorMessage?.includes("verify your email")) {
-        setResendEmail(email);
-        setShowResendModal(true);
+    try {
+      const res = await loginAPI(email, password);
+      setIsSubmit(false);
+
+      if (res?.data) {
+        setIsAuthenticated(true);
+        setUser(res.data.user);
+        localStorage.setItem("access_token", res.data.access_token);
+        message.success(t("login.login_success"));
+        navigate("/");
+      } else {
+        // Handle different error types
+        const errorMessage =
+          res.error && Array.isArray(res.error)
+            ? res.error[0]
+            : res.error || res.message;
+
+        // Check for specific error types
+        if (
+          errorMessage?.toLowerCase().includes("verify") ||
+          errorMessage?.toLowerCase().includes("verification") ||
+          errorMessage?.toLowerCase().includes("confirmed") ||
+          errorMessage?.toLowerCase().includes("xác thực")
+        ) {
+          // Account not verified - only show modal, no notification
+          setResendEmail(email);
+          setShowResendModal(true);
+        } else if (
+          errorMessage?.toLowerCase().includes("invalid") ||
+          errorMessage?.toLowerCase().includes("wrong") ||
+          errorMessage?.toLowerCase().includes("incorrect") ||
+          errorMessage?.toLowerCase().includes("không đúng") ||
+          errorMessage?.toLowerCase().includes("sai")
+        ) {
+          // Invalid credentials
+          notification.error({
+            message: t("login.error_invalid_credentials"),
+            duration: 5
+          });
+        } else if (
+          errorMessage?.toLowerCase().includes("locked") ||
+          errorMessage?.toLowerCase().includes("blocked") ||
+          errorMessage?.toLowerCase().includes("suspended") ||
+          errorMessage?.toLowerCase().includes("khóa")
+        ) {
+          // Account locked
+          notification.error({
+            message: t("login.error_account_locked"),
+            duration: 8
+          });
+        } else if (
+          errorMessage?.toLowerCase().includes("too many") ||
+          errorMessage?.toLowerCase().includes("rate limit") ||
+          errorMessage?.toLowerCase().includes("quá nhiều")
+        ) {
+          // Too many attempts
+          notification.warning({
+            message: t("login.error_too_many_attempts"),
+            duration: 8
+          });
+        } else {
+          // Generic error
+          notification.error({
+            message: errorMessage || t("login.error_unknown"),
+            duration: 5
+          });
+        }
+      }
+    } catch (err: any) {
+      setIsSubmit(false);
+
+      // Handle network and server errors
+      if (
+        err.code === "NETWORK_ERROR" ||
+        err.message?.includes("Network Error")
+      ) {
+        notification.error({
+          message: t("login.error_network"),
+          duration: 8
+        });
+      } else if (err.response?.status >= 500) {
+        notification.error({
+          message: t("login.error_server"),
+          duration: 8
+        });
+      } else if (err.response?.status === 401) {
+        notification.error({
+          message: t("login.error_invalid_credentials"),
+          duration: 5
+        });
+      } else if (err.response?.status === 403) {
+        notification.error({
+          message: t("login.error_account_locked"),
+          duration: 8
+        });
       } else {
         notification.error({
-          message: t("login.login_err"),
-          description: errorMessage,
+          message: err.message || t("login.error_unknown"),
           duration: 5
         });
       }
@@ -107,18 +188,14 @@ const LoginPage = () => {
           setIsAuthenticated(true);
           setUser(res.data.user);
           localStorage.setItem("access_token", res.data.access_token);
-          if (res.data.refresh_token) {
-            localStorage.setItem("refresh_token", res.data.refresh_token);
-          }
           message.success(t("login.login_success"));
           navigate("/");
         } else {
           notification.error({
-            message: t("login.login_err"),
-            description:
-              res.message && Array.isArray(res.message)
-                ? res.message[0]
-                : res.message,
+            message:
+              res.error && Array.isArray(res.error)
+                ? res.error[0]
+                : res.error || res.message,
             duration: 5
           });
         }
@@ -269,34 +346,96 @@ const LoginPage = () => {
 
       {/* Resend Verification Modal */}
       <Modal
-        title="Email Verification Required"
+        title={
+          <div
+            style={{ textAlign: "center", fontSize: "18px", fontWeight: "600" }}
+          >
+            {t("login.error_account_not_verified")}
+          </div>
+        }
         open={showResendModal}
         onCancel={() => setShowResendModal(false)}
+        width={500}
+        centered
         footer={[
-          <Button key="cancel" onClick={() => setShowResendModal(false)}>
-            Cancel
+          <Button
+            key="cancel"
+            onClick={() => setShowResendModal(false)}
+            size="large"
+            style={{ marginRight: "8px" }}
+          >
+            {t("auth.cancel") || "Cancel"}
           </Button>,
           <Button
             key="resend"
             type="primary"
             loading={isResending}
             onClick={handleResendVerification}
+            size="large"
           >
-            Resend Verification Email
+            {t("auth.resend") || "Resend Verification Email"}
           </Button>
         ]}
+        styles={{
+          header: {
+            borderBottom: "1px solid #f0f0f0",
+            paddingBottom: "16px"
+          },
+          body: {
+            padding: "24px"
+          },
+          footer: {
+            borderTop: "1px solid #f0f0f0",
+            paddingTop: "16px"
+          }
+        }}
       >
-        <p>
-          Your email address is not verified yet. Please check your inbox for
-          the verification email.
-        </p>
-        <p>
-          Email: <strong>{resendEmail}</strong>
-        </p>
-        <p>
-          If you didn't receive the email, click "Resend Verification Email" to
-          send it again.
-        </p>
+        <div style={{ textAlign: "center" }}>
+          <div
+            style={{
+              fontSize: "48px",
+              color: "#faad14",
+              marginBottom: "16px",
+              display: "flex",
+              justifyContent: "center"
+            }}
+          >
+            ⚠️
+          </div>
+          <p
+            style={{
+              fontSize: "16px",
+              color: "#666",
+              marginBottom: "20px",
+              lineHeight: "1.6"
+            }}
+          >
+            {t("login.error_account_not_verified")}
+          </p>
+          <div
+            style={{
+              background: "#f6f8fa",
+              padding: "16px",
+              borderRadius: "8px",
+              marginBottom: "20px",
+              border: "1px solid #e1e4e8"
+            }}
+          >
+            <p style={{ margin: "0", fontSize: "14px", color: "#586069" }}>
+              <strong>Email:</strong> {resendEmail}
+            </p>
+          </div>
+          <p
+            style={{
+              fontSize: "14px",
+              color: "#666",
+              lineHeight: "1.5"
+            }}
+          >
+            {t("login.resend_instruction") ||
+              "If you didn't receive the email, click 'Resend Verification Email' to send it again."}
+          </p>
+        </div>
       </Modal>
     </div>
   );

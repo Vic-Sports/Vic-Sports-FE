@@ -2,6 +2,7 @@ export {};
 
 declare global {
   interface IBackendRes<T> {
+    success?: boolean;
     error?: string | string[];
     message: string;
     statusCode: number | string;
@@ -27,6 +28,19 @@ declare global {
       role: string;
       avatar: string;
       id: string;
+    };
+  }
+
+  interface IVerifyEmail {
+    access_token: string;
+    user: {
+      email: string;
+      phone: string;
+      fullName: string;
+      role: string;
+      avatar: string;
+      id: string;
+      isVerified: boolean;
     };
   }
 

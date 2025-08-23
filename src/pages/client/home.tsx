@@ -22,7 +22,10 @@ import {
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Select, Input, DatePicker, TimePicker, Button } from "antd";
+import { Select, Input, DatePicker, TimePicker, Button, App } from "antd";
+import { useSearchParams } from "react-router-dom";
+import { useCurrentApp } from "@/components/context/app.context";
+import { fetchAccountAPI } from "@/services/api";
 import {
   SearchOutlined,
   EnvironmentOutlined,
@@ -35,10 +38,45 @@ const HomePage = () => {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [showChatBot, setShowChatBot] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { message } = App.useApp();
+  const { setIsAuthenticated, setUser } = useCurrentApp();
 
   useEffect(() => {
     setIsVisible(true);
-  }, []);
+
+    // Check if user was redirected from email verification
+    const verified = searchParams.get("verified");
+    const token = searchParams.get("token");
+
+    if (verified === "true" && token) {
+      // Set token and login user automatically
+      localStorage.setItem("access_token", token);
+
+      // Fetch user data and login
+      const loginAfterVerification = async () => {
+        try {
+          const response = await fetchAccountAPI();
+          if (response?.data?.user) {
+            setIsAuthenticated(true);
+            setUser(response.data.user);
+            message.success(
+              t("verify_email.success_message") ||
+                "Email verified successfully! You are now logged in."
+            );
+          }
+        } catch (error) {
+          console.error("Error fetching user data after verification:", error);
+          message.error("Failed to login after verification");
+        }
+      };
+
+      loginAfterVerification();
+
+      // Clean up URL parameters
+      setSearchParams({});
+    }
+  }, [searchParams, setSearchParams, setIsAuthenticated, setUser, message, t]);
 
   const futureFeatures = [
     {
