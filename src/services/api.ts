@@ -70,6 +70,16 @@ export const resendVerificationAPI = (email: string) => {
   return axios.post<IBackendRes<any>>(urlBackend, { email });
 };
 
+export const forgotPasswordAPI = (email: string) => {
+  const urlBackend = "/api/v1/auth/forgot-password";
+  return axios.post<IBackendRes<any>>(urlBackend, { email });
+};
+
+export const resetPasswordAPI = (token: string, newPassword: string) => {
+  const urlBackend = "/api/v1/auth/reset-password";
+  return axios.post<IBackendRes<any>>(urlBackend, { token, newPassword });
+};
+
 export const getUsersAPI = (query: string) => {
   const urlBackend = `/api/v1/user?${query}`;
   return axios.get<IBackendRes<IModelPaginate<IUserTable>>>(urlBackend);

@@ -288,7 +288,7 @@ const LoginPage = () => {
                   <Checkbox className="futuristic-checkbox">
                     {t("login.remember")}
                   </Checkbox>
-                  <Link to="#" className="forgot-link">
+                  <Link to="/forgot-password" className="forgot-link">
                     {t("login.forgot")}
                   </Link>
                 </div>
