@@ -56,7 +56,14 @@ const Header = () => {
     ...(user?.role === "ADMIN"
       ? [
           {
-            label: <Link to="/admin">{t("appHeader.dashboard")}</Link>,
+            label: (
+              <Link
+                to="/admin"
+                style={{ color: "#ffffff", textDecoration: "none" }}
+              >
+                {t("appHeader.dashboard")}
+              </Link>
+            ),
             key: "admin"
           }
         ]
@@ -64,7 +71,7 @@ const Header = () => {
     {
       label: (
         <span
-          style={{ cursor: "pointer" }}
+          style={{ cursor: "pointer", color: "#ffffff" }}
           onClick={() => setOpenManageAccount(true)}
         >
           {t("appHeader.profile")}
@@ -73,12 +80,22 @@ const Header = () => {
       key: "account"
     },
     {
-      label: <Link to="/history">{t("appHeader.history")}</Link>,
+      label: (
+        <Link
+          to="/history"
+          style={{ color: "#ffffff", textDecoration: "none" }}
+        >
+          {t("appHeader.history")}
+        </Link>
+      ),
       key: "history"
     },
     {
       label: (
-        <span style={{ cursor: "pointer" }} onClick={handleLogout}>
+        <span
+          style={{ cursor: "pointer", color: "#ffffff" }}
+          onClick={handleLogout}
+        >
           {t("appHeader.logout")}
         </span>
       ),
@@ -93,7 +110,7 @@ const Header = () => {
         <div
           className="d-flex gap-2 align-items-center"
           onClick={() => i18n.changeLanguage("en")}
-          style={{ color: "#fff" }}
+          style={{ color: "#ffffff" }}
         >
           <img src={enFlag} style={{ width: 20, height: 20 }} alt="English" />
           <span>English</span>
@@ -106,7 +123,7 @@ const Header = () => {
         <div
           className="d-flex gap-2 align-items-center"
           onClick={() => i18n.changeLanguage("vi")}
-          style={{ color: "#fff" }}
+          style={{ color: "#ffffff" }}
         >
           <img
             src={viFlag}
@@ -253,7 +270,8 @@ const Header = () => {
                   items: languageMenuItems,
                   style: {
                     backgroundColor: "#000",
-                    border: "1px solid rgba(255,255,255,0.1)"
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    color: "#ffffff"
                   }
                 }}
                 trigger={["click"]}
@@ -262,7 +280,7 @@ const Header = () => {
                 <Button
                   className="language-button"
                   style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    backgroundColor: "#000000",
                     border: "none",
                     borderRadius: "20px",
                     padding: "8px 12px",
@@ -297,7 +315,8 @@ const Header = () => {
                     items: menuItems,
                     style: {
                       backgroundColor: "#000",
-                      border: "1px solid rgba(255,255,255,0.1)"
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      color: "#ffffff"
                     }
                   }}
                   trigger={["click"]}
