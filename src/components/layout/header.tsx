@@ -53,7 +53,7 @@ const Header = () => {
   };
 
   const menuItems = [
-    ...(user?.role === "ADMIN"
+    ...(user?.role === "admin"
       ? [
           {
             label: (

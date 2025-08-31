@@ -236,13 +236,22 @@ export const getHistoryAPI = () => {
 export const updateUserInfoAPI = (
   _id: string,
   avatar: string,
-  fullName: string,
-  phone: string
+  userData: {
+    fullName: string;
+    phone: string;
+    dateOfBirth?: string;
+    gender?: string;
+    address?: {
+      province: string;
+      district: string;
+      ward: string;
+      street: string;
+    };
+  }
 ) => {
   const urlBackend = "/api/v1/user";
   return axios.put<IBackendRes<IRegister>>(urlBackend, {
-    fullName,
-    phone,
+    ...userData,
     avatar,
     _id
   });
@@ -258,6 +267,35 @@ export const updateUserPasswordAPI = (
     email,
     oldpass,
     newpass
+  });
+};
+
+export const updateUserPreferencesAPI = (
+  _id: string,
+  preferences: {
+    favoriteSports?: string[];
+    preferredDays?: string[];
+    preferredTimeRange?: {
+      from: string;
+      to: string;
+    };
+    bio?: string;
+    emergencyContact?: {
+      name: string;
+      phone: string;
+      relationship: string;
+    };
+    notificationSettings?: {
+      email: boolean;
+      push: boolean;
+      sms: boolean;
+    };
+  }
+) => {
+  const urlBackend = "/api/v1/user/preferences";
+  return axios.put<IBackendRes<IRegister>>(urlBackend, {
+    _id,
+    ...preferences
   });
 };
 

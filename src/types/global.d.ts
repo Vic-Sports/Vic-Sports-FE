@@ -58,6 +58,36 @@ declare global {
     role: string;
     avatar: string;
     id: string;
+    dateOfBirth?: string;
+    gender?: string;
+    address?: {
+      province: string;
+      district: string;
+      ward: string;
+      street: string;
+    };
+    favoriteSports?: string[];
+    preferredDays?: string[];
+    preferredTimeRange?: {
+      from: string;
+      to: string;
+    };
+    bio?: string;
+    emergencyContact?: {
+      name: string;
+      phone: string;
+      relationship: string;
+    };
+    notificationSettings?: {
+      email: boolean;
+      push: boolean;
+      sms: boolean;
+    };
+    rewardPoints?: number;
+    totalBookings?: number;
+    totalSpent?: number;
+    rank?: string;
+    isVerified?: boolean;
   }
 
   interface IFetchAccount {
