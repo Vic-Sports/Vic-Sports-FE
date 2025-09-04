@@ -231,7 +231,6 @@ const HomePage = () => {
                 <div className="search-grid">
                   <div className="search-field">
                     <Select
-                      defaultValue="sport-type"
                       style={{
                         width: "100%",
                         height: "50px"
@@ -262,7 +261,7 @@ const HomePage = () => {
                   <div className="search-field">
                     <DatePicker
                       size="large"
-                      placeholder="Select Date"
+                      placeholder="SELECT DATE"
                       style={{
                         width: "100%",
                         height: "50px"
@@ -276,7 +275,7 @@ const HomePage = () => {
                   <div className="search-field">
                     <TimePicker
                       size="large"
-                      placeholder="Select Time"
+                      placeholder="SELECT TIME"
                       format="HH:mm"
                       style={{
                         width: "100%",

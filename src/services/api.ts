@@ -24,7 +24,7 @@ export const updatePaymentOrderAPI = (
   paymentRef: string
 ) => {
   const urlBackend = "/api/v1/order/update-payment-status";
-  return axios.post<IBackendRes<ILogin>>(urlBackend, {
+  return axios.post<IBackendRes<any>>(urlBackend, {
     paymentStatus,
     paymentRef
   });

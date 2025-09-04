@@ -11,7 +11,14 @@ export default defineConfig({
       "/api": {
         target: "http://localhost:3000",
         changeOrigin: true,
-        secure: false
+        secure: false,
+        ws: true
+      },
+      "/verify-email": {
+        target: "http://localhost:3000/api/auth",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/verify-email/, "/verify-email")
       }
     }
   },

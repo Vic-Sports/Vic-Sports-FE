@@ -20,6 +20,8 @@ import ForgotPasswordPage from "./pages/client/auth/forgot-password";
 import ResetPasswordPage from "./pages/client/auth/reset-password";
 import HomePage from "./pages/client/home";
 import DashBoardPage from "./pages/admin/dashboard";
+import NotFoundPage from "./components/auth/404";
+import ServerErrorPage from "./components/auth/500";
 
 const router = createBrowserRouter([
   {
@@ -77,6 +79,14 @@ const router = createBrowserRouter([
   {
     path: "/reset-password",
     element: <ResetPasswordPage />
+  },
+  {
+    path: "/500",
+    element: <ServerErrorPage />
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />
   }
 ]);
 

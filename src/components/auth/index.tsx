@@ -15,19 +15,19 @@ const ProtectedRoute = (props: IProps) => {
   const { t } = useTranslation();
 
   // Kiểm tra xem có đang loading không
-  if (isAuthenticated === undefined) {
-    return (
-      <div className="auth-error-container">
-        <div className="orb-3"></div>
-        <Result
-          status="info"
-          title={t("auth.loading_title")}
-          subTitle={t("auth.loading_subtitle")}
-          icon={<div className="loading-spinner"></div>}
-        />
-      </div>
-    );
-  }
+  // if (isAuthenticated === undefined) {
+  //   return (
+  //     <div className="auth-error-container">
+  //       <div className="orb-3"></div>
+  //       <Result
+  //         status="info"
+  //         title={t("auth.loading_title")}
+  //         subTitle={t("auth.loading_subtitle")}
+  //         icon={<div className="loading-spinner"></div>}
+  //       />
+  //     </div>
+  //   );
+  // }
 
   // Kiểm tra xem có đăng nhập không
   if (isAuthenticated === false) {

@@ -2,7 +2,6 @@ export {};
 
 declare global {
   interface IBackendRes<T> {
-    success?: boolean;
     error?: string | string[];
     message: string;
     statusCode: number | string;

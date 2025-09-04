@@ -29,6 +29,15 @@
     "cancel": "Hủy",
     "resend": "Gửi lại email xác thực"
   },
+  "error": {
+    "404_title": "Không tìm thấy trang",
+    "404_subtitle": "Xin lỗi, trang bạn đang tìm kiếm không tồn tại.",
+    "500_title": "500",
+    "500_subtitle": "Xin lỗi, đã xảy ra lỗi máy chủ.",
+    "back_home": "Về trang chủ",
+    "search_page": "Tìm kiếm trang",
+    "retry": "Thử lại"
+  },
   "home": {
     "hero": {
       "title": "ĐẶT SÂN TRỰC TUYẾN",

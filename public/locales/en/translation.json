@@ -29,6 +29,15 @@
     "cancel": "Cancel",
     "resend": "Resend Verification Email"
   },
+  "error": {
+    "404_title": "Page Not Found!",
+    "404_subtitle": "Sorry, the page you visited does not exist.",
+    "500_title": "500",
+    "500_subtitle": "Sorry, something went wrong.",
+    "back_home": "Back Home",
+    "search_page": "Search Page",
+    "retry": "Retry"
+  },
   "home": {
     "hero": {
       "title": "ONLINE FIELD BOOKING",
@@ -70,7 +79,7 @@
     },
     "courts": {
       "title": "TOP COURTS",
-      "subtitle": "Most popular sports fields",
+      "subtitle": "Most popular sports courts",
       "viewAll": "VIEW ALL",
       "nexusFootball": {
         "name": "NEXUS FOOTBALL ARENA",
