@@ -1,0 +1,298 @@
+[
+  {
+    "_id": "507f1f77bcf86cd799439012",
+    "ownerId": "507f1f77bcf86cd799439012",
+    "name": "Sân Bóng Đá Thể Thao ABC",
+    "description": "Sân bóng đá chất lượng cao với hệ thống chiếu sáng hiện đại",
+    "address": {
+      "city": "Hồ Chí Minh",
+      "district": "Quận 7",
+      "ward": "Phường Tân Phú",
+      "street": "123 Nguyễn Thị Thập",
+      "coordinates": {
+        "lat": 10.7374,
+        "lng": 106.7219
+      }
+    },
+    "contactInfo": {
+      "phone": "0901234567",
+      "email": "contact@sanbongabc.com"
+    },
+    "images": [
+      "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/football-field.jpg",
+      "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/stadium.jpg"
+    ],
+    "amenities": [
+      {
+        "name": "Parking",
+        "icon": "car",
+        "description": "Bãi đỗ xe miễn phí"
+      },
+      {
+        "name": "Shower",
+        "icon": "shower",
+        "description": "Phòng tắm và thay đồ"
+      },
+      {
+        "name": "Cafe",
+        "icon": "coffee",
+        "description": "Quán cafe và đồ uống"
+      }
+    ],
+    "operatingHours": [
+      {
+        "dayOfWeek": 0,
+        "openTime": "06:00",
+        "closeTime": "22:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 1,
+        "openTime": "06:00",
+        "closeTime": "22:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 2,
+        "openTime": "06:00",
+        "closeTime": "22:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 3,
+        "openTime": "06:00",
+        "closeTime": "22:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 4,
+        "openTime": "06:00",
+        "closeTime": "22:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 5,
+        "openTime": "06:00",
+        "closeTime": "22:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 6,
+        "openTime": "06:00",
+        "closeTime": "22:00",
+        "isOpen": true
+      }
+    ],
+    "parking": {
+      "available": true,
+      "capacity": 50,
+      "fee": 0
+    },
+    "ratings": {
+      "average": 4.5,
+      "count": 128
+    },
+    "totalBookings": 450,
+    "totalRevenue": 15000000,
+    "isActive": true,
+    "isVerified": true,
+    "verifiedAt": "2023-01-15T00:00:00Z",
+    "createdAt": "2023-01-01T00:00:00Z",
+    "updatedAt": "2024-01-15T10:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439013",
+    "ownerId": "507f1f77bcf86cd799439012",
+    "name": "Sân Tennis VIP",
+    "description": "Sân tennis cao cấp với mặt sân cỏ nhân tạo",
+    "address": {
+      "city": "Hồ Chí Minh",
+      "district": "Quận 2",
+      "ward": "Phường Thủ Thiêm",
+      "street": "456 Mai Chí Thọ",
+      "coordinates": {
+        "lat": 10.7872,
+        "lng": 106.7491
+      }
+    },
+    "contactInfo": {
+      "phone": "0901234568",
+      "email": "info@santennisvip.com"
+    },
+    "images": [
+      "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/tennis-court.jpg"
+    ],
+    "amenities": [
+      {
+        "name": "Parking",
+        "icon": "car",
+        "description": "Bãi đỗ xe có phí"
+      },
+      {
+        "name": "Equipment",
+        "icon": "equipment",
+        "description": "Cho thuê vợt và bóng"
+      }
+    ],
+    "operatingHours": [
+      {
+        "dayOfWeek": 0,
+        "openTime": "07:00",
+        "closeTime": "21:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 1,
+        "openTime": "07:00",
+        "closeTime": "21:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 2,
+        "openTime": "07:00",
+        "closeTime": "21:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 3,
+        "openTime": "07:00",
+        "closeTime": "21:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 4,
+        "openTime": "07:00",
+        "closeTime": "21:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 5,
+        "openTime": "07:00",
+        "closeTime": "21:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 6,
+        "openTime": "07:00",
+        "closeTime": "21:00",
+        "isOpen": true
+      }
+    ],
+    "parking": {
+      "available": true,
+      "capacity": 20,
+      "fee": 10000
+    },
+    "ratings": {
+      "average": 4.8,
+      "count": 89
+    },
+    "totalBookings": 320,
+    "totalRevenue": 12000000,
+    "isActive": true,
+    "isVerified": true,
+    "verifiedAt": "2023-02-01T00:00:00Z",
+    "createdAt": "2023-02-01T00:00:00Z",
+    "updatedAt": "2024-01-15T09:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439014",
+    "ownerId": "507f1f77bcf86cd799439012",
+    "name": "Sân Cầu Lông Thể Thao",
+    "description": "Sân cầu lông trong nhà với hệ thống điều hòa",
+    "address": {
+      "city": "Hồ Chí Minh",
+      "district": "Quận 10",
+      "ward": "Phường 15",
+      "street": "789 Lý Thái Tổ",
+      "coordinates": {
+        "lat": 10.7735,
+        "lng": 106.6664
+      }
+    },
+    "contactInfo": {
+      "phone": "0901234569",
+      "email": "info@sancaulong.com"
+    },
+    "images": [
+      "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/badminton-court.jpg"
+    ],
+    "amenities": [
+      {
+        "name": "Air Conditioning",
+        "icon": "air-conditioning",
+        "description": "Hệ thống điều hòa"
+      },
+      {
+        "name": "Equipment Rental",
+        "icon": "equipment",
+        "description": "Cho thuê vợt và cầu"
+      },
+      {
+        "name": "Locker",
+        "icon": "locker",
+        "description": "Tủ khóa cá nhân"
+      }
+    ],
+    "operatingHours": [
+      {
+        "dayOfWeek": 0,
+        "openTime": "06:00",
+        "closeTime": "23:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 1,
+        "openTime": "06:00",
+        "closeTime": "23:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 2,
+        "openTime": "06:00",
+        "closeTime": "23:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 3,
+        "openTime": "06:00",
+        "closeTime": "23:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 4,
+        "openTime": "06:00",
+        "closeTime": "23:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 5,
+        "openTime": "06:00",
+        "closeTime": "23:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 6,
+        "openTime": "06:00",
+        "closeTime": "23:00",
+        "isOpen": true
+      }
+    ],
+    "parking": {
+      "available": true,
+      "capacity": 30,
+      "fee": 5000
+    },
+    "ratings": {
+      "average": 4.6,
+      "count": 67
+    },
+    "totalBookings": 280,
+    "totalRevenue": 8000000,
+    "isActive": true,
+    "isVerified": true,
+    "verifiedAt": "2023-03-01T00:00:00Z",
+    "createdAt": "2023-03-01T00:00:00Z",
+    "updatedAt": "2024-01-15T08:00:00Z"
+  }
+]

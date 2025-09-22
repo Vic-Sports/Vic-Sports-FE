@@ -1,0 +1,61 @@
+[
+  {
+    "_id": "507f1f77bcf86cd799439034",
+    "participants": ["507f1f77bcf86cd799439011", "507f1f77bcf86cd799439013"],
+    "type": "direct",
+    "isActive": true,
+    "lastMessage": {
+      "senderId": "507f1f77bcf86cd799439011",
+      "content": "Cảm ơn coach đã hỗ trợ buổi tập hôm nay!",
+      "type": "text",
+      "sentAt": "2024-01-15T11:30:00Z"
+    },
+    "createdAt": "2024-01-15T10:00:00Z",
+    "updatedAt": "2024-01-15T11:30:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439035",
+    "participants": ["507f1f77bcf86cd799439011", "507f1f77bcf86cd799439012"],
+    "type": "direct",
+    "isActive": true,
+    "lastMessage": {
+      "senderId": "507f1f77bcf86cd799439012",
+      "content": "Chào bạn! Cảm ơn bạn đã đặt sân tại venue của tôi.",
+      "type": "text",
+      "sentAt": "2024-01-14T15:20:00Z"
+    },
+    "createdAt": "2024-01-14T15:00:00Z",
+    "updatedAt": "2024-01-14T15:20:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439036",
+    "participants": ["507f1f77bcf86cd799439011", "507f1f77bcf86cd799439013", "507f1f77bcf86cd799439014"],
+    "type": "group",
+    "name": "Nhóm Tennis Club",
+    "avatar": "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/tennis-group.jpg",
+    "isActive": true,
+    "createdBy": "507f1f77bcf86cd799439013",
+    "lastMessage": {
+      "senderId": "507f1f77bcf86cd799439014",
+      "content": "Ai muốn tập tennis vào cuối tuần không?",
+      "type": "text",
+      "sentAt": "2024-01-16T09:15:00Z"
+    },
+    "createdAt": "2024-01-10T08:00:00Z",
+    "updatedAt": "2024-01-16T09:15:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439037",
+    "participants": ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439015"],
+    "type": "direct",
+    "isActive": true,
+    "lastMessage": {
+      "senderId": "507f1f77bcf86cd799439015",
+      "content": "Báo cáo doanh thu tháng này đã được gửi.",
+      "type": "text",
+      "sentAt": "2024-01-15T16:45:00Z"
+    },
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-15T16:45:00Z"
+  }
+]

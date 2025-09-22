@@ -1,0 +1,41 @@
+[
+  {
+    "_id": "507f1f77bcf86cd799439032",
+    "userId": "507f1f77bcf86cd799439012",
+    "businessName": "Công ty TNHH Thể Thao ABC",
+    "businessLicense": "0123456789",
+    "taxCode": "0123456789",
+    "bankAccount": {
+      "bankName": "Vietcombank",
+      "accountNumber": "1234567890",
+      "accountName": "Công ty TNHH Thể Thao ABC"
+    },
+    "isVerified": true,
+    "verificationDocuments": [
+      "https://example.com/business-license.pdf",
+      "https://example.com/tax-certificate.pdf"
+    ],
+    "totalRevenue": 15000000,
+    "createdAt": "2023-01-01T00:00:00Z",
+    "updatedAt": "2024-01-15T10:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439033",
+    "userId": "507f1f77bcf86cd799439014",
+    "businessName": "Công ty TNHH Thể Thao XYZ",
+    "businessLicense": "9876543210",
+    "taxCode": "9876543210",
+    "bankAccount": {
+      "bankName": "Techcombank",
+      "accountNumber": "0987654321",
+      "accountName": "Công ty TNHH Thể Thao XYZ"
+    },
+    "isVerified": false,
+    "verificationDocuments": [
+      "https://example.com/business-license-xyz.pdf"
+    ],
+    "totalRevenue": 5000000,
+    "createdAt": "2023-06-01T00:00:00Z",
+    "updatedAt": "2024-01-15T09:00:00Z"
+  }
+]
