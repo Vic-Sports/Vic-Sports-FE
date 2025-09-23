@@ -1,14 +1,14 @@
-import { useState, useMemo } from "react";
-import { Divider, Drawer, Avatar, Dropdown, Button } from "antd";
-import { NavLink, useNavigate, Link } from "react-router-dom";
+import { Avatar, Button, Divider, Drawer, Dropdown } from "antd";
 import { useCurrentApp } from "components/context/app.context";
-import { logoutAPI } from "services/api";
-import ManageAccount from "../client/account";
+import { useMemo, useState } from "react";
 import { Container } from "react-bootstrap";
-import viFlag from "../../assets/svg/language/vi.svg";
-import enFlag from "../../assets/svg/language/en.svg";
 import { useTranslation } from "react-i18next";
 import { FaBolt } from "react-icons/fa";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { logoutAPI } from "services/api";
+import enFlag from "../../assets/svg/language/en.svg";
+import viFlag from "../../assets/svg/language/vi.svg";
+import ManageAccount from "../client/account";
 
 const Header = () => {
   const { isAuthenticated, user, setUser, setIsAuthenticated } =
@@ -59,7 +59,7 @@ const Header = () => {
             label: (
               <Link
                 to="/admin"
-                style={{ color: "#ffffff", textDecoration: "none" }}
+                style={{ color: "#1a1a1a", textDecoration: "none" }}
               >
                 {t("appHeader.dashboard")}
               </Link>
@@ -71,7 +71,7 @@ const Header = () => {
     {
       label: (
         <span
-          style={{ cursor: "pointer", color: "#ffffff" }}
+          style={{ cursor: "pointer", color: "#1a1a1a" }}
           onClick={() => setOpenManageAccount(true)}
         >
           {t("appHeader.profile")}
@@ -83,7 +83,7 @@ const Header = () => {
       label: (
         <Link
           to="/history"
-          style={{ color: "#ffffff", textDecoration: "none" }}
+          style={{ color: "#1a1a1a", textDecoration: "none" }}
         >
           {t("appHeader.history")}
         </Link>
@@ -93,7 +93,7 @@ const Header = () => {
     {
       label: (
         <span
-          style={{ cursor: "pointer", color: "#ffffff" }}
+          style={{ cursor: "pointer", color: "#1a1a1a" }}
           onClick={handleLogout}
         >
           {t("appHeader.logout")}
@@ -110,7 +110,7 @@ const Header = () => {
         <div
           className="d-flex gap-2 align-items-center"
           onClick={() => i18n.changeLanguage("en")}
-          style={{ color: "#ffffff" }}
+          style={{ color: "#1a1a1a" }}
         >
           <img src={enFlag} style={{ width: 20, height: 20 }} alt="English" />
           <span>English</span>
@@ -123,7 +123,7 @@ const Header = () => {
         <div
           className="d-flex gap-2 align-items-center"
           onClick={() => i18n.changeLanguage("vi")}
-          style={{ color: "#ffffff" }}
+          style={{ color: "#1a1a1a" }}
         >
           <img
             src={viFlag}
@@ -141,7 +141,7 @@ const Header = () => {
       {/* Simple Header like image 2 */}
       <header
         style={{
-          backgroundColor: "#000000",
+          backgroundColor: "#FFFFFF",
           padding: "16px 0",
           position: "sticky",
           top: 0,
@@ -191,7 +191,7 @@ const Header = () => {
                 <div
                   style={{
                     fontSize: "11px",
-                    color: "rgba(255, 255, 255, 0.6)",
+                    color: "rgba(26, 26, 26, 0.6)",
                     fontWeight: "500",
                     letterSpacing: "1.5px",
                     margin: 0
@@ -254,7 +254,7 @@ const Header = () => {
               type="text"
               onClick={() => setOpenDrawer(true)}
               style={{
-                color: "white",
+                color: "#1a1a1a",
                 fontSize: "18px",
                 padding: "8px 12px"
               }}
@@ -269,9 +269,9 @@ const Header = () => {
                 menu={{
                   items: languageMenuItems,
                   style: {
-                    backgroundColor: "#000",
+                    backgroundColor: "#FFFFFF",
                     border: "1px solid rgba(255,255,255,0.1)",
-                    color: "#ffffff"
+                    color: "#1a1a1a"
                   }
                 }}
                 trigger={["click"]}
@@ -280,7 +280,7 @@ const Header = () => {
                 <Button
                   className="language-button"
                   style={{
-                    backgroundColor: "#000000",
+                    backgroundColor: "#FFFFFF",
                     border: "none",
                     borderRadius: "20px",
                     padding: "8px 12px",
@@ -314,9 +314,9 @@ const Header = () => {
                   menu={{
                     items: menuItems,
                     style: {
-                      backgroundColor: "#000",
+                      backgroundColor: "#FFFFFF",
                       border: "1px solid rgba(255,255,255,0.1)",
-                      color: "#ffffff"
+                      color: "#1a1a1a"
                     }
                   }}
                   trigger={["click"]}
@@ -334,7 +334,7 @@ const Header = () => {
                         style={{
                           fontSize: "14px",
                           fontWeight: "600",
-                          color: "white",
+                          color: "#1a1a1a",
                           margin: 0,
                           lineHeight: 1
                         }}
@@ -344,7 +344,7 @@ const Header = () => {
                       <div
                         style={{
                           fontSize: "12px",
-                          color: "rgba(255, 255, 255, 0.6)",
+                          color: "rgba(26, 26, 26, 0.6)",
                           margin: 0
                         }}
                       >
@@ -365,11 +365,11 @@ const Header = () => {
         onClose={() => setOpenDrawer(false)}
         open={openDrawer}
         styles={{
-          body: { backgroundColor: "#000", color: "#fff" },
+          body: { backgroundColor: "#FFFFFF", color: "#1a1a1a" },
           header: {
-            backgroundColor: "#000",
-            color: "#fff",
-            borderBottom: "1px solid rgba(255,255,255,0.1)"
+            backgroundColor: "#FFFFFF",
+            color: "#1a1a1a",
+            borderBottom: "1px solid rgba(0,0,0,0.1)"
           }
         }}
       >
@@ -377,7 +377,7 @@ const Header = () => {
           <NavLink
             to="/"
             className="text-decoration-none"
-            style={{ color: "white" }}
+            style={{ color: "#1a1a1a" }}
             onClick={() => setOpenDrawer(false)}
           >
             {t("appHeader.home")}
@@ -385,7 +385,7 @@ const Header = () => {
           <NavLink
             to="/courts"
             className="text-decoration-none"
-            style={{ color: "white" }}
+            style={{ color: "#1a1a1a" }}
             onClick={() => setOpenDrawer(false)}
           >
             {t("appHeader.courts")}
@@ -393,7 +393,7 @@ const Header = () => {
           <NavLink
             to="/coaches"
             className="text-decoration-none"
-            style={{ color: "white" }}
+            style={{ color: "#1a1a1a" }}
             onClick={() => setOpenDrawer(false)}
           >
             {t("appHeader.coaches")}
@@ -401,16 +401,16 @@ const Header = () => {
           <NavLink
             to="/community"
             className="text-decoration-none"
-            style={{ color: "white" }}
+            style={{ color: "#1a1a1a" }}
             onClick={() => setOpenDrawer(false)}
           >
             {t("appHeader.community")}
           </NavLink>
-          <Divider style={{ borderColor: "rgba(255,255,255,0.2)" }} />
+          <Divider style={{ borderColor: "rgba(0,0,0,0.2)" }} />
           <p onClick={() => setOpenManageAccount(true)}>
             {t("appHeader.profile")}
           </p>
-          <Divider style={{ borderColor: "rgba(255,255,255,0.2)" }} />
+          <Divider style={{ borderColor: "rgba(0,0,0,0.2)" }} />
           <p onClick={handleLogout}>{t("appHeader.logout")}</p>
         </div>
       </Drawer>
