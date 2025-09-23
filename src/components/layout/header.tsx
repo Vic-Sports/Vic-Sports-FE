@@ -141,11 +141,14 @@ const Header = () => {
       {/* Simple Header like image 2 */}
       <header
         style={{
-          backgroundColor: "#FFFFFF",
-          padding: "16px 0",
+          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9))",
+          backdropFilter: "blur(20px)",
+          borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
+          padding: "20px 0",
           position: "sticky",
           top: 0,
-          zIndex: 1000
+          zIndex: 1000,
+          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)"
         }}
       >
         <Container>
@@ -191,8 +194,8 @@ const Header = () => {
                 <div
                   style={{
                     fontSize: "11px",
-                    color: "rgba(26, 26, 26, 0.6)",
-                    fontWeight: "500",
+                    color: "rgba(0, 0, 0, 0.7)",
+                    fontWeight: "600",
                     letterSpacing: "1.5px",
                     margin: 0
                   }}
@@ -254,9 +257,12 @@ const Header = () => {
               type="text"
               onClick={() => setOpenDrawer(true)}
               style={{
-                color: "#1a1a1a",
+                color: "#0ea5e9",
                 fontSize: "18px",
-                padding: "8px 12px"
+                padding: "8px 12px",
+                backgroundColor: "rgba(14, 165, 233, 0.1)",
+                borderRadius: "12px",
+                border: "1px solid rgba(14, 165, 233, 0.2)"
               }}
             >
               ☰
@@ -280,14 +286,14 @@ const Header = () => {
                 <Button
                   className="language-button"
                   style={{
-                    backgroundColor: "#FFFFFF",
-                    border: "none",
+                    backgroundColor: "rgba(0, 0, 0, 0.05)",
+                    border: "1px solid rgba(0, 0, 0, 0.1)",
                     borderRadius: "20px",
                     padding: "8px 12px",
                     display: "flex",
                     alignItems: "center",
                     gap: "8px",
-                    boxShadow: "none"
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)"
                   }}
                 >
                   {renderFlag(i18n.resolvedLanguage || "en")}
@@ -333,8 +339,8 @@ const Header = () => {
                       <div
                         style={{
                           fontSize: "14px",
-                          fontWeight: "600",
-                          color: "#1a1a1a",
+                          fontWeight: "700",
+                          color: "#0ea5e9",
                           margin: 0,
                           lineHeight: 1
                         }}
@@ -344,8 +350,9 @@ const Header = () => {
                       <div
                         style={{
                           fontSize: "12px",
-                          color: "rgba(26, 26, 26, 0.6)",
-                          margin: 0
+                          color: "rgba(0, 0, 0, 0.6)",
+                          margin: 0,
+                          fontWeight: "500"
                         }}
                       >
                         Level 15

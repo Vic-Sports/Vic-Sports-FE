@@ -233,7 +233,7 @@ const HomePage = () => {
                     <Select
                       style={{
                         width: "100%",
-                        height: "50px"
+                        height: "50px",
                       }}
                       size="large"
                       placeholder="🎯 SPORT TYPE"
@@ -251,9 +251,6 @@ const HomePage = () => {
                     <Input
                       size="large"
                       placeholder="📍 LOCATION"
-                      prefix={
-                        <EnvironmentOutlined style={{ color: "#0ea5e9" }} />
-                      }
                       style={{ height: "50px" }}
                     />
                   </div>

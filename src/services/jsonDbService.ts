@@ -1,19 +1,19 @@
 // JSON Database Service - Đọc/ghi từng file JSON riêng biệt
 import type {
-  Booking,
-  Chat,
-  Coach,
-  Court,
-  Location,
-  Message,
-  Owner,
-  Review,
-  TokenBlacklist,
-  Tournament,
-  TournamentMatch,
-  TournamentRegistration,
-  User,
-  Venue
+    Booking,
+    Chat,
+    Coach,
+    Court,
+    Location,
+    Message,
+    Owner,
+    Review,
+    TokenBlacklist,
+    Tournament,
+    TournamentMatch,
+    TournamentRegistration,
+    User,
+    Venue
 } from '../types/mockdata';
 
 // Import JSON data
@@ -837,6 +837,19 @@ export const tournamentRegistrationService = {
   }
 };
 
+// Convenience methods for courts pages
+export const getVenues = async (): Promise<Venue[]> => {
+  return venueService.getAll();
+};
+
+export const getVenueById = async (id: string): Promise<Venue | null> => {
+  return venueService.getById(id);
+};
+
+export const getCourtsByVenueId = async (venueId: string): Promise<Court[]> => {
+  return courtService.getByVenue(venueId);
+};
+
 // Export all services
 export const jsonDbService = {
   users: userService,
@@ -853,7 +866,11 @@ export const jsonDbService = {
   tokenBlacklist: tokenBlacklistService,
   tournamentMatches: tournamentMatchService,
   tournamentRegistrations: tournamentRegistrationService,
-  statistics: statisticsService
+  statistics: statisticsService,
+  // Convenience methods
+  getVenues,
+  getVenueById,
+  getCourtsByVenueId
 };
 
 export default jsonDbService;
