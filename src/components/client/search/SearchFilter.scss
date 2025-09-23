@@ -1,0 +1,96 @@
+.search-filter {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .search-container {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .search-info {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .search-mode-indicator {
+    margin-bottom: 0.5rem;
+  }
+
+  .search-mode {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 14px;
+
+    &.court-mode {
+      background: linear-gradient(45deg, #ff6b6b, #ffa726);
+      color: white;
+    }
+
+    &.venue-mode {
+      background: linear-gradient(45deg, #0ea5e9, #d946ef);
+      color: white;
+    }
+  }
+
+  .search-description {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+  }
+
+  .search-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+  }
+
+  .search-field {
+    position: relative;
+  }
+
+  .search-tips {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: center;
+    }
+  }
+
+  .tip-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+  }
+
+  .tip-icon {
+    font-size: 14px;
+  }
+}
