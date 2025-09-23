@@ -1,20 +1,20 @@
-// Fixed Dark Theme Variables - Futuristic Sports Platform
-$dark-theme: (
-    // Background colors - Futuristic dark theme
-    background-body: #000000,
-    background-body-tertiary: #0a0a0a,
-    background-card: rgba(255, 255, 255, 0.1),
-    background-card-hover: rgba(255, 255, 255, 0.15),
-    background-section: #000000,
-    background-hero: #000000,
+// Fixed Light Theme Variables - Modern Sports Platform
+$light-theme: (
+    // Background colors - Clean white theme
+    background-body: #FFFFFF,
+    background-body-tertiary: #f8f9fa,
+    background-card: rgba(255, 255, 255, 0.05),
+    background-card-hover: rgba(255, 255, 255, 0.08),
+    background-section: #FFFFFF,
+    background-hero: #FFFFFF,
     
     // Text colors
-    text-primary: #FFFFFF,
-    text-secondary: rgba(255, 255, 255, 0.7),
-    text-muted: rgba(255, 255, 255, 0.6),
+    text-primary: #1a1a1a,
+    text-secondary: rgba(26, 26, 26, 0.7),
+    text-muted: rgba(26, 26, 26, 0.6),
     text-white: #FFFFFF,
-    text-dark: #FFFFFF,
-    text-light: rgba(255, 255, 255, 0.8),
+    text-dark: #1a1a1a,
+    text-light: rgba(26, 26, 26, 0.8),
     
     // Brand colors - Neon and Electric palette
     brand-name-100: #0ea5e9,
@@ -57,7 +57,7 @@ $dark-theme: (
     border-light: rgba(255, 255, 255, 0.1),
     
     // Background gradients
-    background-hero-right: linear-gradient(to right, #000, rgba(14, 165, 233, 0.1)),
+    background-hero-right: linear-gradient(to right, #fff, rgba(14, 165, 233, 0.1)),
     border-top-hero-right: linear-gradient(to right, transparent, #0ea5e9, #d946ef, transparent),
     
     // Text colors
@@ -72,7 +72,7 @@ $dark-theme: (
     // Other colors
     line-blue-500: #0ea5e9,
     resize-button: linear-gradient(to right, #0ea5e9, #d946ef),
-    glow-card-background: #000000,
+    glow-card-background: #FFFFFF,
     skill-card-background: rgba(255, 255, 255, 0.05),
     border-top-skill-card: linear-gradient(to right, transparent, #0ea5e9, #d946ef, transparent),
     
@@ -87,9 +87,9 @@ $dark-theme: (
     shadow-dark: rgba(14, 165, 233, 0.3),
 );
 
-// Set dark theme as default and only theme
+// Set light theme as default and only theme
 :root {
-    @each $name, $color in $dark-theme {
+    @each $name, $color in $light-theme {
         --#{$name}: #{$color};
     }
 }
