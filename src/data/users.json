@@ -1,0 +1,222 @@
+[
+  {
+    "_id": "507f1f77bcf86cd799439011",
+    "fullName": "Nguyễn Văn An",
+    "email": "nguyenvanan@gmail.com",
+    "phone": "0901234567",
+    "avatar": "https://res.cloudinary.com/demo/image/upload/v1/samples/people/boy-snow-hoodie.jpg",
+    "dateOfBirth": "1995-05-15",
+    "gender": "male",
+    "address": {
+      "city": "Hồ Chí Minh",
+      "district": "Quận 1",
+      "ward": "Phường Bến Nghé",
+      "street": "123 Nguyễn Huệ",
+      "coordinates": {
+        "lat": 10.7769,
+        "lng": 106.7009
+      }
+    },
+    "isEmailVerified": true,
+    "role": "customer",
+    "status": "ACTIVE",
+    "isBlocked": false,
+    "rewardPoints": 150,
+    "loyaltyTier": "Silver",
+    "referralCode": "ABC123",
+    "referralCount": 5,
+    "birthdayVoucherClaimed": false,
+    "totalBookings": 12,
+    "totalSpent": 2500000,
+    "favoriteVenues": ["507f1f77bcf86cd799439012"],
+    "favoriteSports": ["football", "basketball"],
+    "isOnline": true,
+    "lastSeen": "2024-01-15T10:30:00Z",
+    "friends": ["507f1f77bcf86cd799439013"],
+    "blockedUsers": [],
+    "notificationSettings": {
+      "email": true,
+      "push": true,
+      "booking": true,
+      "promotion": true
+    },
+    "createdAt": "2023-01-15T08:00:00Z",
+    "updatedAt": "2024-01-15T10:30:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439012",
+    "fullName": "Trần Thị Bình",
+    "email": "tranthibinh@gmail.com",
+    "phone": "0901234568",
+    "avatar": "https://res.cloudinary.com/demo/image/upload/v1/samples/people/girl-urban-view.jpg",
+    "dateOfBirth": "1992-08-20",
+    "gender": "female",
+    "address": {
+      "city": "Hà Nội",
+      "district": "Quận Ba Đình",
+      "ward": "Phường Phúc Xá",
+      "street": "456 Hoàng Hoa Thám",
+      "coordinates": {
+        "lat": 21.0285,
+        "lng": 105.8542
+      }
+    },
+    "isEmailVerified": true,
+    "role": "owner",
+    "status": "ACTIVE",
+    "isBlocked": false,
+    "rewardPoints": 0,
+    "loyaltyTier": "Bronze",
+    "referralCode": "DEF456",
+    "referralCount": 0,
+    "birthdayVoucherClaimed": true,
+    "totalBookings": 0,
+    "totalSpent": 0,
+    "favoriteVenues": [],
+    "favoriteSports": [],
+    "isOnline": false,
+    "lastSeen": "2024-01-14T18:00:00Z",
+    "friends": [],
+    "blockedUsers": [],
+    "notificationSettings": {
+      "email": true,
+      "push": false,
+      "booking": true,
+      "promotion": false
+    },
+    "createdAt": "2023-03-10T09:00:00Z",
+    "updatedAt": "2024-01-14T18:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439013",
+    "fullName": "Lê Văn Cường",
+    "email": "levancuong@gmail.com",
+    "phone": "0901234569",
+    "avatar": "https://res.cloudinary.com/demo/image/upload/v1/samples/people/jazz.jpg",
+    "dateOfBirth": "1988-12-03",
+    "gender": "male",
+    "address": {
+      "city": "Đà Nẵng",
+      "district": "Quận Hải Châu",
+      "ward": "Phường Hải Châu I",
+      "street": "789 Lê Duẩn",
+      "coordinates": {
+        "lat": 16.0544,
+        "lng": 108.2022
+      }
+    },
+    "isEmailVerified": true,
+    "role": "coach",
+    "status": "ACTIVE",
+    "isBlocked": false,
+    "rewardPoints": 300,
+    "loyaltyTier": "Gold",
+    "referralCode": "GHI789",
+    "referralCount": 8,
+    "birthdayVoucherClaimed": false,
+    "totalBookings": 25,
+    "totalSpent": 5000000,
+    "favoriteVenues": ["507f1f77bcf86cd799439012"],
+    "favoriteSports": ["football", "tennis"],
+    "isOnline": true,
+    "lastSeen": "2024-01-15T11:00:00Z",
+    "friends": ["507f1f77bcf86cd799439011"],
+    "blockedUsers": [],
+    "notificationSettings": {
+      "email": true,
+      "push": true,
+      "booking": true,
+      "promotion": true
+    },
+    "createdAt": "2022-11-20T10:00:00Z",
+    "updatedAt": "2024-01-15T11:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439014",
+    "fullName": "Phạm Thị Dung",
+    "email": "phamthidung@gmail.com",
+    "phone": "0901234570",
+    "avatar": "https://res.cloudinary.com/demo/image/upload/v1/samples/people/woman-portrait.jpg",
+    "dateOfBirth": "1990-03-25",
+    "gender": "female",
+    "address": {
+      "city": "Hồ Chí Minh",
+      "district": "Quận 3",
+      "ward": "Phường Võ Thị Sáu",
+      "street": "321 Lê Văn Sỹ",
+      "coordinates": {
+        "lat": 10.7829,
+        "lng": 106.7009
+      }
+    },
+    "isEmailVerified": true,
+    "role": "customer",
+    "status": "ACTIVE",
+    "isBlocked": false,
+    "rewardPoints": 75,
+    "loyaltyTier": "Bronze",
+    "referralCode": "JKL012",
+    "referralCount": 2,
+    "birthdayVoucherClaimed": false,
+    "totalBookings": 8,
+    "totalSpent": 1200000,
+    "favoriteVenues": ["507f1f77bcf86cd799439012"],
+    "favoriteSports": ["tennis", "badminton"],
+    "isOnline": false,
+    "lastSeen": "2024-01-14T20:00:00Z",
+    "friends": [],
+    "blockedUsers": [],
+    "notificationSettings": {
+      "email": true,
+      "push": true,
+      "booking": true,
+      "promotion": false
+    },
+    "createdAt": "2023-05-15T14:00:00Z",
+    "updatedAt": "2024-01-14T20:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439015",
+    "fullName": "Admin System",
+    "email": "admin@vicsports.com",
+    "phone": "0901234571",
+    "avatar": "https://res.cloudinary.com/demo/image/upload/v1/samples/people/admin-avatar.jpg",
+    "dateOfBirth": "1985-01-01",
+    "gender": "male",
+    "address": {
+      "city": "Hồ Chí Minh",
+      "district": "Quận 1",
+      "ward": "Phường Bến Nghé",
+      "street": "1 Nguyễn Huệ",
+      "coordinates": {
+        "lat": 10.7769,
+        "lng": 106.7009
+      }
+    },
+    "isEmailVerified": true,
+    "role": "admin",
+    "status": "ACTIVE",
+    "isBlocked": false,
+    "rewardPoints": 0,
+    "loyaltyTier": "Diamond",
+    "referralCode": "ADM001",
+    "referralCount": 0,
+    "birthdayVoucherClaimed": false,
+    "totalBookings": 0,
+    "totalSpent": 0,
+    "favoriteVenues": [],
+    "favoriteSports": [],
+    "isOnline": true,
+    "lastSeen": "2024-01-15T12:00:00Z",
+    "friends": [],
+    "blockedUsers": [],
+    "notificationSettings": {
+      "email": true,
+      "push": true,
+      "booking": true,
+      "promotion": true
+    },
+    "createdAt": "2023-01-01T00:00:00Z",
+    "updatedAt": "2024-01-15T12:00:00Z"
+  }
+]

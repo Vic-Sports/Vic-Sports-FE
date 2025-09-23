@@ -1,0 +1,284 @@
+[
+  {
+    "_id": "507f1f77bcf86cd799439068",
+    "tournamentId": "507f1f77bcf86cd799439029",
+    "participantId": "507f1f77bcf86cd799439011",
+    "teamName": "Đội Bóng Đá ABC",
+    "teamMembers": [
+      {
+        "userId": "507f1f77bcf86cd799439011",
+        "role": "captain",
+        "isConfirmed": true
+      },
+      {
+        "userId": "507f1f77bcf86cd799439014",
+        "role": "member",
+        "isConfirmed": true
+      }
+    ],
+    "registeredAt": "2024-01-05T10:00:00Z",
+    "paymentStatus": "paid",
+    "paymentId": "PAY_TOURNAMENT_001",
+    "status": "approved",
+    "approvedBy": "507f1f77bcf86cd799439015",
+    "approvedAt": "2024-01-06T09:00:00Z",
+    "emergencyContact": {
+      "name": "Nguyễn Văn An",
+      "phone": "0901234567",
+      "relationship": "Self"
+    },
+    "medicalConditions": "Không có",
+    "createdAt": "2024-01-05T10:00:00Z",
+    "updatedAt": "2024-01-06T09:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439069",
+    "tournamentId": "507f1f77bcf86cd799439029",
+    "participantId": "507f1f77bcf86cd799439013",
+    "teamName": "Đội Bóng Đá XYZ",
+    "teamMembers": [
+      {
+        "userId": "507f1f77bcf86cd799439013",
+        "role": "captain",
+        "isConfirmed": true
+      }
+    ],
+    "registeredAt": "2024-01-08T14:00:00Z",
+    "paymentStatus": "paid",
+    "paymentId": "PAY_TOURNAMENT_002",
+    "status": "approved",
+    "approvedBy": "507f1f77bcf86cd799439015",
+    "approvedAt": "2024-01-09T08:00:00Z",
+    "emergencyContact": {
+      "name": "Lê Văn Cường",
+      "phone": "0901234569",
+      "relationship": "Self"
+    },
+    "medicalConditions": "Không có",
+    "createdAt": "2024-01-08T14:00:00Z",
+    "updatedAt": "2024-01-09T08:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439071",
+    "tournamentId": "507f1f77bcf86cd799439029",
+    "participantId": "507f1f77bcf86cd799439012",
+    "teamName": "Đội Bóng Đá DEF",
+    "teamMembers": [
+      {
+        "userId": "507f1f77bcf86cd799439012",
+        "role": "captain",
+        "isConfirmed": true
+      }
+    ],
+    "registeredAt": "2024-01-10T16:00:00Z",
+    "paymentStatus": "paid",
+    "paymentId": "PAY_TOURNAMENT_003",
+    "status": "approved",
+    "approvedBy": "507f1f77bcf86cd799439015",
+    "approvedAt": "2024-01-11T10:00:00Z",
+    "emergencyContact": {
+      "name": "Trần Thị Bình",
+      "phone": "0901234568",
+      "relationship": "Self"
+    },
+    "medicalConditions": "Không có",
+    "createdAt": "2024-01-10T16:00:00Z",
+    "updatedAt": "2024-01-11T10:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439072",
+    "tournamentId": "507f1f77bcf86cd799439029",
+    "participantId": "507f1f77bcf86cd799439014",
+    "teamName": "Đội Bóng Đá GHI",
+    "teamMembers": [
+      {
+        "userId": "507f1f77bcf86cd799439014",
+        "role": "captain",
+        "isConfirmed": true
+      }
+    ],
+    "registeredAt": "2024-01-12T11:00:00Z",
+    "paymentStatus": "paid",
+    "paymentId": "PAY_TOURNAMENT_004",
+    "status": "approved",
+    "approvedBy": "507f1f77bcf86cd799439015",
+    "approvedAt": "2024-01-13T09:00:00Z",
+    "emergencyContact": {
+      "name": "Phạm Thị Dung",
+      "phone": "0901234570",
+      "relationship": "Self"
+    },
+    "medicalConditions": "Không có",
+    "createdAt": "2024-01-12T11:00:00Z",
+    "updatedAt": "2024-01-13T09:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439074",
+    "tournamentId": "507f1f77bcf86cd799439030",
+    "participantId": "507f1f77bcf86cd799439011",
+    "teamName": null,
+    "teamMembers": [
+      {
+        "userId": "507f1f77bcf86cd799439011",
+        "role": "captain",
+        "isConfirmed": true
+      }
+    ],
+    "registeredAt": "2024-01-20T09:00:00Z",
+    "paymentStatus": "paid",
+    "paymentId": "PAY_TOURNAMENT_005",
+    "status": "approved",
+    "approvedBy": "507f1f77bcf86cd799439015",
+    "approvedAt": "2024-01-21T08:00:00Z",
+    "emergencyContact": {
+      "name": "Nguyễn Văn An",
+      "phone": "0901234567",
+      "relationship": "Self"
+    },
+    "medicalConditions": "Không có",
+    "createdAt": "2024-01-20T09:00:00Z",
+    "updatedAt": "2024-01-21T08:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439075",
+    "tournamentId": "507f1f77bcf86cd799439030",
+    "participantId": "507f1f77bcf86cd799439013",
+    "teamName": null,
+    "teamMembers": [
+      {
+        "userId": "507f1f77bcf86cd799439013",
+        "role": "captain",
+        "isConfirmed": true
+      }
+    ],
+    "registeredAt": "2024-01-22T15:00:00Z",
+    "paymentStatus": "paid",
+    "paymentId": "PAY_TOURNAMENT_006",
+    "status": "approved",
+    "approvedBy": "507f1f77bcf86cd799439015",
+    "approvedAt": "2024-01-23T10:00:00Z",
+    "emergencyContact": {
+      "name": "Lê Văn Cường",
+      "phone": "0901234569",
+      "relationship": "Self"
+    },
+    "medicalConditions": "Không có",
+    "createdAt": "2024-01-22T15:00:00Z",
+    "updatedAt": "2024-01-23T10:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439077",
+    "tournamentId": "507f1f77bcf86cd799439031",
+    "participantId": "507f1f77bcf86cd799439011",
+    "teamName": "Cặp Đôi ABC",
+    "teamMembers": [
+      {
+        "userId": "507f1f77bcf86cd799439011",
+        "role": "captain",
+        "isConfirmed": true
+      },
+      {
+        "userId": "507f1f77bcf86cd799439014",
+        "role": "member",
+        "isConfirmed": true
+      }
+    ],
+    "registeredAt": "2024-02-05T10:00:00Z",
+    "paymentStatus": "paid",
+    "paymentId": "PAY_TOURNAMENT_007",
+    "status": "approved",
+    "approvedBy": "507f1f77bcf86cd799439015",
+    "approvedAt": "2024-02-06T09:00:00Z",
+    "emergencyContact": {
+      "name": "Nguyễn Văn An",
+      "phone": "0901234567",
+      "relationship": "Self"
+    },
+    "medicalConditions": "Không có",
+    "createdAt": "2024-02-05T10:00:00Z",
+    "updatedAt": "2024-02-06T09:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439078",
+    "tournamentId": "507f1f77bcf86cd799439031",
+    "participantId": "507f1f77bcf86cd799439013",
+    "teamName": "Cặp Đôi XYZ",
+    "teamMembers": [
+      {
+        "userId": "507f1f77bcf86cd799439013",
+        "role": "captain",
+        "isConfirmed": true
+      },
+      {
+        "userId": "507f1f77bcf86cd799439012",
+        "role": "member",
+        "isConfirmed": true
+      }
+    ],
+    "registeredAt": "2024-02-08T14:00:00Z",
+    "paymentStatus": "paid",
+    "paymentId": "PAY_TOURNAMENT_008",
+    "status": "approved",
+    "approvedBy": "507f1f77bcf86cd799439015",
+    "approvedAt": "2024-02-09T08:00:00Z",
+    "emergencyContact": {
+      "name": "Lê Văn Cường",
+      "phone": "0901234569",
+      "relationship": "Self"
+    },
+    "medicalConditions": "Không có",
+    "createdAt": "2024-02-08T14:00:00Z",
+    "updatedAt": "2024-02-09T08:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439080",
+    "tournamentId": "507f1f77bcf86cd799439029",
+    "participantId": "507f1f77bcf86cd799439014",
+    "teamName": "Đội Bóng Đá JKL",
+    "teamMembers": [
+      {
+        "userId": "507f1f77bcf86cd799439014",
+        "role": "captain",
+        "isConfirmed": true
+      }
+    ],
+    "registeredAt": "2024-01-15T13:00:00Z",
+    "paymentStatus": "pending",
+    "status": "pending",
+    "emergencyContact": {
+      "name": "Phạm Thị Dung",
+      "phone": "0901234570",
+      "relationship": "Self"
+    },
+    "medicalConditions": "Không có",
+    "createdAt": "2024-01-15T13:00:00Z",
+    "updatedAt": "2024-01-15T13:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439081",
+    "tournamentId": "507f1f77bcf86cd799439029",
+    "participantId": "507f1f77bcf86cd799439012",
+    "teamName": "Đội Bóng Đá MNO",
+    "teamMembers": [
+      {
+        "userId": "507f1f77bcf86cd799439012",
+        "role": "captain",
+        "isConfirmed": true
+      }
+    ],
+    "registeredAt": "2024-01-16T16:00:00Z",
+    "paymentStatus": "paid",
+    "paymentId": "PAY_TOURNAMENT_009",
+    "status": "rejected",
+    "approvedBy": "507f1f77bcf86cd799439015",
+    "approvedAt": "2024-01-17T10:00:00Z",
+    "emergencyContact": {
+      "name": "Trần Thị Bình",
+      "phone": "0901234568",
+      "relationship": "Self"
+    },
+    "medicalConditions": "Không có",
+    "createdAt": "2024-01-16T16:00:00Z",
+    "updatedAt": "2024-01-17T10:00:00Z"
+  }
+]

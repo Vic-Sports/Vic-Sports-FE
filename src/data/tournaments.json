@@ -1,0 +1,202 @@
+[
+  {
+    "_id": "507f1f77bcf86cd799439029",
+    "organizerId": "507f1f77bcf86cd799439012",
+    "venueId": "507f1f77bcf86cd799439012",
+    "name": "Giải Bóng Đá Mùa Hè 2024",
+    "description": "Giải bóng đá mùa hè dành cho các đội nghiệp dư",
+    "sportType": "football",
+    "tournamentType": "single_elimination",
+    "maxParticipants": 16,
+    "minParticipants": 8,
+    "teamSize": 7,
+    "currentParticipants": 12,
+    "registrationStartDate": "2024-01-01T00:00:00Z",
+    "registrationEndDate": "2024-02-15T23:59:59Z",
+    "registrationFee": 500000,
+    "startDate": "2024-03-01T08:00:00Z",
+    "endDate": "2024-03-03T18:00:00Z",
+    "estimatedDuration": 3,
+    "prizePool": 10000000,
+    "prizeDistribution": [
+      {
+        "position": "Nhất",
+        "amount": 5000000,
+        "percentage": 50,
+        "description": "Cúp vàng và tiền thưởng"
+      },
+      {
+        "position": "Nhì",
+        "amount": 3000000,
+        "percentage": 30,
+        "description": "Cúp bạc và tiền thưởng"
+      },
+      {
+        "position": "Ba",
+        "amount": 2000000,
+        "percentage": 20,
+        "description": "Cúp đồng và tiền thưởng"
+      }
+    ],
+    "rules": [
+      "Mỗi đội tối đa 7 cầu thủ",
+      "Thời gian thi đấu 2 hiệp x 25 phút",
+      "Không được sử dụng giày đinh",
+      "Có VAR hỗ trợ"
+    ],
+    "ageRestrictions": {
+      "minAge": 18,
+      "maxAge": 45
+    },
+    "skillLevel": "intermediate",
+    "status": "registration_open",
+    "bannerImage": "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/tournament-banner.jpg",
+    "gallery": [
+      "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/tournament1.jpg",
+      "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/tournament2.jpg"
+    ],
+    "allowLivestream": true,
+    "streamingRights": {
+      "type": "organizer_only"
+    },
+    "isPublic": true,
+    "allowSpectators": true,
+    "spectatorFee": 50000,
+    "requireApproval": true,
+    "allowSubstitutes": true,
+    "createdAt": "2023-12-01T00:00:00Z",
+    "updatedAt": "2024-01-15T10:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439030",
+    "organizerId": "507f1f77bcf86cd799439012",
+    "venueId": "507f1f77bcf86cd799439013",
+    "name": "Giải Tennis Đơn Nam 2024",
+    "description": "Giải tennis đơn nam dành cho các tay vợt nghiệp dư",
+    "sportType": "tennis",
+    "tournamentType": "single_elimination",
+    "maxParticipants": 32,
+    "minParticipants": 16,
+    "teamSize": 1,
+    "currentParticipants": 24,
+    "registrationStartDate": "2024-01-15T00:00:00Z",
+    "registrationEndDate": "2024-02-28T23:59:59Z",
+    "registrationFee": 200000,
+    "startDate": "2024-03-15T08:00:00Z",
+    "endDate": "2024-03-17T18:00:00Z",
+    "estimatedDuration": 3,
+    "prizePool": 5000000,
+    "prizeDistribution": [
+      {
+        "position": "Nhất",
+        "amount": 2500000,
+        "percentage": 50,
+        "description": "Cúp vàng và tiền thưởng"
+      },
+      {
+        "position": "Nhì",
+        "amount": 1500000,
+        "percentage": 30,
+        "description": "Cúp bạc và tiền thưởng"
+      },
+      {
+        "position": "Ba",
+        "amount": 1000000,
+        "percentage": 20,
+        "description": "Cúp đồng và tiền thưởng"
+      }
+    ],
+    "rules": [
+      "Thi đấu theo luật tennis quốc tế",
+      "Mỗi trận đấu 3 set",
+      "Tie-break ở set thứ 3",
+      "Không được sử dụng chất kích thích"
+    ],
+    "ageRestrictions": {
+      "minAge": 16,
+      "maxAge": 50
+    },
+    "skillLevel": "intermediate",
+    "status": "registration_open",
+    "bannerImage": "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/tennis-tournament.jpg",
+    "gallery": [
+      "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/tennis-tournament1.jpg"
+    ],
+    "allowLivestream": true,
+    "streamingRights": {
+      "type": "participants"
+    },
+    "isPublic": true,
+    "allowSpectators": true,
+    "spectatorFee": 30000,
+    "requireApproval": false,
+    "allowSubstitutes": false,
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-15T10:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439031",
+    "organizerId": "507f1f77bcf86cd799439012",
+    "venueId": "507f1f77bcf86cd799439014",
+    "name": "Giải Cầu Lông Đôi Nam Nữ 2024",
+    "description": "Giải cầu lông đôi nam nữ dành cho các cặp đôi",
+    "sportType": "badminton",
+    "tournamentType": "round_robin",
+    "maxParticipants": 16,
+    "minParticipants": 8,
+    "teamSize": 2,
+    "currentParticipants": 12,
+    "registrationStartDate": "2024-02-01T00:00:00Z",
+    "registrationEndDate": "2024-03-15T23:59:59Z",
+    "registrationFee": 300000,
+    "startDate": "2024-04-01T08:00:00Z",
+    "endDate": "2024-04-03T18:00:00Z",
+    "estimatedDuration": 3,
+    "prizePool": 3000000,
+    "prizeDistribution": [
+      {
+        "position": "Nhất",
+        "amount": 1500000,
+        "percentage": 50,
+        "description": "Cúp vàng và tiền thưởng"
+      },
+      {
+        "position": "Nhì",
+        "amount": 900000,
+        "percentage": 30,
+        "description": "Cúp bạc và tiền thưởng"
+      },
+      {
+        "position": "Ba",
+        "amount": 600000,
+        "percentage": 20,
+        "description": "Cúp đồng và tiền thưởng"
+      }
+    ],
+    "rules": [
+      "Mỗi đội gồm 1 nam và 1 nữ",
+      "Thi đấu theo luật cầu lông quốc tế",
+      "Mỗi trận đấu 3 set",
+      "Không được thay đổi thành viên sau khi đăng ký"
+    ],
+    "ageRestrictions": {
+      "minAge": 18,
+      "maxAge": 40
+    },
+    "skillLevel": "beginner",
+    "status": "draft",
+    "bannerImage": "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/badminton-tournament.jpg",
+    "gallery": [],
+    "allowLivestream": false,
+    "streamingRights": {
+      "type": "none"
+    },
+    "isPublic": true,
+    "allowSpectators": true,
+    "spectatorFee": 20000,
+    "requireApproval": true,
+    "allowSubstitutes": false,
+    "createdAt": "2024-01-20T00:00:00Z",
+    "updatedAt": "2024-01-20T00:00:00Z"
+  }
+]
