@@ -232,7 +232,7 @@ const Header = () => {
                     </Button>
                   )}
                 </NavLink>
-                <NavLink to="/courts" className="nav-button-wrapper">
+                <NavLink to="/venues" className="nav-button-wrapper">
                   {({ isActive }) => (
                     <Button
                       type="text"
@@ -250,7 +250,7 @@ const Header = () => {
                         boxShadow: isActive ? "0 4px 15px rgba(102, 126, 234, 0.3)" : "none"
                       }}
                     >
-                      {t("appHeader.courts")}
+                      {t("appHeader.venues")}
                     </Button>
                   )}
                 </NavLink>
@@ -500,7 +500,7 @@ const Header = () => {
             {t("appHeader.home")}
           </NavLink>
           <NavLink
-            to="/courts"
+            to="/venues"
             className="text-decoration-none mobile-nav-item"
             style={{ 
               color: "#1a1a1a",
@@ -513,7 +513,7 @@ const Header = () => {
             }}
             onClick={() => setOpenDrawer(false)}
           >
-            {t("appHeader.courts")}
+            {t("appHeader.venues")}
           </NavLink>
           <NavLink
             to="/coaches"
