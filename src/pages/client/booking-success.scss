@@ -1,0 +1,421 @@
+.booking-success-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 40px 0;
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  // Success Card
+  .success-card {
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: none;
+    margin-bottom: 24px;
+
+    .ant-result {
+      .ant-result-icon {
+        .anticon {
+          color: #52c41a;
+          font-size: 72px;
+        }
+      }
+
+      .ant-result-title {
+        color: #1a1a1a;
+        font-weight: 600;
+        font-size: 24px;
+      }
+
+      .ant-result-subtitle {
+        color: #666;
+        font-size: 16px;
+        margin-bottom: 24px;
+      }
+
+      .ant-result-extra {
+        .ant-btn {
+          height: 40px;
+          padding: 0 24px;
+          border-radius: 20px;
+          font-weight: 500;
+
+          &.ant-btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+
+            &:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Booking Details Card
+  .booking-details-card,
+  .instructions-card {
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    border: none;
+    margin-bottom: 24px;
+
+    .ant-card-head {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 16px 16px 0 0;
+
+      .ant-card-head-title {
+        color: white;
+        font-weight: 600;
+      }
+    }
+
+    .detail-section {
+      h5 {
+        color: #1a1a1a;
+        margin-bottom: 20px;
+        font-weight: 600;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 8px;
+      }
+
+      .detail-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 4px solid #1890ff;
+
+        .anticon {
+          color: #1890ff;
+          font-size: 18px;
+          margin-top: 2px;
+        }
+
+        div {
+          flex: 1;
+
+          .ant-typography {
+            margin: 0;
+            line-height: 1.4;
+
+            &:first-child {
+              font-size: 15px;
+            }
+
+            &:last-child {
+              font-size: 13px;
+              margin-top: 2px;
+            }
+          }
+        }
+      }
+
+      // Payment Info
+      .payment-info {
+        .payment-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 12px;
+          padding: 8px 0;
+
+          .ant-typography {
+            margin: 0;
+          }
+
+          .ant-tag {
+            border-radius: 12px;
+            border: none;
+            font-weight: 500;
+          }
+
+          &.total {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 2px solid #f0f0f0;
+            background: #f8f9fa;
+            padding: 16px 12px;
+            border-radius: 8px;
+
+            .amount {
+              color: #f5222d;
+              font-size: 18px;
+              font-weight: 700;
+            }
+          }
+        }
+      }
+
+      // Timeline
+      .ant-timeline {
+        .ant-timeline-item {
+          .ant-timeline-item-content {
+            margin-left: 20px;
+            min-height: 48px;
+
+            .ant-typography {
+              margin: 0;
+              line-height: 1.4;
+
+              &:first-child {
+                font-size: 14px;
+              }
+
+              &:last-child {
+                font-size: 12px;
+                margin-top: 2px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Instructions Card
+  .instructions-card {
+    .instructions {
+      .instruction-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 24px;
+        padding: 16px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        border-left: 4px solid #52c41a;
+
+        .instruction-icon {
+          color: #52c41a;
+          font-size: 20px;
+          margin-top: 2px;
+        }
+
+        div {
+          flex: 1;
+
+          .ant-typography {
+            margin: 0;
+            line-height: 1.5;
+
+            &:first-child {
+              font-size: 15px;
+              color: #1a1a1a;
+            }
+
+            &:last-child {
+              font-size: 13px;
+              margin-top: 4px;
+            }
+          }
+        }
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+
+  // Responsive Design
+  @media (max-width: 768px) {
+    padding: 20px 0;
+
+    .container {
+      padding: 0 12px;
+    }
+
+    .success-card {
+      .ant-result {
+        .ant-result-icon .anticon {
+          font-size: 48px;
+        }
+
+        .ant-result-title {
+          font-size: 20px;
+        }
+
+        .ant-result-subtitle {
+          font-size: 14px;
+        }
+
+        .ant-result-extra {
+          .ant-space {
+            flex-direction: column;
+            width: 100%;
+
+            .ant-btn {
+              width: 100%;
+            }
+          }
+        }
+      }
+    }
+
+    .detail-section {
+      .detail-item {
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px;
+
+        .anticon {
+          align-self: flex-start;
+        }
+      }
+    }
+
+    .instructions {
+      .instruction-item {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px;
+
+        .instruction-icon {
+          align-self: flex-start;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .booking-details-card,
+    .instructions-card {
+      margin: 0 -4px 24px -4px;
+      border-radius: 12px;
+    }
+
+    .success-card {
+      margin: 0 -4px 24px -4px;
+      border-radius: 12px;
+    }
+
+    .detail-section {
+      .payment-info {
+        .payment-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+
+          &.total {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+
+            .amount {
+              font-size: 16px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Dark theme support
+[data-theme="dark"] {
+  .booking-success-page {
+    background: linear-gradient(135deg, #1f1f1f 0%, #2d2d2d 100%);
+
+    .success-card,
+    .booking-details-card,
+    .instructions-card {
+      background: #2d2d2d;
+      border: 1px solid #3d3d3d;
+
+      .ant-card-head {
+        background: linear-gradient(135deg, #4a4a4a 0%, #5d5d5d 100%);
+        border-bottom: 1px solid #3d3d3d;
+      }
+    }
+
+    .success-card {
+      .ant-result {
+        .ant-result-title {
+          color: #e0e0e0;
+        }
+
+        .ant-result-subtitle {
+          color: #aaa;
+        }
+      }
+    }
+
+    .detail-section {
+      h5 {
+        color: #e0e0e0;
+        border-bottom-color: #4d4d4d;
+      }
+
+      .detail-item {
+        background: #3a3a3a;
+        border-left-color: #1890ff;
+
+        .ant-typography {
+          color: #e0e0e0;
+
+          &.ant-typography-caption {
+            color: #aaa;
+          }
+        }
+      }
+
+      .payment-info {
+        .payment-item {
+          .ant-typography {
+            color: #e0e0e0;
+          }
+
+          &.total {
+            background: #3a3a3a;
+
+            .amount {
+              color: #ff7875;
+            }
+          }
+        }
+      }
+
+      .ant-timeline {
+        .ant-timeline-item-content {
+          .ant-typography {
+            color: #e0e0e0;
+
+            &.ant-typography-caption {
+              color: #aaa;
+            }
+          }
+        }
+      }
+    }
+
+    .instructions {
+      .instruction-item {
+        background: #3a3a3a;
+        border-left-color: #52c41a;
+
+        .ant-typography {
+          color: #e0e0e0;
+
+          &:first-child {
+            color: #e0e0e0;
+          }
+
+          &:last-child {
+            color: #aaa;
+          }
+        }
+      }
+    }
+  }
+}

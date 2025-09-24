@@ -22,7 +22,7 @@ import {
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useCurrentApp } from "@/components/context/app.context";
 import { fetchAccountAPI } from "@/services/api";
 import { searchVenuesAPI } from "@/services/venueApi";
@@ -38,6 +38,7 @@ const HomePage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { message } = App.useApp();
   const { setIsAuthenticated, setUser } = useCurrentApp();
+  const navigate = useNavigate();
 
   // Search states
   const [searchLoading, setSearchLoading] = useState(false);
@@ -85,7 +86,7 @@ const HomePage = () => {
 
   // Handle venue actions
   const handleViewCourts = (venueId: string) => {
-    message.info(`Viewing courts for venue: ${venueId}`);
+    navigate(`/venue/${venueId}`);
   };
 
   useEffect(() => {
@@ -332,7 +333,7 @@ const HomePage = () => {
                 <Row className="g-4">
                   {/* Display venues in smart court card style */}
                   {searchResults.venues.map((venue) => (
-                    <Col lg={6} key={venue._id}>
+                    <Col lg={4} key={venue._id}>
                       <div className="smart-court-card">
                         <div className="court-glow"></div>
 

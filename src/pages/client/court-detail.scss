@@ -1,0 +1,468 @@
+.court-detail-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 20px 0;
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  // Loading and Error States
+  .court-detail-loading,
+  .court-detail-error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+
+    .ant-card {
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+    }
+  }
+
+  // Court Images
+  .court-images-card {
+    margin-bottom: 24px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+    .ant-card-body {
+      padding: 0;
+    }
+
+    .court-image-slide {
+      position: relative;
+      height: 400px;
+      overflow: hidden;
+
+      .court-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 0;
+      }
+    }
+
+    .court-carousel-dots {
+      bottom: 20px;
+
+      .ant-carousel-dot {
+        width: 12px;
+        height: 12px;
+
+        button {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.5);
+        }
+
+        &.ant-carousel-dot-active button {
+          background: #1890ff;
+        }
+      }
+    }
+  }
+
+  // Main Content
+  .court-detail-content {
+    .court-info-card,
+    .booking-panel,
+    .pricing-card {
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+      border: none;
+    }
+  }
+
+  // Court Information
+  .court-info-card {
+    .court-header {
+      margin-bottom: 20px;
+
+      h2 {
+        margin-bottom: 8px;
+        color: #1a1a1a;
+        font-weight: 600;
+      }
+
+      .court-rating {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .rating-text {
+          color: #666;
+          font-size: 14px;
+        }
+      }
+    }
+
+    .court-tags {
+      margin-bottom: 20px;
+
+      .ant-tag {
+        padding: 4px 12px;
+        border-radius: 20px;
+        border: none;
+        font-size: 12px;
+        font-weight: 500;
+      }
+    }
+
+    .court-detail-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+
+      .ant-typography {
+        margin: 0;
+      }
+    }
+
+    .court-equipment {
+      .equipment-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+
+        .ant-tag {
+          border-radius: 20px;
+          border: none;
+          padding: 4px 12px;
+        }
+      }
+    }
+
+    .court-stats {
+      .ant-row {
+        gap: 16px;
+      }
+
+      .stat-card {
+        text-align: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+
+        .stat-number {
+          font-size: 24px;
+          font-weight: 600;
+          margin-bottom: 4px;
+        }
+
+        .stat-label {
+          font-size: 12px;
+          opacity: 0.9;
+        }
+      }
+    }
+  }
+
+  // Booking Panel
+  .booking-panel {
+    position: sticky;
+    top: 20px;
+
+    .ant-card-head {
+      text-align: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 16px 16px 0 0;
+
+      .ant-card-head-title {
+        color: white;
+        font-weight: 600;
+      }
+    }
+
+    .booking-form {
+      .form-item {
+        margin-bottom: 24px;
+
+        .ant-typography {
+          display: block;
+          margin-bottom: 8px;
+          font-weight: 500;
+          color: #333;
+        }
+
+        .date-picker {
+          width: 100%;
+        }
+      }
+
+      .time-slots-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 8px;
+        max-height: 300px;
+        overflow-y: auto;
+
+        .time-slot-btn {
+          height: auto;
+          padding: 12px 8px;
+          border-radius: 8px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          border: 2px solid #f0f0f0;
+          background: white;
+          transition: all 0.3s ease;
+
+          &:hover {
+            border-color: #1890ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.2);
+          }
+
+          &.selected {
+            border-color: #1890ff;
+            background: #e6f7ff;
+            color: #1890ff;
+          }
+
+          &.disabled {
+            background: #f5f5f5;
+            color: #bbb;
+            cursor: not-allowed;
+
+            &:hover {
+              transform: none;
+              box-shadow: none;
+            }
+          }
+
+          .time-slot-time {
+            font-weight: 500;
+            font-size: 12px;
+            margin-bottom: 4px;
+          }
+
+          .time-slot-price {
+            font-size: 11px;
+            color: #666;
+            font-weight: 600;
+          }
+        }
+      }
+
+      .booking-summary {
+        .summary-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 8px;
+
+          .anticon {
+            color: #1890ff;
+          }
+
+          &.total-price {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+            justify-content: space-between;
+
+            .price-text {
+              color: #f5222d;
+              font-size: 18px;
+            }
+          }
+        }
+      }
+
+      .book-now-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        height: 48px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 24px;
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+
+        &:disabled {
+          background: #f5f5f5;
+          color: #bbb;
+          transform: none;
+          box-shadow: none;
+        }
+      }
+    }
+  }
+
+  // Pricing Card
+  .pricing-card {
+    margin-top: 24px;
+
+    .ant-card-head {
+      text-align: center;
+    }
+
+    .pricing-item {
+      .pricing-time {
+        font-weight: 600;
+        color: #1890ff;
+        margin-bottom: 4px;
+      }
+
+      .pricing-day {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 4px;
+      }
+
+      .pricing-price {
+        font-weight: 600;
+        color: #f5222d;
+        font-size: 14px;
+      }
+    }
+  }
+
+  // Booking Modal
+  .booking-modal {
+    .booking-confirmation {
+      .confirmation-details {
+        .detail-row {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 12px;
+
+          .anticon {
+            color: #1890ff;
+            font-size: 16px;
+          }
+
+          &.total {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 2px solid #f0f0f0;
+            justify-content: space-between;
+
+            .total-amount {
+              color: #f5222d;
+              font-size: 18px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Responsive Design
+  @media (max-width: 768px) {
+    padding: 10px 0;
+
+    .container {
+      padding: 0 12px;
+    }
+
+    .court-images-card {
+      .court-image-slide {
+        height: 250px;
+      }
+    }
+
+    .booking-panel {
+      position: static;
+      margin-top: 24px;
+
+      .time-slots-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+
+        .time-slot-btn {
+          padding: 8px 4px;
+
+          .time-slot-time {
+            font-size: 10px;
+          }
+
+          .time-slot-price {
+            font-size: 9px;
+          }
+        }
+      }
+    }
+
+    .court-stats {
+      .ant-row {
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .court-detail-content {
+      .ant-col {
+        margin-bottom: 16px;
+      }
+    }
+
+    .booking-form {
+      .time-slots-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}
+
+// Dark theme support
+[data-theme="dark"] {
+  .court-detail-page {
+    background: linear-gradient(135deg, #1f1f1f 0%, #2d2d2d 100%);
+
+    .court-info-card,
+    .booking-panel,
+    .pricing-card {
+      background: #2d2d2d;
+      border: 1px solid #3d3d3d;
+
+      .ant-card-head {
+        background: linear-gradient(135deg, #4a4a4a 0%, #5d5d5d 100%);
+        border-bottom: 1px solid #3d3d3d;
+      }
+    }
+
+    .court-detail-item {
+      .ant-typography {
+        color: #e0e0e0;
+      }
+    }
+
+    .time-slot-btn {
+      background: #3d3d3d;
+      border-color: #4d4d4d;
+      color: #e0e0e0;
+
+      &:hover {
+        border-color: #1890ff;
+        background: #2a2a2a;
+      }
+
+      &.selected {
+        background: #1a3a5a;
+      }
+
+      &.disabled {
+        background: #2a2a2a;
+        color: #666;
+      }
+    }
+  }
+}

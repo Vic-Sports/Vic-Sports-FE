@@ -22,6 +22,12 @@ import HomePage from "./pages/client/home";
 import DashBoardPage from "./pages/admin/dashboard";
 import NotFoundPage from "./components/auth/404";
 import ServerErrorPage from "./components/auth/500";
+import VenueCourts from "./components/client/venue/VenueCourts";
+import CourtDetailPage from "./pages/client/court-detail";
+import BookingPage from "./pages/client/booking";
+import BookingSuccessPage from "./pages/client/booking-success";
+import PaymentPage from "./components/client/booking/payment";
+import PaymentReturnPage from "./components/client/booking/return.url";
 
 const router = createBrowserRouter([
   {
@@ -30,9 +36,37 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />
-      }
-    ]
+        element: <HomePage />,
+      },
+      {
+        path: "venue/:venueId",
+        element: <VenueCourts />,
+      },
+      {
+        path: "court/:courtId",
+        element: <CourtDetailPage />,
+      },
+      {
+        path: "booking",
+        element: <BookingPage />,
+      },
+      {
+        path: "booking/success",
+        element: <BookingSuccessPage />,
+      },
+      {
+        path: "payment",
+        element: <PaymentPage />,
+      },
+      {
+        path: "payment/return",
+        element: <PaymentReturnPage />,
+      },
+      {
+        path: "payment/success",
+        element: <PaymentReturnPage />,
+      },
+    ],
   },
   {
     path: "admin",
@@ -44,7 +78,7 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             <DashBoardPage />
           </ProtectedRoute>
-        )
+        ),
       },
       {
         // path: "user",
@@ -53,41 +87,41 @@ const router = createBrowserRouter([
         //     {/* <ManageUserPage /> */}
         //   </ProtectedRoute>
         // )
-      }
-    ]
+      },
+    ],
   },
   {
     path: "/login",
-    element: <LoginPage />
+    element: <LoginPage />,
   },
   {
     path: "/register",
-    element: <RegisterPage />
+    element: <RegisterPage />,
   },
   {
     path: "/email-verified",
-    element: <EmailVerifiedPage />
+    element: <EmailVerifiedPage />,
   },
   {
     path: "/email-verification-failed",
-    element: <EmailVerificationFailedPage />
+    element: <EmailVerificationFailedPage />,
   },
   {
     path: "/forgot-password",
-    element: <ForgotPasswordPage />
+    element: <ForgotPasswordPage />,
   },
   {
     path: "/reset-password",
-    element: <ResetPasswordPage />
+    element: <ResetPasswordPage />,
   },
   {
     path: "/500",
-    element: <ServerErrorPage />
+    element: <ServerErrorPage />,
   },
   {
     path: "*",
-    element: <NotFoundPage />
-  }
+    element: <NotFoundPage />,
+  },
 ]);
 
 createRoot(document.getElementById("root")!).render(
