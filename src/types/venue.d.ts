@@ -86,3 +86,27 @@ export interface IVenueSearchResponse {
   hasNext: boolean;
   hasPrev: boolean;
 }
+
+// 🆕 NEW: Court filter parameters for venue courts API
+export interface ICourtFilters {
+  sportType?: string;
+  courtType?: string; // "trong nhà" | "ngoài trời"
+  capacity?: number;
+  sortBy?: "rating" | "price" | "name" | "capacity";
+  sortOrder?: "asc" | "desc";
+  page?: number;
+  limit?: number;
+}
+
+// 🆕 NEW: Courts data response from venue courts API
+export interface ICourtsData {
+  courts: import("./court").ICourt[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}

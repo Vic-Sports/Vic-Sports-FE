@@ -30,14 +30,18 @@ const CourtCard: React.FC<CourtCardProps> = ({
 
   const getSportIcon = (sportType: string) => {
     switch (sportType.toLowerCase()) {
+      case "football":
       case "bóng đá":
         return "⚽";
       case "tennis":
         return "🎾";
+      case "badminton":
       case "cầu lông":
         return "🏸";
+      case "basketball":
       case "bóng rổ":
         return "🏀";
+      case "volleyball":
       case "bóng chuyền":
         return "🏐";
       default:

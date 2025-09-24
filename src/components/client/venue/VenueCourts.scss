@@ -1,0 +1,574 @@
+.venue-courts-page {
+  min-height: 100vh;
+  color: #1a1a1a;
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+
+  .venue-breadcrumb {
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+
+    .ant-breadcrumb-link {
+      color: #666;
+
+      a {
+        color: #1890ff;
+        text-decoration: none;
+        font-weight: 500;
+
+        &:hover {
+          color: #40a9ff;
+        }
+      }
+    }
+
+    .ant-breadcrumb-separator {
+      color: #999;
+    }
+  }
+
+  .venue-info-header {
+    margin-bottom: 32px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 16px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    overflow: hidden;
+    position: relative;
+    backdrop-filter: blur(20px);
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(
+        90deg,
+        #1890ff,
+        #722ed1,
+        #52c41a,
+        #fa8c16,
+        #1890ff
+      );
+      animation: gradient-shift 3s ease-in-out infinite;
+    }
+
+    .venue-image {
+      position: relative;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 320px;
+        object-fit: cover;
+        border-radius: 20px;
+        transition: transform 0.3s ease;
+
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+
+      .verified-badge {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: linear-gradient(45deg, #52c41a, #73d13d);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+        animation: pulse 2s infinite;
+      }
+    }
+
+    .venue-details {
+      padding: 24px;
+
+      .venue-title-section {
+        margin-bottom: 24px;
+
+        h2 {
+          margin-bottom: 12px;
+          color: #1a1a1a;
+          font-weight: 700;
+          font-size: 32px;
+          background: linear-gradient(45deg, #1890ff, #722ed1);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .venue-rating-location {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+
+          .ant-rate {
+            .ant-rate-star {
+              color: #ffa940;
+            }
+          }
+
+          .rating-text {
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+          }
+        }
+      }
+
+      .venue-stats-row {
+        margin-bottom: 24px;
+        padding: 20px;
+        background: linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%);
+        border-radius: 16px;
+        border: 1px solid #d6e4ff;
+      }
+
+      .venue-meta {
+        margin-bottom: 20px;
+
+        .meta-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 12px;
+          color: #666;
+          padding: 8px 0;
+          font-weight: 500;
+
+          .anticon {
+            color: #1890ff;
+            font-size: 16px;
+          }
+        }
+      }
+
+      .venue-description {
+        color: #555;
+        line-height: 1.6;
+        font-size: 15px;
+        margin-bottom: 20px;
+      }
+
+      .venue-amenities {
+        .amenity-tag {
+          margin-right: 8px;
+          margin-bottom: 8px;
+          border-radius: 20px;
+          background: linear-gradient(45deg, #e6f7ff, #f0f8ff);
+          border: 1px solid #91d5ff;
+          color: #1890ff;
+          padding: 6px 16px;
+          font-size: 12px;
+          font-weight: 500;
+          transition: all 0.3s ease;
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.2);
+          }
+
+          &.amenity-more {
+            background: linear-gradient(45deg, #f6ffed, #f0f9ff);
+            border-color: #b7eb8f;
+            color: #52c41a;
+          }
+        }
+      }
+    }
+  }
+
+  .booking-filters {
+    margin-bottom: 32px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 16px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #fa8c16, #1890ff, #722ed1, #52c41a);
+    }
+
+    .ant-card-body {
+      background: transparent;
+      padding: 32px;
+    }
+
+    .filter-header {
+      margin-bottom: 24px;
+      text-align: center;
+
+      h4 {
+        margin: 0 0 8px 0;
+        color: #1a1a1a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        font-weight: 700;
+        font-size: 20px;
+      }
+    }
+
+    .filter-group {
+      margin-bottom: 16px;
+
+      span[data-text="strong"] {
+        display: block;
+        margin-bottom: 12px;
+        font-weight: 700;
+        font-size: 14px;
+      }
+
+      .ant-select {
+        .ant-select-selector {
+          background: rgba(255, 255, 255, 0.9) !important;
+          border: 2px solid #e8f4f8 !important;
+          border-radius: 12px !important;
+          padding: 8px 12px !important;
+          transition: all 0.3s ease !important;
+
+          &:hover {
+            border-color: #1890ff !important;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1) !important;
+          }
+
+          &:focus {
+            border-color: #722ed1 !important;
+            box-shadow: 0 0 0 3px rgba(114, 46, 209, 0.2) !important;
+          }
+        }
+
+        .ant-select-selection-placeholder {
+          color: #bfbfbf !important;
+          font-weight: 500 !important;
+        }
+
+        .ant-select-arrow {
+          color: #1890ff !important;
+        }
+      }
+    }
+
+    .filter-summary {
+      margin-top: 20px;
+      text-align: center;
+      padding: 16px;
+      background: linear-gradient(135deg, #fff7e6 0%, #fff2e8 100%);
+      border-radius: 12px;
+      border: 1px solid #ffd591;
+
+      span {
+        font-weight: 600;
+        color: #fa8c16;
+      }
+    }
+  }
+
+  .courts-section {
+    .section-header {
+      margin-bottom: 32px;
+      text-align: center;
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      backdrop-filter: blur(10px);
+
+      .header-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 12px;
+
+        h3 {
+          margin: 0;
+          color: #1a1a1a;
+          font-weight: 700;
+          font-size: 24px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .court-count-badge {
+          background: linear-gradient(45deg, #e6f7ff, #f0f8ff);
+          padding: 8px 16px;
+          border-radius: 20px;
+          border: 1px solid #91d5ff;
+        }
+      }
+
+      .section-description {
+        font-size: 16px;
+        color: #666;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .venue-courts-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 16px;
+
+    .ant-spin-dot {
+      .ant-spin-dot-item {
+        background-color: #1890ff;
+      }
+    }
+
+    span {
+      color: #666;
+      font-size: 16px;
+    }
+  }
+
+  .venue-courts-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 16px;
+
+    .ant-empty-description {
+      color: #666;
+    }
+
+    .ant-btn {
+      margin-top: 16px;
+      background: #1890ff;
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: 600;
+
+      &:hover {
+        background: #40a9ff;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(24, 144, 255, 0.3);
+      }
+    }
+  }
+
+  // Animations and effects
+  @keyframes gradient-shift {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  // Responsive design
+  @media (max-width: 768px) {
+    padding: 16px;
+
+    .venue-info-header {
+      .venue-details {
+        padding: 16px;
+
+        .venue-title-section h2 {
+          font-size: 24px;
+        }
+
+        .venue-stats-row {
+          padding: 16px;
+        }
+      }
+    }
+
+    .booking-filters {
+      .ant-card-body {
+        padding: 20px;
+      }
+
+      .filter-group {
+        margin-bottom: 20px;
+      }
+    }
+
+    .courts-section {
+      .section-header {
+        padding: 16px;
+
+        .header-content {
+          flex-direction: column;
+          gap: 12px;
+
+          h3 {
+            font-size: 20px;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 576px) {
+    .venue-info-header {
+      .venue-image {
+        img {
+          height: 220px;
+        }
+      }
+
+      .venue-details {
+        .venue-title-section h2 {
+          font-size: 20px;
+        }
+
+        .venue-stats-row {
+          padding: 12px;
+        }
+      }
+    }
+
+    .booking-filters {
+      .filter-header {
+        h4 {
+          font-size: 18px;
+        }
+      }
+    }
+  }
+}
+
+// Global enhancements
+.ant-card {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.ant-btn {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+// Sport Type Cards
+.sport-type-card {
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .sport-card-cover {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    &:hover img {
+      transform: scale(1.1);
+    }
+
+    .sport-type-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+      padding: 20px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+  }
+
+  .sport-card-content {
+    padding: 16px 0;
+
+    .sport-stats {
+      margin-bottom: 16px;
+
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+    }
+
+    .sport-details {
+      font-size: 13px;
+      line-height: 1.6;
+    }
+  }
+
+  .ant-card-actions {
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+
+    li {
+      margin: 8px 0;
+    }
+  }
+}
