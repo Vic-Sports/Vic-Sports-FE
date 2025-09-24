@@ -1,0 +1,213 @@
+.payment-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 24px;
+
+  .payment-content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .booking-summary-card {
+    .ant-card-head {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+
+      .ant-card-head-title {
+        color: white;
+        font-weight: 600;
+      }
+    }
+
+    .ant-card-body {
+      padding: 24px;
+    }
+  }
+
+  .payment-form-card {
+    .ant-card-head {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+
+      .ant-card-head-title {
+        color: white;
+        font-weight: 600;
+      }
+    }
+
+    .ant-card-body {
+      padding: 24px;
+    }
+  }
+
+  .payment-method-group {
+    width: 100%;
+
+    .payment-option {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d9d9d9;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        border-color: #1890ff;
+        background-color: #f6f9ff;
+      }
+
+      .ant-radio-wrapper {
+        width: 100%;
+      }
+
+      .payment-option-content {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: 8px;
+
+        .anticon {
+          font-size: 16px;
+        }
+
+        span {
+          flex: 1;
+          font-weight: 500;
+        }
+      }
+    }
+
+    .ant-radio-wrapper-checked .payment-option {
+      border-color: #1890ff;
+      background-color: #f6f9ff;
+    }
+  }
+
+  .ant-form-item-label > label {
+    font-weight: 600;
+    color: #262626;
+  }
+
+  .ant-input-affix-wrapper,
+  .ant-input {
+    border-radius: 8px;
+    border: 1px solid #d9d9d9;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: #40a9ff;
+    }
+
+    &:focus,
+    &.ant-input-affix-wrapper-focused {
+      border-color: #1890ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    }
+  }
+
+  .ant-btn {
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+
+    &.ant-btn-primary {
+      background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%);
+      border: none;
+
+      &:hover {
+        background: linear-gradient(135deg, #40a9ff 0%, #9254de 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(24, 144, 255, 0.4);
+      }
+    }
+
+    &:not(.ant-btn-primary) {
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+
+  .ant-tag {
+    border-radius: 6px;
+    font-weight: 500;
+  }
+
+  .ant-divider {
+    border-color: #e8e8e8;
+    font-weight: 600;
+    color: #595959;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .payment-container {
+    padding: 16px;
+
+    .payment-content {
+      .ant-col {
+        margin-bottom: 16px;
+      }
+    }
+
+    .booking-summary-card,
+    .payment-form-card {
+      .ant-card-body {
+        padding: 16px;
+      }
+    }
+
+    .payment-method-group {
+      .payment-option-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+
+        .anticon {
+          align-self: flex-start;
+        }
+      }
+    }
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .payment-container {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+
+    .ant-card {
+      background-color: #1f1f1f;
+      border-color: #434343;
+
+      .ant-card-body {
+        color: #ffffff;
+      }
+    }
+
+    .payment-option {
+      background-color: #2c2c2c;
+      border-color: #434343;
+
+      &:hover {
+        background-color: #363636;
+        border-color: #1890ff;
+      }
+    }
+
+    .ant-input-affix-wrapper,
+    .ant-input {
+      background-color: #2c2c2c;
+      border-color: #434343;
+      color: #ffffff;
+
+      &::placeholder {
+        color: #8c8c8c;
+      }
+    }
+  }
+}

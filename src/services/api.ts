@@ -6,6 +6,7 @@ const axiosPayment = createInstanceAxios(
   import.meta.env.VITE_BACKEND_PAYMENT_URL
 );
 
+// =================== VNPay Payment APIs ===================
 export const getVNPayUrlAPI = (
   amount: number,
   locale: string,
@@ -15,8 +16,44 @@ export const getVNPayUrlAPI = (
   return axiosPayment.post<IBackendRes<{ url: string }>>(urlBackend, {
     amount,
     locale,
-    paymentRef
+    paymentRef,
   });
+};
+
+export const createVNPayPaymentSandboxAPI = (
+  amount: number,
+  bookingId: string,
+  returnUrl: string,
+  locale: string = "vn",
+  orderInfo?: string
+) => {
+  const urlBackend = "/api/v1/payment/vnpay/create-url";
+  return axios.post<IBackendRes<{ paymentUrl: string; paymentRef: string }>>(
+    urlBackend,
+    {
+      amount,
+      bookingId,
+      returnUrl,
+      locale,
+      orderInfo: orderInfo || `Thanh toán đặt sân - Booking ID: ${bookingId}`,
+    }
+  );
+};
+
+export const verifyVNPayPaymentSandboxAPI = (vnpayParams: any) => {
+  const urlBackend = "/api/v1/payment/vnpay/verify";
+  return axios.post<IBackendRes<{ isValid: boolean; message: string }>>(
+    urlBackend,
+    vnpayParams
+  );
+};
+
+export const testVNPaySandboxAPI = (amount: number) => {
+  const urlBackend = "/api/v1/payment/test-vnpay";
+  return axios.post<IBackendRes<{ paymentUrl: string; paymentRef: string }>>(
+    urlBackend,
+    { amount }
+  );
 };
 
 export const updatePaymentOrderAPI = (
@@ -26,7 +63,7 @@ export const updatePaymentOrderAPI = (
   const urlBackend = "/api/v1/order/update-payment-status";
   return axios.post<IBackendRes<any>>(urlBackend, {
     paymentStatus,
-    paymentRef
+    paymentRef,
   });
 };
 
@@ -46,7 +83,7 @@ export const registerAPI = (
     fullName,
     email,
     password,
-    phone
+    phone,
   });
 };
 
@@ -96,7 +133,7 @@ export const createUserAPI = (
     fullName,
     email,
     password,
-    phone
+    phone,
   });
 };
 
@@ -117,7 +154,7 @@ export const updateUserAPI = (_id: string, fullName: string, phone: string) => {
   return axios.put<IBackendRes<IRegister>>(urlBackend, {
     _id,
     fullName,
-    phone
+    phone,
   });
 };
 
@@ -149,8 +186,8 @@ export const uploadFileAPI = (fileImg: any, folder: string) => {
     data: bodyFormData,
     headers: {
       "Content-Type": "multipart/form-data",
-      "upload-type": folder
-    }
+      "upload-type": folder,
+    },
   });
 };
 
@@ -171,7 +208,7 @@ export const createBookAPI = (
     quantity,
     category,
     thumbnail,
-    slider
+    slider,
   });
 };
 
@@ -193,7 +230,7 @@ export const updateBookAPI = (
     quantity,
     category,
     thumbnail,
-    slider
+    slider,
   });
 };
 
@@ -224,7 +261,7 @@ export const createOrderAPI = (
     totalPrice,
     type,
     detail,
-    paymentRef
+    paymentRef,
   });
 };
 
@@ -253,7 +290,7 @@ export const updateUserInfoAPI = (
   return axios.put<IBackendRes<IRegister>>(urlBackend, {
     ...userData,
     avatar,
-    _id
+    _id,
   });
 };
 
@@ -266,7 +303,7 @@ export const updateUserPasswordAPI = (
   return axios.post<IBackendRes<IRegister>>(urlBackend, {
     email,
     oldpass,
-    newpass
+    newpass,
   });
 };
 
@@ -295,7 +332,7 @@ export const updateUserPreferencesAPI = (
   const urlBackend = "/api/v1/user/preferences";
   return axios.put<IBackendRes<IRegister>>(urlBackend, {
     _id,
-    ...preferences
+    ...preferences,
   });
 };
 

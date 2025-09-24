@@ -1,0 +1,254 @@
+.payment-return-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .result-card {
+    max-width: 800px;
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border: none;
+
+    .ant-card-body {
+      padding: 32px;
+    }
+  }
+
+  .ant-result {
+    .ant-result-icon {
+      .anticon {
+        font-size: 72px;
+      }
+    }
+
+    .ant-result-title {
+      color: #262626;
+      font-weight: 600;
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .ant-result-subtitle {
+      color: #595959;
+      font-size: 16px;
+      margin-bottom: 32px;
+    }
+
+    .ant-result-extra {
+      .ant-btn {
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 8px 24px;
+        height: auto;
+        font-size: 14px;
+
+        &.ant-btn-primary {
+          background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%);
+          border: none;
+
+          &:hover {
+            background: linear-gradient(135deg, #40a9ff 0%, #9254de 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.4);
+          }
+        }
+
+        &:not(.ant-btn-primary) {
+          border-color: #d9d9d9;
+
+          &:hover {
+            border-color: #40a9ff;
+            color: #40a9ff;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          }
+        }
+      }
+    }
+  }
+
+  .ant-descriptions {
+    .ant-descriptions-header {
+      .ant-descriptions-title {
+        font-weight: 600;
+        color: #262626;
+      }
+    }
+
+    .ant-descriptions-item-label {
+      font-weight: 600;
+      color: #595959;
+      background-color: #fafafa;
+    }
+
+    .ant-descriptions-item-content {
+      color: #262626;
+    }
+  }
+
+  .ant-tag {
+    border-radius: 6px;
+    font-weight: 500;
+    padding: 4px 8px;
+  }
+
+  .ant-space {
+    .ant-space-item {
+      .ant-tag {
+        margin-bottom: 4px;
+      }
+    }
+  }
+}
+
+// Success specific styles
+.payment-return-container {
+  .ant-result-success {
+    .ant-result-icon .anticon {
+      color: #52c41a;
+      animation: successPulse 2s ease-in-out;
+    }
+  }
+
+  .ant-result-error {
+    .ant-result-icon .anticon {
+      color: #ff4d4f;
+      animation: errorShake 0.5s ease-in-out;
+    }
+  }
+}
+
+@keyframes successPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes errorShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+// Loading state
+.payment-return-container {
+  .ant-spin {
+    .ant-spin-dot {
+      i {
+        background-color: #1890ff;
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .payment-return-container {
+    padding: 16px;
+
+    .result-card {
+      .ant-card-body {
+        padding: 24px 16px;
+      }
+    }
+
+    .ant-result {
+      .ant-result-icon {
+        .anticon {
+          font-size: 48px;
+        }
+      }
+
+      .ant-result-title {
+        font-size: 20px;
+      }
+
+      .ant-result-subtitle {
+        font-size: 14px;
+      }
+
+      .ant-result-extra {
+        .ant-btn {
+          width: 100%;
+          margin-bottom: 12px;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+
+    .ant-descriptions {
+      .ant-descriptions-item {
+        .ant-descriptions-item-label,
+        .ant-descriptions-item-content {
+          padding: 8px 12px;
+        }
+      }
+    }
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .payment-return-container {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+
+    .result-card {
+      background-color: #1f1f1f;
+
+      .ant-card-body {
+        color: #ffffff;
+      }
+    }
+
+    .ant-result {
+      .ant-result-title {
+        color: #ffffff;
+      }
+
+      .ant-result-subtitle {
+        color: #d9d9d9;
+      }
+    }
+
+    .ant-descriptions {
+      .ant-descriptions-header {
+        .ant-descriptions-title {
+          color: #ffffff;
+        }
+      }
+
+      .ant-descriptions-item-label {
+        color: #d9d9d9;
+        background-color: #2c2c2c;
+      }
+
+      .ant-descriptions-item-content {
+        color: #ffffff;
+        background-color: #1f1f1f;
+      }
+    }
+  }
+}

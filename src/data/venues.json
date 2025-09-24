@@ -1,51 +1,46 @@
 [
   {
-    "_id": "507f1f77bcf86cd799439012",
-    "ownerId": "507f1f77bcf86cd799439012",
-    "name": "Sân Bóng Đá Thể Thao ABC",
-    "description": "Sân bóng đá chất lượng cao với hệ thống chiếu sáng hiện đại",
+    "_id": {
+      "$oid": "65234be3f2e81e1c6f123001"
+    },
+    "ownerId": {
+      "$oid": "65234cf8f2e81e1c6f130123"
+    },
+    "name": "Khu Liên Hợp Thể Thao Mỹ An",
+    "description": "Khu liên hợp thể thao hiện đại bậc nhất khu vực Ngũ Hành Sơn...",
     "address": {
-      "city": "Hồ Chí Minh",
-      "district": "Quận 7",
-      "ward": "Phường Tân Phú",
-      "street": "123 Nguyễn Thị Thập",
+      "street": "23 Hồ Xuân Hương",
+      "ward": "Mỹ An",
+      "district": "Ngũ Hành Sơn",
+      "city": "Đà Nẵng",
       "coordinates": {
-        "lat": 10.7374,
-        "lng": 106.7219
+        "type": "Point",
+        "coordinates": [108.241649, 16.041519]
       }
     },
     "contactInfo": {
-      "phone": "0901234567",
-      "email": "contact@sanbongabc.com"
+      "phone": "0912345678",
+      "email": "lienhe@myan-sports.vn"
     },
-    "images": [
-      "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/football-field.jpg",
-      "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/stadium.jpg"
-    ],
+    "images": ["venue_myan_1.jpg", "venue_myan_2.jpg"],
     "amenities": [
       {
-        "name": "Parking",
-        "icon": "car",
-        "description": "Bãi đỗ xe miễn phí"
+        "name": "Wifi miễn phí",
+        "icon": "wifi",
+        "description": "Wifi tốc độ cao phủ sóng toàn khu vực"
       },
       {
-        "name": "Shower",
-        "icon": "shower",
-        "description": "Phòng tắm và thay đồ"
+        "name": "Phòng thay đồ",
+        "icon": "changing-room",
+        "description": "Phòng thay đồ rộng rãi, sạch sẽ"
       },
       {
-        "name": "Cafe",
-        "icon": "coffee",
-        "description": "Quán cafe và đồ uống"
+        "name": "Khu vực gửi xe",
+        "icon": "parking",
+        "description": "Chỗ để xe máy, xe ô tô rộng rãi, an ninh"
       }
     ],
     "operatingHours": [
-      {
-        "dayOfWeek": 0,
-        "openTime": "06:00",
-        "closeTime": "22:00",
-        "isOpen": true
-      },
       {
         "dayOfWeek": 1,
         "openTime": "06:00",
@@ -73,226 +68,35 @@
       {
         "dayOfWeek": 5,
         "openTime": "06:00",
-        "closeTime": "22:00",
+        "closeTime": "23:00",
         "isOpen": true
       },
       {
         "dayOfWeek": 6,
         "openTime": "06:00",
-        "closeTime": "22:00",
-        "isOpen": true
-      }
-    ],
-    "parking": {
-      "available": true,
-      "capacity": 50,
-      "fee": 0
-    },
-    "ratings": {
-      "average": 4.5,
-      "count": 128
-    },
-    "totalBookings": 450,
-    "totalRevenue": 15000000,
-    "isActive": true,
-    "isVerified": true,
-    "verifiedAt": "2023-01-15T00:00:00Z",
-    "createdAt": "2023-01-01T00:00:00Z",
-    "updatedAt": "2024-01-15T10:00:00Z"
-  },
-  {
-    "_id": "507f1f77bcf86cd799439013",
-    "ownerId": "507f1f77bcf86cd799439012",
-    "name": "Sân Tennis VIP",
-    "description": "Sân tennis cao cấp với mặt sân cỏ nhân tạo",
-    "address": {
-      "city": "Hồ Chí Minh",
-      "district": "Quận 2",
-      "ward": "Phường Thủ Thiêm",
-      "street": "456 Mai Chí Thọ",
-      "coordinates": {
-        "lat": 10.7872,
-        "lng": 106.7491
-      }
-    },
-    "contactInfo": {
-      "phone": "0901234568",
-      "email": "info@santennisvip.com"
-    },
-    "images": [
-      "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/tennis-court.jpg"
-    ],
-    "amenities": [
-      {
-        "name": "Parking",
-        "icon": "car",
-        "description": "Bãi đỗ xe có phí"
-      },
-      {
-        "name": "Equipment",
-        "icon": "equipment",
-        "description": "Cho thuê vợt và bóng"
-      }
-    ],
-    "operatingHours": [
-      {
-        "dayOfWeek": 0,
-        "openTime": "07:00",
-        "closeTime": "21:00",
+        "closeTime": "23:00",
         "isOpen": true
       },
-      {
-        "dayOfWeek": 1,
-        "openTime": "07:00",
-        "closeTime": "21:00",
-        "isOpen": true
-      },
-      {
-        "dayOfWeek": 2,
-        "openTime": "07:00",
-        "closeTime": "21:00",
-        "isOpen": true
-      },
-      {
-        "dayOfWeek": 3,
-        "openTime": "07:00",
-        "closeTime": "21:00",
-        "isOpen": true
-      },
-      {
-        "dayOfWeek": 4,
-        "openTime": "07:00",
-        "closeTime": "21:00",
-        "isOpen": true
-      },
-      {
-        "dayOfWeek": 5,
-        "openTime": "07:00",
-        "closeTime": "21:00",
-        "isOpen": true
-      },
-      {
-        "dayOfWeek": 6,
-        "openTime": "07:00",
-        "closeTime": "21:00",
-        "isOpen": true
-      }
-    ],
-    "parking": {
-      "available": true,
-      "capacity": 20,
-      "fee": 10000
-    },
-    "ratings": {
-      "average": 4.8,
-      "count": 89
-    },
-    "totalBookings": 320,
-    "totalRevenue": 12000000,
-    "isActive": true,
-    "isVerified": true,
-    "verifiedAt": "2023-02-01T00:00:00Z",
-    "createdAt": "2023-02-01T00:00:00Z",
-    "updatedAt": "2024-01-15T09:00:00Z"
-  },
-  {
-    "_id": "507f1f77bcf86cd799439014",
-    "ownerId": "507f1f77bcf86cd799439012",
-    "name": "Sân Cầu Lông Thể Thao",
-    "description": "Sân cầu lông trong nhà với hệ thống điều hòa",
-    "address": {
-      "city": "Hồ Chí Minh",
-      "district": "Quận 10",
-      "ward": "Phường 15",
-      "street": "789 Lý Thái Tổ",
-      "coordinates": {
-        "lat": 10.7735,
-        "lng": 106.6664
-      }
-    },
-    "contactInfo": {
-      "phone": "0901234569",
-      "email": "info@sancaulong.com"
-    },
-    "images": [
-      "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/badminton-court.jpg"
-    ],
-    "amenities": [
-      {
-        "name": "Air Conditioning",
-        "icon": "air-conditioning",
-        "description": "Hệ thống điều hòa"
-      },
-      {
-        "name": "Equipment Rental",
-        "icon": "equipment",
-        "description": "Cho thuê vợt và cầu"
-      },
-      {
-        "name": "Locker",
-        "icon": "locker",
-        "description": "Tủ khóa cá nhân"
-      }
-    ],
-    "operatingHours": [
       {
         "dayOfWeek": 0,
         "openTime": "06:00",
-        "closeTime": "23:00",
-        "isOpen": true
-      },
-      {
-        "dayOfWeek": 1,
-        "openTime": "06:00",
-        "closeTime": "23:00",
-        "isOpen": true
-      },
-      {
-        "dayOfWeek": 2,
-        "openTime": "06:00",
-        "closeTime": "23:00",
-        "isOpen": true
-      },
-      {
-        "dayOfWeek": 3,
-        "openTime": "06:00",
-        "closeTime": "23:00",
-        "isOpen": true
-      },
-      {
-        "dayOfWeek": 4,
-        "openTime": "06:00",
-        "closeTime": "23:00",
-        "isOpen": true
-      },
-      {
-        "dayOfWeek": 5,
-        "openTime": "06:00",
-        "closeTime": "23:00",
-        "isOpen": true
-      },
-      {
-        "dayOfWeek": 6,
-        "openTime": "06:00",
-        "closeTime": "23:00",
+        "closeTime": "22:00",
         "isOpen": true
       }
     ],
     "parking": {
       "available": true,
-      "capacity": 30,
+      "capacity": 100,
       "fee": 5000
     },
     "ratings": {
-      "average": 4.6,
-      "count": 67
+      "average": 4.3,
+      "count": 108
     },
-    "totalBookings": 280,
-    "totalRevenue": 8000000,
+    "totalBookings": 563,
+    "totalRevenue": 178000000,
     "isActive": true,
     "isVerified": true,
-    "verifiedAt": "2023-03-01T00:00:00Z",
-    "createdAt": "2023-03-01T00:00:00Z",
-    "updatedAt": "2024-01-15T08:00:00Z"
+    "verifiedAt": "2024-05-11T10:30:00.000Z"
   }
 ]

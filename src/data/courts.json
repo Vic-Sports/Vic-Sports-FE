@@ -1,31 +1,182 @@
 [
   {
-    "_id": "507f1f77bcf86cd799439015",
-    "venueId": "507f1f77bcf86cd799439012",
-    "name": "Sân A1",
+    "_id": {
+      "$oid": "68d1132e0a78e92307469eb5"
+    },
+    "venueId": {
+      "$oid": "65234be3f2e81e1c6f123001"
+    },
+    "name": "Sân Bóng Đá Mỹ An",
     "sportType": "football",
-    "courtType": "7v7",
+    "courtType": "ngoài trời",
     "capacity": 14,
     "dimensions": {
-      "length": 70,
-      "width": 50,
+      "length": 40,
+      "width": 20,
       "unit": "meters"
     },
-    "surface": "Cỏ nhân tạo",
-    "equipment": ["Bóng", "Cột gôn", "Lưới"],
+    "surface": "cỏ nhân tạo",
+    "equipment": ["khung thành", "lưới chắn", "đèn chiếu sáng"],
     "pricing": [
       {
         "timeSlot": {
           "start": "06:00",
+          "end": "18:00"
+        },
+        "pricePerHour": 300000,
+        "dayType": "weekday",
+        "isActive": true
+      },
+      {
+        "timeSlot": {
+          "start": "18:00",
+          "end": "22:00"
+        },
+        "pricePerHour": 400000,
+        "dayType": "weekend",
+        "isActive": true
+      }
+    ],
+    "defaultAvailability": [
+      {
+        "dayOfWeek": 1,
+        "timeSlots": [
+          {
+            "start": "06:00",
+            "end": "22:00",
+            "isAvailable": true
+          }
+        ]
+      },
+      {
+        "dayOfWeek": 6,
+        "timeSlots": [
+          {
+            "start": "06:00",
+            "end": "23:00",
+            "isAvailable": true
+          }
+        ]
+      }
+    ],
+    "isActive": true,
+    "images": ["myan1.jpg", "myan2.jpg"],
+    "ratings": {
+      "average": 4.2,
+      "count": 35
+    },
+    "totalBookings": 248,
+    "totalRevenue": 83000000
+  },
+  {
+    "_id": {
+      "$oid": "68d1132e0a78e92307469eb6"
+    },
+    "venueId": {
+      "$oid": "65234be3f2e81e1c6f123002"
+    },
+    "name": "Sân Cầu Lông Hải Châu",
+    "sportType": "badminton",
+    "courtType": "trong nhà",
+    "capacity": 8,
+    "dimensions": {
+      "length": 13.4,
+      "width": 6.1,
+      "unit": "meters"
+    },
+    "surface": "thảm PVC",
+    "equipment": ["cột lưới", "đèn LED"],
+    "pricing": [
+      {
+        "timeSlot": {
+          "start": "07:00",
           "end": "17:00"
         },
-        "pricePerHour": 200000,
+        "pricePerHour": 120000,
         "dayType": "weekday",
         "isActive": true
       },
       {
         "timeSlot": {
           "start": "17:00",
+          "end": "22:00"
+        },
+        "pricePerHour": 180000,
+        "dayType": "weekday",
+        "isActive": true
+      },
+      {
+        "timeSlot": {
+          "start": "07:00",
+          "end": "22:00"
+        },
+        "pricePerHour": 200000,
+        "dayType": "weekend",
+        "isActive": true
+      }
+    ],
+    "defaultAvailability": [
+      {
+        "dayOfWeek": 2,
+        "timeSlots": [
+          {
+            "start": "07:00",
+            "end": "22:00",
+            "isAvailable": true
+          }
+        ]
+      },
+      {
+        "dayOfWeek": 4,
+        "timeSlots": [
+          {
+            "start": "07:00",
+            "end": "22:00",
+            "isAvailable": true
+          }
+        ]
+      }
+    ],
+    "isActive": true,
+    "images": ["caulong1.jpg"],
+    "ratings": {
+      "average": 4.5,
+      "count": 22
+    },
+    "totalBookings": 152,
+    "totalRevenue": 27000000
+  },
+  {
+    "_id": {
+      "$oid": "68d1132e0a78e92307469eb7"
+    },
+    "venueId": {
+      "$oid": "65234be3f2e81e1c6f123003"
+    },
+    "name": "Sân Tennis Sơn Trà",
+    "sportType": "tennis",
+    "courtType": "ngoài trời",
+    "capacity": 4,
+    "dimensions": {
+      "length": 23.77,
+      "width": 10.97,
+      "unit": "meters"
+    },
+    "surface": "cứng",
+    "equipment": ["lưới tennis", "đèn sân", "ghế trọng tài"],
+    "pricing": [
+      {
+        "timeSlot": {
+          "start": "06:00",
+          "end": "16:00"
+        },
+        "pricePerHour": 180000,
+        "dayType": "weekday",
+        "isActive": true
+      },
+      {
+        "timeSlot": {
+          "start": "16:00",
           "end": "22:00"
         },
         "pricePerHour": 250000,
@@ -48,272 +199,98 @@
         "timeSlots": [
           {
             "start": "06:00",
-            "end": "07:00",
-            "isAvailable": true
-          },
-          {
-            "start": "07:00",
-            "end": "08:00",
-            "isAvailable": true
-          },
-          {
-            "start": "08:00",
-            "end": "09:00",
-            "isAvailable": false
-          },
-          {
-            "start": "09:00",
-            "end": "10:00",
+            "end": "22:00",
             "isAvailable": true
           }
         ]
-      }
-    ],
-    "isActive": true,
-    "images": [
-      "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/football-field.jpg"
-    ],
-    "ratings": {
-      "average": 4.3,
-      "count": 45
-    },
-    "totalBookings": 120,
-    "totalRevenue": 5000000,
-    "createdAt": "2023-01-01T00:00:00Z",
-    "updatedAt": "2024-01-15T10:00:00Z"
-  },
-  {
-    "_id": "507f1f77bcf86cd799439016",
-    "venueId": "507f1f77bcf86cd799439013",
-    "name": "Sân Tennis 1",
-    "sportType": "tennis",
-    "courtType": "singles",
-    "capacity": 2,
-    "dimensions": {
-      "length": 23.77,
-      "width": 8.23,
-      "unit": "meters"
-    },
-    "surface": "Cỏ nhân tạo",
-    "equipment": ["Lưới", "Vợt", "Bóng"],
-    "pricing": [
-      {
-        "timeSlot": {
-          "start": "07:00",
-          "end": "17:00"
-        },
-        "pricePerHour": 150000,
-        "dayType": "weekday",
-        "isActive": true
       },
       {
-        "timeSlot": {
-          "start": "17:00",
-          "end": "21:00"
-        },
-        "pricePerHour": 200000,
-        "dayType": "weekday",
-        "isActive": true
-      },
-      {
-        "timeSlot": {
-          "start": "07:00",
-          "end": "21:00"
-        },
-        "pricePerHour": 250000,
-        "dayType": "weekend",
-        "isActive": true
-      }
-    ],
-    "defaultAvailability": [
-      {
-        "dayOfWeek": 0,
-        "timeSlots": [
-          {
-            "start": "07:00",
-            "end": "08:00",
-            "isAvailable": true
-          },
-          {
-            "start": "08:00",
-            "end": "09:00",
-            "isAvailable": true
-          },
-          {
-            "start": "09:00",
-            "end": "10:00",
-            "isAvailable": false
-          }
-        ]
-      }
-    ],
-    "isActive": true,
-    "images": [
-      "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/tennis-court.jpg"
-    ],
-    "ratings": {
-      "average": 4.7,
-      "count": 32
-    },
-    "totalBookings": 85,
-    "totalRevenue": 3000000,
-    "createdAt": "2023-02-01T00:00:00Z",
-    "updatedAt": "2024-01-15T09:00:00Z"
-  },
-  {
-    "_id": "507f1f77bcf86cd799439017",
-    "venueId": "507f1f77bcf86cd799439014",
-    "name": "Sân Cầu Lông 1",
-    "sportType": "badminton",
-    "courtType": "singles",
-    "capacity": 2,
-    "dimensions": {
-      "length": 13.4,
-      "width": 6.1,
-      "unit": "meters"
-    },
-    "surface": "Sàn gỗ",
-    "equipment": ["Lưới", "Vợt", "Cầu"],
-    "pricing": [
-      {
-        "timeSlot": {
-          "start": "06:00",
-          "end": "17:00"
-        },
-        "pricePerHour": 80000,
-        "dayType": "weekday",
-        "isActive": true
-      },
-      {
-        "timeSlot": {
-          "start": "17:00",
-          "end": "23:00"
-        },
-        "pricePerHour": 120000,
-        "dayType": "weekday",
-        "isActive": true
-      },
-      {
-        "timeSlot": {
-          "start": "06:00",
-          "end": "23:00"
-        },
-        "pricePerHour": 150000,
-        "dayType": "weekend",
-        "isActive": true
-      }
-    ],
-    "defaultAvailability": [
-      {
-        "dayOfWeek": 0,
+        "dayOfWeek": 5,
         "timeSlots": [
           {
             "start": "06:00",
-            "end": "07:00",
+            "end": "22:00",
             "isAvailable": true
-          },
-          {
-            "start": "07:00",
-            "end": "08:00",
-            "isAvailable": true
-          },
-          {
-            "start": "08:00",
-            "end": "09:00",
-            "isAvailable": false
           }
         ]
       }
     ],
     "isActive": true,
-    "images": [
-      "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/badminton-court.jpg"
-    ],
+    "images": ["tennis_sontra.jpg"],
     "ratings": {
-      "average": 4.4,
-      "count": 28
+      "average": 4,
+      "count": 17
     },
-    "totalBookings": 95,
-    "totalRevenue": 1800000,
-    "createdAt": "2023-03-01T00:00:00Z",
-    "updatedAt": "2024-01-15T08:00:00Z"
+    "totalBookings": 97,
+    "totalRevenue": 19000000
   },
   {
-    "_id": "507f1f77bcf86cd799439018",
-    "venueId": "507f1f77bcf86cd799439012",
-    "name": "Sân A2",
-    "sportType": "football",
-    "courtType": "5v5",
+    "_id": {
+      "$oid": "68d1132e0a78e92307469eb8"
+    },
+    "venueId": {
+      "$oid": "65234be3f2e81e1c6f123004"
+    },
+    "name": "Sân Bóng Rổ Thanh Khê",
+    "sportType": "basketball",
+    "courtType": "ngoài trời",
     "capacity": 10,
     "dimensions": {
-      "length": 50,
-      "width": 35,
+      "length": 28,
+      "width": 15,
       "unit": "meters"
     },
-    "surface": "Cỏ nhân tạo",
-    "equipment": ["Bóng", "Cột gôn", "Lưới"],
+    "surface": "xi măng",
+    "equipment": ["rổ bóng", "đèn sân"],
     "pricing": [
       {
         "timeSlot": {
-          "start": "06:00",
-          "end": "17:00"
-        },
-        "pricePerHour": 150000,
-        "dayType": "weekday",
-        "isActive": true
-      },
-      {
-        "timeSlot": {
-          "start": "17:00",
-          "end": "22:00"
-        },
-        "pricePerHour": 200000,
-        "dayType": "weekday",
-        "isActive": true
-      },
-      {
-        "timeSlot": {
-          "start": "06:00",
+          "start": "16:00",
           "end": "22:00"
         },
         "pricePerHour": 250000,
+        "dayType": "weekday",
+        "isActive": true
+      },
+      {
+        "timeSlot": {
+          "start": "06:00",
+          "end": "22:00"
+        },
+        "pricePerHour": 320000,
         "dayType": "weekend",
         "isActive": true
       }
     ],
     "defaultAvailability": [
       {
-        "dayOfWeek": 0,
+        "dayOfWeek": 3,
+        "timeSlots": [
+          {
+            "start": "16:00",
+            "end": "22:00",
+            "isAvailable": true
+          }
+        ]
+      },
+      {
+        "dayOfWeek": 6,
         "timeSlots": [
           {
             "start": "06:00",
-            "end": "07:00",
-            "isAvailable": true
-          },
-          {
-            "start": "07:00",
-            "end": "08:00",
-            "isAvailable": true
-          },
-          {
-            "start": "08:00",
-            "end": "09:00",
+            "end": "22:00",
             "isAvailable": true
           }
         ]
       }
     ],
     "isActive": true,
-    "images": [
-      "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/football-field-small.jpg"
-    ],
+    "images": ["basketball_thanhkhe.jpg"],
     "ratings": {
-      "average": 4.2,
-      "count": 38
+      "average": 3.9,
+      "count": 10
     },
-    "totalBookings": 85,
-    "totalRevenue": 3200000,
-    "createdAt": "2023-01-01T00:00:00Z",
-    "updatedAt": "2024-01-15T10:00:00Z"
+    "totalBookings": 66,
+    "totalRevenue": 9500000
   }
 ]
