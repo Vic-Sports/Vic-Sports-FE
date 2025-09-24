@@ -1,33 +1,34 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import ProtectedRoute from "@/components/auth";
 import Layout from "@/layout";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import "./i18n"; //👈 phải import trước App
+import "@/styles/global.scss"; // Import sau để override các CSS framework
 import { App } from "antd";
 import "antd/dist/reset.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "@/styles/global.scss"; // Import sau để override các CSS framework
 import { AppProvider } from "components/context/app.context";
-import ProtectedRoute from "@/components/auth";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import "./i18n"; //👈 phải import trước App
 // import viVN from "antd/locale/vi_VN";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import LayoutAdmin from "./components/layout/layout.dashboard";
-import LoginPage from "./pages/client/auth/login";
-import RegisterPage from "./pages/client/auth/register";
-import EmailVerifiedPage from "./pages/client/auth/email-verified";
-import EmailVerificationFailedPage from "./pages/client/auth/email-verification-failed";
-import ForgotPasswordPage from "./pages/client/auth/forgot-password";
-import ResetPasswordPage from "./pages/client/auth/reset-password";
-import HomePage from "./pages/client/home";
-import DashBoardPage from "./pages/admin/dashboard";
 import NotFoundPage from "./components/auth/404";
 import ServerErrorPage from "./components/auth/500";
-import VenueCourts from "./components/client/venue/VenueCourts";
-import CourtDetailPage from "./pages/client/court-detail";
-import BookingPage from "./pages/client/booking";
-import BookingSuccessPage from "./pages/client/booking-success";
 import PaymentPage from "./components/client/booking/payment";
 import PaymentReturnPage from "./components/client/booking/return.url";
+import VenueCourts from "./components/client/venue/VenueCourts";
+import LayoutAdmin from "./components/layout/layout.dashboard";
+import DashBoardPage from "./pages/admin/dashboard";
+import EmailVerificationFailedPage from "./pages/client/auth/email-verification-failed";
+import EmailVerifiedPage from "./pages/client/auth/email-verified";
+import ForgotPasswordPage from "./pages/client/auth/forgot-password";
+import LoginPage from "./pages/client/auth/login";
+import RegisterPage from "./pages/client/auth/register";
+import ResetPasswordPage from "./pages/client/auth/reset-password";
+import BookingPage from "./pages/client/booking";
+import BookingSuccessPage from "./pages/client/booking-success";
+import CourtDetailPage from "./pages/client/court-detail";
+import HomePage from "./pages/client/home";
+import VenuesPage from "./pages/client/venues";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <HomePage />,
+      },
+      {
+        path: "venues",
+        element: <VenuesPage />,
       },
       {
         path: "venue/:venueId",
