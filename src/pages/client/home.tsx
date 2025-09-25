@@ -474,12 +474,40 @@ const HomePage = () => {
             ) : (
               <div className="no-results-smart">
                 <div className="no-results-card">
-                  <div className="no-results-icon">🏟️</div>
-                  <h3>Không tìm thấy kết quả</h3>
-                  <p>
+                  <div
+                    className="no-results-icon"
+                    style={{ color: "#0099ff", fontSize: 48 }}
+                  >
+                    �️
+                  </div>
+                  <h3 style={{ color: "#0099ff", fontWeight: 700 }}>
+                    Không tìm thấy kết quả
+                  </h3>
+                  <p style={{ color: "#333", fontWeight: 500 }}>
                     Không có khu thể thao nào phù hợp với tiêu chí tìm kiếm của
                     bạn
                   </p>
+                  <div
+                    style={{
+                      color: "#0099ff",
+                      fontWeight: 600,
+                      margin: "12px 0 4px 0",
+                      fontSize: 16,
+                    }}
+                  >
+                    Using official Vietnam API v2 (updated after merger 07/2025)
+                  </div>
+                  <div
+                    style={{
+                      color: "#333",
+                      fontWeight: 500,
+                      marginBottom: 8,
+                      fontSize: 15,
+                    }}
+                  >
+                    🎯 Districts optimized for 6 major cities: HCM, HN, DN, HP,
+                    CT
+                  </div>
                   <button
                     className="view-all-btn"
                     onClick={() => setShowResults(false)}
