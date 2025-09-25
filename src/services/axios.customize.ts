@@ -1,5 +1,5 @@
-import axios from "axios";
 import { Mutex } from "async-mutex";
+import axios from "axios";
 
 const mutex = new Mutex();
 
@@ -12,13 +12,18 @@ const createInstanceAxios = (baseURL: string) => {
 
   const handleRefreshToken = async () => {
     return await mutex.runExclusive(async () => {
-      const refreshToken = localStorage.getItem("refresh_token");
+      const refreshToken = localStorage.getItem("refresh_token") || sessionStorage.getItem("refresh_token");
       if (!refreshToken) return null;
 
       const res = await instance.post("/api/v1/auth/refresh-token", {
         refreshToken
       });
-      if (res && res.data) return res.data.access_token;
+      if (res && res.data) {
+        // Lưu refresh token mới vào cả localStorage và sessionStorage
+        localStorage.setItem("refresh_token", res.data.refreshToken);
+        sessionStorage.setItem("refresh_token", res.data.refreshToken);
+        return res.data.token;
+      }
       else return null;
     });
   };
@@ -27,7 +32,7 @@ const createInstanceAxios = (baseURL: string) => {
   instance.interceptors.request.use(
     function (config) {
       // Do something before request is sent
-      const token = localStorage.getItem("access_token");
+      const token = localStorage.getItem("access_token") || sessionStorage.getItem("access_token");
       const auth = token ? `Bearer ${token}` : "";
       config.headers["Authorization"] = auth;
 
@@ -57,6 +62,7 @@ const createInstanceAxios = (baseURL: string) => {
         if (access_token) {
           error.config.headers["Authorization"] = `Bearer ${access_token}`;
           localStorage.setItem("access_token", access_token);
+          sessionStorage.setItem("access_token", access_token);
           return instance.request(error.config);
         }
       }

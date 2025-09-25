@@ -36,6 +36,9 @@ const Header = () => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         localStorage.removeItem("carts");
+        sessionStorage.removeItem("access_token");
+        sessionStorage.removeItem("refresh_token");
+        sessionStorage.removeItem("user");
       }
     } catch (error) {
       console.error("Logout error:", error);

@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from "react";
-import {
-  AppstoreOutlined,
-  ExceptionOutlined,
-  UserOutlined,
-  DollarCircleOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  BellOutlined
-} from "@ant-design/icons";
-import { Layout, Menu, Dropdown, Space, Avatar, Badge, Popover } from "antd";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import type { MenuProps } from "antd";
 import { logoutAPI } from "@/services/api";
+import {
+    AppstoreOutlined,
+    BellOutlined,
+    DollarCircleOutlined,
+    ExceptionOutlined,
+    MenuFoldOutlined,
+    MenuUnfoldOutlined,
+    UserOutlined
+} from "@ant-design/icons";
+import type { MenuProps } from "antd";
+import { Avatar, Badge, Dropdown, Layout, Menu, Popover, Space } from "antd";
+import React, { useEffect, useState } from "react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useCurrentApp } from "../context/app.context";
 
 const { Content, Sider } = Layout;
@@ -109,6 +108,9 @@ const LayoutAdmin = () => {
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
       localStorage.removeItem("carts");
+      sessionStorage.removeItem("access_token");
+      sessionStorage.removeItem("refresh_token");
+      sessionStorage.removeItem("user");
       navigate("/");
     }
   };

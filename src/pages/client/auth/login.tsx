@@ -1,22 +1,22 @@
-import { App, Button, Form, Input, Checkbox, Modal } from "antd";
+import loginAnimation from "@/assets/lottie/login-animation.json";
+import facebook from "@/assets/svg/images/facebook-logo.png";
+import google from "@/assets/svg/images/google-logo.png";
+import { useCurrentApp } from "@/components/context/app.context";
+import {
+    loginAPI,
+    loginWithGoogleAPI,
+    resendVerificationAPI
+} from "@/services/api";
+import AnimationLottie from "@/share/animation-lottie";
+import { useGoogleLogin } from "@react-oauth/google";
+import type { FormProps } from "antd";
+import { App, Button, Checkbox, Form, Input, Modal } from "antd";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { FaEnvelope, FaLock } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import "./login.scss";
-import { useState, useEffect } from "react";
-import type { FormProps } from "antd";
-import {
-  loginAPI,
-  loginWithGoogleAPI,
-  resendVerificationAPI
-} from "@/services/api";
-import { useCurrentApp } from "@/components/context/app.context";
-import { useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
-import google from "@/assets/svg/images/google-logo.png";
-import facebook from "@/assets/svg/images/facebook-logo.png";
-import { useTranslation } from "react-i18next";
-import loginAnimation from "@/assets/lottie/login-animation.json";
-import AnimationLottie from "@/share/animation-lottie";
-import { FaLock, FaEnvelope } from "react-icons/fa";
 
 type FieldType = {
   email: string;
@@ -76,6 +76,10 @@ const LoginPage = () => {
         setIsAuthenticated(true);
         setUser(res.data.user);
         localStorage.setItem("access_token", res.data.access_token);
+        localStorage.setItem("refresh_token", res.data.refreshToken);
+        sessionStorage.setItem("access_token", res.data.access_token);
+        sessionStorage.setItem("refresh_token", res.data.refreshToken);
+        sessionStorage.setItem("user", JSON.stringify(res.data.user));
         message.success(t("login.login_success"));
         navigate("/");
       } else {
@@ -188,6 +192,10 @@ const LoginPage = () => {
           setIsAuthenticated(true);
           setUser(res.data.user);
           localStorage.setItem("access_token", res.data.access_token);
+          localStorage.setItem("refresh_token", res.data.refreshToken);
+          sessionStorage.setItem("access_token", res.data.access_token);
+          sessionStorage.setItem("refresh_token", res.data.refreshToken);
+          sessionStorage.setItem("user", JSON.stringify(res.data.user));
           message.success(t("login.login_success"));
           navigate("/");
         } else {

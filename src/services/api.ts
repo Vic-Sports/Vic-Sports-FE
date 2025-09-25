@@ -353,6 +353,6 @@ export const getDashboardAPI = () => {
 };
 
 export const loginWithGoogleAPI = (type: string, email: string) => {
-  const urlBackend = "/api/v1/auth/social-media";
+  const urlBackend = "/api/v1/auth/social-login";
   return axios.post<IBackendRes<ILogin>>(urlBackend, { type, email });
 };
