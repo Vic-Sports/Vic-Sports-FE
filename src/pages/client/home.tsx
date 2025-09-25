@@ -20,7 +20,7 @@ import {
   FaWind,
   FaTimes,
 } from "react-icons/fa";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useCurrentApp } from "@/components/context/app.context";
@@ -54,6 +54,7 @@ const HomePage = () => {
     totalPages: 1,
   });
   const [showResults, setShowResults] = useState(false);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   // Handle search function - only for venues now
   const handleSearch = async (params: IVenueFilterParams) => {
@@ -299,7 +300,10 @@ const HomePage = () => {
 
       {/* Search Results Section */}
       {showResults && (
-        <section className="smart-courts-section search-results">
+        <section
+          className="smart-courts-section search-results"
+          ref={resultsRef}
+        >
           <Container>
             <Row className="align-items-center mb-5">
               <Col lg={8}>
