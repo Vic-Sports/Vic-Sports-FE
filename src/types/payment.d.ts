@@ -20,77 +20,132 @@ export interface IBookingData {
 }
 
 export interface ICreateBookingRequest {
+  venueId: string;
   courtIds: string[];
-  venue: string;
   date: string;
   timeSlots: {
-    start: string;
-    end: string;
+    startTime: string; // BE expect startTime, not start
+    endTime: string; // BE expect endTime, not end
     price: number;
   }[];
-  totalPrice: number;
+  paymentMethod: "payos" | "momo" | "zalopay" | "banking";
+  paymentInfo?: {
+    returnUrl?: string;
+    cancelUrl?: string;
+  };
   customerInfo: {
     fullName: string;
-    phone: string;
     email: string;
+    phoneNumber: string; // BE expect phoneNumber, not phone
   };
-  paymentMethod: string;
   notes?: string;
 }
 
 export interface IBookingResponse {
   _id?: string;
   bookingId?: string;
-  courtIds: string[];
-  venue: string;
+  bookingCode?: string;
+  user?: string;
+  venue?: {
+    _id: string;
+    name: string;
+    address: string;
+  };
+  court?: {
+    _id: string;
+    name: string;
+    type: string;
+  };
+  courtIds?: string[]; // For multiple courts
   date: string;
   timeSlots: {
     start: string;
     end: string;
     price: number;
   }[];
+  courtQuantity?: number;
   totalPrice: number;
-  customerInfo: {
+  customerInfo?: {
+    fullName: string;
+    phone: string;
+    email: string;
+    notes?: string;
+  };
+  paymentMethod: string;
+  paymentStatus: "pending" | "paid" | "failed" | "cancelled";
+  bookingRef?: string;
+  notes?: string;
+  status: "pending" | "confirmed" | "cancelled";
+  createdAt: string;
+  updatedAt?: string;
+}
+
+// New interface for multiple bookings response
+export interface IMultipleBookingsResponse {
+  bookings: IBookingResponse[];
+  totalAmount: number;
+  groupBookingCode: string;
+  bookingCount: number;
+}
+
+// PayOS Payment interfaces
+export interface IPayOSCreateRequest {
+  amount: number;
+  bookingId: string;
+  description?: string; // Đổi từ orderInfo sang description theo PayOS docs
+  buyerName?: string;
+  buyerEmail?: string;
+  buyerPhone?: string;
+}
+
+export interface IPayOSCreateResponse {
+  paymentUrl: string;
+  paymentRef: string;
+  qrCode?: string;
+}
+
+export interface IPayOSReturnParams {
+  code: string;
+  id: string;
+  cancel: boolean;
+  status: string;
+  orderCode: string;
+}
+
+// ZaloPay interfaces
+export interface IZaloPayCreateRequest {
+  amount: number;
+  bookingId: string;
+  description?: string;
+  customerInfo?: {
     fullName: string;
     phone: string;
     email: string;
   };
-  paymentMethod: string;
-  paymentStatus: "pending" | "paid" | "failed" | "cancelled";
-  paymentRef?: string;
-  notes?: string;
-  bookingRef: string;
-  status: "confirmed" | "pending" | "cancelled";
-  createdAt: string;
-  updatedAt: string;
 }
 
-export interface IVNPayCreateRequest {
-  amount: number;
-  bookingId: string;
-  returnUrl: string;
-  locale?: "vn" | "en";
-  orderInfo?: string;
+export interface IZaloPayCreateResponse {
+  return_code: number;
+  return_message: string;
+  sub_return_code: number;
+  sub_return_message: string;
+  zp_trans_token: string;
+  order_url: string;
+  order_token: string;
 }
 
-export interface IVNPayCreateResponse {
-  paymentUrl: string;
-  paymentRef: string;
+export interface IZaloPayCallbackData {
+  data: string;
+  mac: string;
+  type: number;
 }
 
-export interface IVNPayReturnParams {
-  vnp_Amount: string;
-  vnp_BankCode: string;
-  vnp_BankTranNo?: string;
-  vnp_CardType?: string;
-  vnp_OrderInfo: string;
-  vnp_PayDate: string;
-  vnp_ResponseCode: string;
-  vnp_TmnCode: string;
-  vnp_TransactionNo: string;
-  vnp_TransactionStatus: string;
-  vnp_TxnRef: string;
-  vnp_SecureHash: string;
+export interface IZaloPayReturnParams {
+  status: string;
+  amount: string;
+  appTransId: string;
+  bankCode?: string;
+  checksum: string;
 }
 
 export interface IPaymentTransaction {
@@ -98,9 +153,14 @@ export interface IPaymentTransaction {
   paymentRef: string;
   bookingId: string;
   amount: number;
-  paymentMethod: "vnpay";
+  paymentMethod: "payos" | "zalopay" | "momo" | "banking";
   status: "pending" | "success" | "failed";
-  vnpayData?: IVNPayReturnParams;
+  payosData?: IPayOSReturnParams;
+  zalopayData?: {
+    app_trans_id: string;
+    zp_trans_token: string;
+    order_token: string;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -112,6 +172,11 @@ declare global {
     statusCode: number | string;
     data?: T;
     success?: boolean;
-    booking?: IBookingResponse; // Add this field for booking responses
+    // For booking responses - can contain either single or multiple bookings
+    booking?: IBookingResponse; // Single booking response
+    bookings?: IBookingResponse[]; // Multiple bookings response
+    totalAmount?: number; // Total for multiple bookings
+    groupBookingCode?: string; // Group code for multiple bookings
+    bookingCount?: number; // Count of bookings created
   }
 }

@@ -15,6 +15,7 @@ import NotFoundPage from "./components/auth/404";
 import ServerErrorPage from "./components/auth/500";
 import PaymentPage from "./components/client/booking/payment";
 import PaymentReturnPage from "./components/client/booking/return.url";
+import PayOSReturnPage from "./components/client/booking/payos.return";
 import VenueCourts from "./components/client/venue/VenueCourts";
 import LayoutAdmin from "./components/layout/layout.dashboard";
 import DashBoardPage from "./pages/admin/dashboard";
@@ -70,6 +71,10 @@ const router = createBrowserRouter([
       {
         path: "payment/success",
         element: <PaymentReturnPage />,
+      },
+      {
+        path: "booking/payos-return",
+        element: <PayOSReturnPage />,
       },
     ],
   },

@@ -2,10 +2,7 @@ import createInstanceAxios from "./axios.customize";
 import type {
   ICreateBookingRequest,
   IBookingResponse,
-  IVNPayCreateRequest,
-  IVNPayCreateResponse,
   IPaymentTransaction,
-  IVNPayReturnParams,
 } from "@/types/payment";
 
 const axios = createInstanceAxios(import.meta.env.VITE_BACKEND_URL);
@@ -32,27 +29,9 @@ export const updateBookingStatusAPI = (bookingId: string, status: string) => {
 };
 
 // =================== PAYMENT APIS ===================
-export const createVNPayPaymentAPI = (paymentData: IVNPayCreateRequest) => {
-  const urlBackend = "/api/v1/payment/vnpay/create-url";
-  return axios.post<IBackendRes<IVNPayCreateResponse>>(urlBackend, paymentData);
-};
-
-export const verifyVNPayPaymentAPI = (vnpayParams: IVNPayReturnParams) => {
-  const urlBackend = "/api/v1/payment/vnpay/verify";
-  return axios.post<IBackendRes<{ isValid: boolean; message: string }>>(
-    urlBackend,
-    vnpayParams
-  );
-};
-
 export const getPaymentTransactionAPI = (paymentRef: string) => {
   const urlBackend = `/api/v1/payment/${paymentRef}`;
   return axios.get<IBackendRes<IPaymentTransaction>>(urlBackend);
-};
-
-export const testVNPayAPI = (amount: number) => {
-  const urlBackend = "/api/v1/payment/test-vnpay";
-  return axios.post<IBackendRes<IVNPayCreateResponse>>(urlBackend, { amount });
 };
 
 // =================== VENUE & COURT APIS ===================

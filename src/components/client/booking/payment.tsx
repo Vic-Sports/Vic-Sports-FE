@@ -1,23 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Card,
-  Row,
-  Col,
-  Typography,
-  Button,
   Form,
   Input,
+  Button,
   Radio,
-  Divider,
+  Typography,
+  Space,
+  Descriptions,
+  Tag,
   message,
   Spin,
-  Space,
-  Tag,
-  Modal,
+  Row,
+  Col,
 } from "antd";
 import {
-  CreditCardOutlined,
   UserOutlined,
   PhoneOutlined,
   MailOutlined,
@@ -26,28 +24,27 @@ import {
   ShopOutlined,
   DollarOutlined,
 } from "@ant-design/icons";
-import { createBookingAPI, createVNPayPaymentAPI } from "@/services/bookingApi";
-import type { IBookingData } from "@/types/payment";
+import { createBookingAPI } from "@/services/bookingApi";
+import type { IBookingData, ICreateBookingRequest } from "@/types/payment";
 import "./payment.scss";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 interface LocationState {
   bookingData: IBookingData;
 }
 
-const Payment: React.FC = () => {
+const PaymentPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [form] = Form.useForm();
 
   const [loading, setLoading] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<string>("vnpay");
+  const [paymentMethod, setPaymentMethod] = useState<string>("payos");
   const [bookingData, setBookingData] = useState<IBookingData | null>(null);
 
   useEffect(() => {
     const state = location.state as LocationState;
-
     if (!state?.bookingData) {
       message.error("Không tìm thấy thông tin đặt sân");
       navigate("/");
@@ -65,8 +62,7 @@ const Payment: React.FC = () => {
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("vi-VN", {
+    return new Date(dateString).toLocaleDateString("vi-VN", {
       weekday: "long",
       year: "numeric",
       month: "long",
@@ -74,39 +70,43 @@ const Payment: React.FC = () => {
     });
   };
 
-  const handleSubmit = async (values: any) => {
-    console.log("=== PAYMENT SUBMIT STARTED ===");
-    console.log("Form values:", values);
-    console.log("Selected payment method:", paymentMethod);
-    console.log("Booking data:", bookingData);
-
+  const onFinish = async (values: any) => {
     if (!bookingData) {
       message.error("Không tìm thấy thông tin đặt sân");
       return;
     }
 
     setLoading(true);
-
     try {
+      console.log("=== BOOKING CREATION STARTED ===");
+      console.log("Form values:", values);
+      console.log("Booking data:", bookingData);
+
       // Step 1: Create booking
-      const bookingRequest = {
+      const bookingPayload: ICreateBookingRequest = {
+        venueId: bookingData.venue,
         courtIds: bookingData.courtIds,
-        venue: bookingData.venue,
         date: bookingData.date,
-        timeSlots: bookingData.timeSlots,
-        totalPrice: bookingData.totalPrice,
+        timeSlots: bookingData.timeSlots.map((slot) => ({
+          startTime: slot.start, // Map start -> startTime for BE
+          endTime: slot.end, // Map end -> endTime for BE
+          price: slot.price,
+        })),
+        paymentMethod: paymentMethod as
+          | "payos"
+          | "momo"
+          | "zalopay"
+          | "banking",
         customerInfo: {
           fullName: values.fullName,
-          phone: values.phone,
           email: values.email,
+          phoneNumber: values.phone, // Map phone -> phoneNumber for BE
         },
-        paymentMethod: paymentMethod,
         notes: values.notes || "",
       };
 
-      console.log("Creating booking with data:", bookingRequest);
-
-      const bookingResponse = await createBookingAPI(bookingRequest);
+      console.log("Creating booking with payload:", bookingPayload);
+      const bookingResponse = await createBookingAPI(bookingPayload);
 
       if (!bookingResponse.success || !bookingResponse.data) {
         throw new Error(bookingResponse.message || "Tạo booking thất bại");
@@ -114,9 +114,8 @@ const Payment: React.FC = () => {
 
       const booking = bookingResponse.data;
       console.log("Booking created:", booking);
-      console.log("Booking ID available:", booking._id || booking.bookingId);
 
-      // Save booking data with customerInfo to localStorage for VNPay return handling
+      // Save booking with customer info
       const bookingWithCustomerInfo = {
         ...booking,
         customerInfo: {
@@ -125,334 +124,227 @@ const Payment: React.FC = () => {
           email: values.email,
         },
       };
-      console.log("Booking with customerInfo:", bookingWithCustomerInfo);
+
       localStorage.setItem(
         "currentBooking",
         JSON.stringify(bookingWithCustomerInfo)
       );
 
-      // Step 2: Create payment URL if VNPay
-      if (paymentMethod === "vnpay") {
-        console.log("=== VNPAY FLOW STARTED ===");
-        const bookingId = booking._id || booking.bookingId;
-        console.log("Extracted booking ID:", bookingId);
-
-        if (!bookingId) {
-          throw new Error("Không tìm thấy ID booking");
-        }
-
-        const paymentRequest = {
-          amount: booking.totalPrice,
-          bookingId: bookingId,
-          returnUrl: `${window.location.origin}/payment/return`,
-          locale: "vn" as const,
-          orderInfo: `Thanh toán đặt sân ${
-            bookingData.courtNames
-          } - ${formatDate(bookingData.date)}`,
-        };
-
-        console.log("Creating VNPay payment with data:", paymentRequest);
-
-        try {
-          const paymentResponse = await createVNPayPaymentAPI(paymentRequest);
-          console.log("Raw VNPay API response:", paymentResponse);
-
-          if (!paymentResponse.success || !paymentResponse.data) {
-            console.error("VNPay API failed:", paymentResponse);
-            throw new Error(
-              paymentResponse.message || "Tạo thanh toán thất bại"
-            );
-          }
-
-          console.log("VNPay payment URL created:", paymentResponse.data);
-          console.log("About to show confirmation modal...");
-
-          // Step 3: Redirect to VNPay
-          Modal.confirm({
-            title: "Chuyển hướng thanh toán",
-            content:
-              "Bạn sẽ được chuyển hướng đến trang thanh toán VNPay. Bạn có muốn tiếp tục?",
-            okText: "Tiếp tục",
-            cancelText: "Hủy",
-            onOk: () => {
-              console.log(
-                "User confirmed, redirecting to:",
-                paymentResponse.data!.paymentUrl
-              );
-              window.location.href = paymentResponse.data!.paymentUrl;
+      // Redirect based on payment method
+      if (paymentMethod === "payos") {
+        // Redirect back to booking page for PayOS payment
+        navigate("/booking", {
+          state: {
+            ...bookingData,
+            bookingId: booking._id || booking.bookingId,
+            customerInfo: {
+              fullName: values.fullName,
+              phone: values.phone,
+              email: values.email,
             },
-            onCancel: () => {
-              console.log("User cancelled VNPay payment");
-              setLoading(false);
-            },
-          });
-        } catch (vnpayError) {
-          console.error("VNPay API call failed:", vnpayError);
-          throw vnpayError;
-        }
+          },
+        });
       } else {
-        // Handle other payment methods here (cash, bank transfer, etc.)
-        message.success(
-          "Đặt sân thành công! Quý khách vui lòng thanh toán khi đến sân."
-        );
-        navigate("/booking-success", {
+        // For other payment methods, go to success
+        navigate("/booking/success", {
           state: {
             booking: bookingWithCustomerInfo,
-            paymentMethod: "cash",
+            paymentMethod: paymentMethod,
           },
         });
       }
     } catch (error: any) {
-      console.error("Payment error:", error);
-      message.error(
-        error.message || "Có lỗi xảy ra trong quá trình thanh toán"
-      );
+      console.error("Booking creation error:", error);
+      message.error(error.message || "Có lỗi xảy ra khi tạo booking");
+    } finally {
       setLoading(false);
     }
   };
 
   if (!bookingData) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
+      <div style={{ textAlign: "center", padding: "50px" }}>
         <Spin size="large" />
+        <div style={{ marginTop: 16 }}>
+          <Text>Đang tải thông tin đặt sân...</Text>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="payment-container">
-      <div className="payment-content">
-        <Title level={2} style={{ textAlign: "center", marginBottom: 32 }}>
-          <CreditCardOutlined /> Thanh toán đặt sân
-        </Title>
-
-        <Row gutter={[24, 24]}>
-          {/* Booking Summary */}
-          <Col xs={24} lg={12}>
-            <Card
-              title={
-                <span>
-                  <ShopOutlined /> Thông tin đặt sân
-                </span>
-              }
-              className="booking-summary-card"
+      <Row gutter={[24, 24]}>
+        <Col xs={24} lg={14}>
+          <Card title="Thông tin khách hàng" className="payment-form-card">
+            <Form
+              form={form}
+              layout="vertical"
+              onFinish={onFinish}
+              initialValues={{
+                fullName: bookingData.customerInfo?.fullName || "",
+                phone: bookingData.customerInfo?.phone || "",
+                email: bookingData.customerInfo?.email || "",
+              }}
             >
-              <Space
-                direction="vertical"
-                size="middle"
-                style={{ width: "100%" }}
+              <Form.Item
+                name="fullName"
+                label="Họ và tên"
+                rules={[{ required: true, message: "Vui lòng nhập họ tên" }]}
               >
-                <div>
-                  <Text strong>Sân đã chọn:</Text>
-                  <br />
-                  <Text>{bookingData.courtNames}</Text>
-                </div>
+                <Input
+                  prefix={<UserOutlined />}
+                  placeholder="Nhập họ và tên"
+                  size="large"
+                />
+              </Form.Item>
 
-                <div>
-                  <CalendarOutlined /> <Text strong>Ngày:</Text>
-                  <br />
-                  <Text>{formatDate(bookingData.date)}</Text>
-                </div>
-
-                <div>
-                  <ClockCircleOutlined /> <Text strong>Khung giờ:</Text>
-                  <br />
-                  <Space wrap>
-                    {bookingData.timeSlots.map((slot, index) => (
-                      <Tag key={index} color="blue">
-                        {slot.start} - {slot.end}
-                      </Tag>
-                    ))}
-                  </Space>
-                </div>
-
-                <div>
-                  <Text strong>Số lượng sân:</Text>
-                  <Text style={{ marginLeft: 8 }}>
-                    {bookingData.courtQuantity} sân
-                  </Text>
-                </div>
-
-                <div>
-                  <Text strong>Số khung giờ:</Text>
-                  <Text style={{ marginLeft: 8 }}>
-                    {bookingData.timeSlots.length} khung
-                  </Text>
-                </div>
-
-                <Divider />
-
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "12px",
-                    background: "#f6ffed",
-                    borderRadius: "8px",
-                    border: "1px solid #b7eb8f",
-                  }}
-                >
-                  <Text strong style={{ fontSize: "18px" }}>
-                    <DollarOutlined /> Tổng tiền:
-                  </Text>
-                  <Text
-                    strong
-                    style={{
-                      fontSize: "20px",
-                      color: "#52c41a",
-                    }}
-                  >
-                    {formatCurrency(bookingData.totalPrice)}
-                  </Text>
-                </div>
-              </Space>
-            </Card>
-          </Col>
-
-          {/* Payment Form */}
-          <Col xs={24} lg={12}>
-            <Card
-              title={
-                <span>
-                  <UserOutlined /> Thông tin khách hàng
-                </span>
-              }
-              className="payment-form-card"
-            >
-              <Form
-                form={form}
-                layout="vertical"
-                onFinish={handleSubmit}
-                autoComplete="off"
+              <Form.Item
+                name="phone"
+                label="Số điện thoại"
+                rules={[
+                  { required: true, message: "Vui lòng nhập số điện thoại" },
+                  {
+                    pattern: /^[0-9]{10,11}$/,
+                    message: "Số điện thoại không hợp lệ",
+                  },
+                ]}
               >
-                <Form.Item
-                  label="Họ và tên"
-                  name="fullName"
-                  rules={[
-                    { required: true, message: "Vui lòng nhập họ và tên!" },
-                    { min: 2, message: "Họ và tên phải có ít nhất 2 ký tự!" },
-                  ]}
+                <Input
+                  prefix={<PhoneOutlined />}
+                  placeholder="Nhập số điện thoại"
+                  size="large"
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="email"
+                label="Email"
+                rules={[
+                  { required: true, message: "Vui lòng nhập email" },
+                  { type: "email", message: "Email không hợp lệ" },
+                ]}
+              >
+                <Input
+                  prefix={<MailOutlined />}
+                  placeholder="Nhập địa chỉ email"
+                  size="large"
+                />
+              </Form.Item>
+
+              <Form.Item name="notes" label="Ghi chú (tùy chọn)">
+                <Input.TextArea
+                  placeholder="Nhập ghi chú nếu có"
+                  rows={3}
+                  size="large"
+                />
+              </Form.Item>
+
+              <Form.Item label="Phương thức thanh toán">
+                <Radio.Group
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  size="large"
                 >
-                  <Input
-                    prefix={<UserOutlined />}
-                    placeholder="Nhập họ và tên"
-                    size="large"
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  label="Số điện thoại"
-                  name="phone"
-                  rules={[
-                    { required: true, message: "Vui lòng nhập số điện thoại!" },
-                    {
-                      pattern: /(84|0[3|5|7|8|9])+([0-9]{8})\b/,
-                      message: "Số điện thoại không hợp lệ!",
-                    },
-                  ]}
-                >
-                  <Input
-                    prefix={<PhoneOutlined />}
-                    placeholder="Nhập số điện thoại"
-                    size="large"
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  label="Email"
-                  name="email"
-                  rules={[
-                    { required: true, message: "Vui lòng nhập email!" },
-                    { type: "email", message: "Email không hợp lệ!" },
-                  ]}
-                >
-                  <Input
-                    prefix={<MailOutlined />}
-                    placeholder="Nhập email"
-                    size="large"
-                  />
-                </Form.Item>
-
-                <Form.Item label="Ghi chú (tùy chọn)" name="notes">
-                  <Input.TextArea
-                    placeholder="Ghi chú thêm về booking..."
-                    rows={3}
-                  />
-                </Form.Item>
-
-                <Divider>Phương thức thanh toán</Divider>
-
-                <Form.Item>
-                  <Radio.Group
-                    value={paymentMethod}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="payment-method-group"
-                  >
-                    <Space direction="vertical" style={{ width: "100%" }}>
-                      <Radio value="vnpay" className="payment-option">
-                        <div className="payment-option-content">
-                          <CreditCardOutlined style={{ color: "#1890ff" }} />
-                          <span>
-                            VNPay (Thẻ ATM, Internet Banking, Ví điện tử)
-                          </span>
-                          <Tag color="blue">Khuyến nghị</Tag>
-                        </div>
-                      </Radio>
-
-                      <Radio value="cash" className="payment-option">
-                        <div className="payment-option-content">
-                          <DollarOutlined style={{ color: "#52c41a" }} />
-                          <span>Thanh toán tiền mặt khi đến sân</span>
-                        </div>
-                      </Radio>
-                    </Space>
-                  </Radio.Group>
-                </Form.Item>
-
-                <Form.Item style={{ marginBottom: 0 }}>
-                  <Space style={{ width: "100%" }}>
-                    <Button
-                      onClick={() => navigate(-1)}
-                      size="large"
-                      style={{ flex: 1 }}
-                    >
-                      Quay lại
-                    </Button>
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      loading={loading}
-                      size="large"
-                      style={{ flex: 2 }}
-                      icon={
-                        paymentMethod === "vnpay" ? (
-                          <CreditCardOutlined />
-                        ) : (
-                          <DollarOutlined />
-                        )
-                      }
-                    >
-                      {paymentMethod === "vnpay"
-                        ? "Thanh toán VNPay"
-                        : "Xác nhận đặt sân"}
-                    </Button>
+                  <Space direction="vertical">
+                    <Radio value="payos">
+                      <span>
+                        <strong>PayOS</strong> - Thanh toán qua PayOS
+                      </span>
+                    </Radio>
+                    <Radio value="momo">
+                      <span>
+                        <strong>MoMo</strong> - Ví điện tử MoMo
+                      </span>
+                    </Radio>
+                    <Radio value="zalopay">
+                      <span>
+                        <strong>ZaloPay</strong> - Ví điện tử ZaloPay
+                      </span>
+                    </Radio>
+                    <Radio value="banking">
+                      <span>
+                        <strong>Chuyển khoản</strong> - Chuyển khoản ngân hàng
+                      </span>
+                    </Radio>
                   </Space>
-                </Form.Item>
-              </Form>
-            </Card>
-          </Col>
-        </Row>
-      </div>
+                </Radio.Group>
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  size="large"
+                  loading={loading}
+                  block
+                  style={{ height: "50px", fontSize: "16px" }}
+                >
+                  {paymentMethod === "payos"
+                    ? "Tiến hành thanh toán PayOS"
+                    : "Xác nhận đặt sân"}
+                </Button>
+              </Form.Item>
+            </Form>
+          </Card>
+        </Col>
+
+        <Col xs={24} lg={10}>
+          <Card title="Chi tiết đặt sân" className="booking-summary-card">
+            <Descriptions column={1} size="small">
+              <Descriptions.Item
+                label={
+                  <span>
+                    <ShopOutlined /> Sân thể thao
+                  </span>
+                }
+              >
+                <Text strong>{bookingData.courtNames}</Text>
+              </Descriptions.Item>
+
+              <Descriptions.Item
+                label={
+                  <span>
+                    <CalendarOutlined /> Ngày đặt
+                  </span>
+                }
+              >
+                <Text>{formatDate(bookingData.date)}</Text>
+              </Descriptions.Item>
+
+              <Descriptions.Item
+                label={
+                  <span>
+                    <ClockCircleOutlined /> Khung giờ
+                  </span>
+                }
+              >
+                <Space wrap>
+                  {bookingData.timeSlots.map((slot, index) => (
+                    <Tag key={index} color="blue">
+                      {slot.start} - {slot.end}
+                    </Tag>
+                  ))}
+                </Space>
+              </Descriptions.Item>
+
+              <Descriptions.Item
+                label={
+                  <span>
+                    <DollarOutlined /> Tổng tiền
+                  </span>
+                }
+              >
+                <Text strong style={{ fontSize: "18px", color: "#d32f2f" }}>
+                  {formatCurrency(bookingData.totalPrice)}
+                </Text>
+              </Descriptions.Item>
+            </Descriptions>
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 };
 
-export default Payment;
+export default PaymentPage;

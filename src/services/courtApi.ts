@@ -2,7 +2,6 @@ import type {
   ICourt,
   ICourtFilterParams,
   ICourtSearchResponse,
-  ICourtBooking,
   ICourtAvailability,
 } from "@/types/court";
 import createInstanceAxios from "@/services/axios.customize";
@@ -79,16 +78,6 @@ export const getCourtsBySportAPI = (sportType: string, params?: any) => {
 export const getAvailableSportsAPI = () => {
   const urlBackend = "/api/v1/courts/sports";
   return axios.get<IBackendRes<string[]>>(urlBackend);
-};
-
-/**
- * 🆕 Create booking (requires authentication)
- */
-export const createBookingAPI = (
-  bookingData: Omit<ICourtBooking, "_id" | "createdAt" | "updatedAt">
-) => {
-  const urlBackend = "/api/v1/bookings";
-  return axios.post<IBackendRes<ICourtBooking>>(urlBackend, bookingData);
 };
 
 // 🔒 Owner/Admin only APIs (require authentication)

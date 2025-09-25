@@ -30,13 +30,17 @@ import {
   TeamOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
+import { useCurrentApp } from "@/components/context/app.context";
+import { createBookingAPI } from "@/services/bookingApi";
+import { createPayOSPayment } from "@/services/payOSApi";
+import type { ICreateBookingRequest } from "@/types/payment";
 import "./booking.scss";
 
 const { Title, Text } = Typography;
 
 interface BookingData {
-  courtId: string;
-  courtName: string;
+  courtIds: string[]; // Đổi từ courtId sang courtIds array
+  courtNames: string; // Đổi từ courtName sang courtNames (có thể là string nối)
   date: string;
   timeSlots: Array<{
     start: string;
@@ -60,6 +64,7 @@ const BookingPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const { user, isAuthenticated } = useCurrentApp();
 
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
@@ -69,10 +74,10 @@ const BookingPage: React.FC = () => {
 
   const paymentMethods: PaymentMethod[] = [
     {
-      id: "vnpay",
-      name: "VNPay",
+      id: "payos",
+      name: "PayOS",
       icon: <CreditCardOutlined />,
-      description: "Thanh toán qua VNPay (Visa, MasterCard, ATM)",
+      description: "Thanh toán qua PayOS (Visa, MasterCard, ATM, QR Code)",
       fee: 0,
     },
     {
@@ -100,13 +105,41 @@ const BookingPage: React.FC = () => {
 
   useEffect(() => {
     const data = location.state?.bookingData as BookingData;
+    console.log("Raw location.state:", location.state);
+    console.log("Extracted bookingData:", data);
+
     if (data) {
+      // Validate courtIds array
+      if (
+        !data.courtIds ||
+        data.courtIds.length === 0 ||
+        data.courtIds.some((id) => id === null || id === undefined || id === "")
+      ) {
+        console.error("Invalid courtIds in bookingData:", data.courtIds);
+        message.error("Thông tin sân không hợp lệ. Vui lòng chọn lại sân.");
+        navigate(-1);
+        return;
+      }
+
+      console.log("Valid bookingData, setting state:", data);
       setBookingData(data);
     } else {
       message.error("Không có thông tin đặt sân");
       navigate(-1);
     }
   }, [location.state, navigate]);
+
+  // Auto-fill user information if logged in
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      form.setFieldsValue({
+        fullName: user.fullName || "",
+        phone: user.phone || "",
+        email: user.email || "",
+        notes: "",
+      });
+    }
+  }, [isAuthenticated, user, form]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -163,74 +196,131 @@ const BookingPage: React.FC = () => {
       setLoading(true);
 
       // Validate form first
-      const userInfo = await form.validateFields();
+      await form.validateFields();
+      const userInfo = form.getFieldsValue(true);
+      console.log("[DEBUG] userInfo after getFieldsValue:", userInfo);
 
       console.log("=== BOOKING PAYMENT STARTED ===");
       console.log("Payment method:", paymentMethod);
       console.log("User info:", userInfo);
       console.log("Booking data:", bookingData);
+      console.log("🔍 Debug booking data structure:");
+      console.log("- venueId:", bookingData.venue);
+      console.log("- courtIds:", bookingData.courtIds);
+      console.log("- courtIds length:", bookingData.courtIds?.length);
+      console.log("- courtNames:", bookingData.courtNames);
 
-      // Check if we have required customer info, use fallback if not
-      let customerInfo = userInfo;
-      if (!userInfo.fullName || !userInfo.phone || !userInfo.email) {
-        console.log("Using fallback customer info for testing");
+      // Lấy thông tin khách hàng từ context nếu đã đăng nhập, ưu tiên user context
+      let customerInfo;
+      if (
+        isAuthenticated &&
+        user &&
+        user.fullName &&
+        user.phone &&
+        user.email
+      ) {
         customerInfo = {
-          fullName: "Nguyễn Văn Test",
-          phone: "0123456789",
-          email: "test@example.com",
+          fullName: user.fullName,
+          phone: user.phone,
+          email: user.email,
+          notes: userInfo.notes || "",
         };
+      } else if (userInfo.fullName && userInfo.phone && userInfo.email) {
+        customerInfo = userInfo;
+      } else {
+        message.error("Vui lòng nhập đầy đủ họ tên, số điện thoại và email");
+        setLoading(false);
+        setConfirmModalVisible(false);
+        return;
       }
 
-      // Step 1: Create booking request
-      const bookingRequest = {
-        courtIds: [bookingData.courtId], // Convert single courtId to array
-        venue: bookingData.venue,
+      // Step 1: Create booking request theo format BE yêu cầu (UPDATED)
+      const bookingRequest: ICreateBookingRequest = {
+        venueId: bookingData.venue,
+        courtIds: bookingData.courtIds,
         date: bookingData.date,
-        timeSlots: bookingData.timeSlots,
-        totalPrice: bookingData.totalPrice,
+        timeSlots: bookingData.timeSlots.map((slot) => ({
+          startTime: slot.start, // Map start -> startTime
+          endTime: slot.end, // Map end -> endTime
+          price: slot.price,
+        })),
+        paymentMethod: paymentMethod.toLowerCase() as
+          | "payos"
+          | "momo"
+          | "zalopay"
+          | "banking",
+        paymentInfo: {
+          returnUrl: `${window.location.origin}/booking/payos-return`,
+          cancelUrl: `${window.location.origin}/booking`,
+        },
         customerInfo: {
           fullName: customerInfo.fullName,
-          phone: customerInfo.phone,
           email: customerInfo.email,
+          phoneNumber: customerInfo.phone, // Map phone -> phoneNumber
         },
-        paymentMethod: paymentMethod,
         notes: customerInfo.notes || "",
       };
 
       console.log("Creating booking with data:", bookingRequest);
+      console.log(
+        "📞 Note: Customer info will be handled by user authentication"
+      );
 
-      console.log("🧪 Sử dụng TEST ENDPOINT để tạo booking");
-      // Mock successful booking response with proper structure
-      const bookingResponse = {
-        success: true,
-        message: "Test booking created successfully",
-        booking: {
-          _id: `booking_${Date.now()}`,
-          bookingId: `BK${Date.now()}`,
-          courtIds: bookingRequest.courtIds,
-          venue: bookingRequest.venue,
-          date: bookingRequest.date,
-          timeSlots: bookingRequest.timeSlots,
-          totalPrice: bookingRequest.totalPrice,
-          customerInfo: bookingRequest.customerInfo,
-          paymentMethod: bookingRequest.paymentMethod,
-          paymentStatus: "pending",
-          bookingRef: `REF${Date.now()}`,
-          status: "pending",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      };
+      // Try real API to create booking
+      let bookingResponse;
+      try {
+        console.log("🔄 Attempting real API call to create booking...");
+        bookingResponse = await createBookingAPI(bookingRequest);
+        console.log("✅ Real API call successful:", bookingResponse);
+      } catch (realApiError: any) {
+        console.error("❌ Real API failed:", realApiError.message);
+        throw new Error("Không thể tạo booking: " + realApiError.message);
+      }
 
       console.log("Backend response:", bookingResponse);
 
-      if (!bookingResponse.success || !bookingResponse.booking) {
+      if (!bookingResponse.data && !bookingResponse.booking) {
         console.error("Backend error details:", bookingResponse);
         throw new Error(bookingResponse.message || "Tạo booking thất bại");
       }
 
-      const booking = bookingResponse.booking;
-      console.log("Booking created:", booking);
+      // Handle response based on Backend format (Updated for PayOS)
+
+      let booking: any;
+      let paymentInfo: any = null;
+      let bookingRef: string | undefined;
+
+      if (bookingResponse.data) {
+        const data = bookingResponse.data as any;
+
+        if (data.booking && data.payment) {
+          booking = data.booking;
+          paymentInfo = data.payment;
+        } else if (data.booking) {
+          booking = data.booking;
+        } else if (
+          data.bookings &&
+          Array.isArray(data.bookings) &&
+          data.bookings.length > 0
+        ) {
+          booking = data.bookings[0];
+          // Nếu có groupBookingCode thì dùng làm bookingRef
+          bookingRef = data.groupBookingCode;
+        } else if (typeof data === "object" && data._id) {
+          booking = data;
+        } else {
+          throw new Error("Không nhận được thông tin booking từ server");
+        }
+        // Nếu chưa có bookingRef (single booking), lấy bookingCode hoặc _id
+        if (!bookingRef) {
+          bookingRef = booking.bookingCode || booking._id;
+        }
+      } else if (bookingResponse.booking) {
+        booking = bookingResponse.booking;
+        bookingRef = booking.bookingCode || booking._id;
+      } else {
+        throw new Error("Không nhận được thông tin booking từ server");
+      }
 
       // Create booking result with customer info
       const bookingResult = {
@@ -240,45 +330,38 @@ const BookingPage: React.FC = () => {
           phone: customerInfo.phone,
           email: customerInfo.email,
         },
+        paymentRef: bookingRef,
+        bookingRef: bookingRef,
       };
-
-      // Save to localStorage for VNPay return handling
       localStorage.setItem("currentBooking", JSON.stringify(bookingResult));
 
       // Step 2: Handle payment method
-      if (paymentMethod === "vnpay") {
-        console.log("=== VNPAY FLOW STARTED ===");
-
-        const bookingId = booking._id || booking.bookingId;
-        if (!bookingId) {
-          throw new Error("Không tìm thấy ID booking");
-        }
-
-        console.log("🎉 SKIP VNPAY - Chuyển thẳng đến success page");
-
-        // Close current modal
+      if (paymentMethod === "payos") {
+        // Tạm thời bỏ qua chuyển hướng thanh toán PayOS
+        // Commented out PayOS redirect/payment code
+        // Chuyển trạng thái sang đã thanh toán, chuyển đến trang thông tin, lưu vào DB
+        bookingResult.status = "paid";
+        localStorage.setItem("currentBooking", JSON.stringify(bookingResult));
         setConfirmModalVisible(false);
         setLoading(false);
-
-        // Navigate directly to success page (skip VNPay)
-        message.success("Đặt sân thành công! (Đã skip VNPay cho testing)");
+        message.success("Thanh toán thành công (giả lập)");
         navigate("/booking/success", {
           state: {
             booking: bookingResult,
-            paymentMethod: "vnpay",
-            paymentStatus: "paid", // Mock as paid
-            paymentRef: `SKIP_${Date.now()}`,
+            paymentMethod: paymentMethod,
+            paymentStatus: "paid",
           },
         });
       } else {
-        // Handle cash payment
+        // Handle other payment methods (cash, banking, etc.)
         message.success("Đặt sân thành công! Vui lòng thanh toán khi đến sân.");
 
         // Navigate to success page
         navigate("/booking/success", {
           state: {
             booking: bookingResult,
-            paymentMethod: "cash",
+            paymentMethod: paymentMethod,
+            paymentStatus: "pending",
           },
         });
 
@@ -292,8 +375,7 @@ const BookingPage: React.FC = () => {
       if (error.errorFields && error.errorFields.length > 0) {
         message.error("Vui lòng điền đầy đủ thông tin bắt buộc!");
         // Focus on first error field
-        const firstError = error.errorFields[0];
-        form.scrollToField(firstError.name);
+        form.scrollToField(error.errorFields[0].name);
       } else {
         message.error(
           error.message || "Có lỗi xảy ra trong quá trình thanh toán"
@@ -358,7 +440,54 @@ const BookingPage: React.FC = () => {
               {/* Step 1: Customer Information */}
               {currentStep === 0 && (
                 <div className="step-content">
-                  <Title level={4}>Thông tin khách hàng</Title>
+                  <div style={{ marginBottom: 16 }}>
+                    <Title level={4}>Thông tin khách hàng</Title>
+                    {isAuthenticated && user ? (
+                      <div
+                        style={{
+                          padding: "8px 12px",
+                          background: "#f6ffed",
+                          borderRadius: "6px",
+                          border: "1px solid #b7eb8f",
+                          marginBottom: 16,
+                        }}
+                      >
+                        <Text style={{ color: "#52c41a" }}>
+                          ✓ Đã tự động điền thông tin từ tài khoản của bạn
+                        </Text>
+                      </div>
+                    ) : (
+                      <div
+                        style={{
+                          padding: "12px",
+                          background: "#fff7e6",
+                          borderRadius: "6px",
+                          border: "1px solid #ffd591",
+                          marginBottom: 16,
+                        }}
+                      >
+                        <Text type="secondary">
+                          💡 <strong>Gợi ý:</strong> Đăng nhập để tự động điền
+                          thông tin và theo dõi lịch sử đặt sân{" "}
+                          <Button
+                            type="link"
+                            size="small"
+                            onClick={() =>
+                              navigate("/auth/login", {
+                                state: {
+                                  returnUrl: location.pathname,
+                                  bookingData: bookingData,
+                                },
+                              })
+                            }
+                            style={{ padding: 0, height: "auto" }}
+                          >
+                            Đăng nhập ngay
+                          </Button>
+                        </Text>
+                      </div>
+                    )}
+                  </div>
                   <Form
                     form={form}
                     layout="vertical"
@@ -383,8 +512,13 @@ const BookingPage: React.FC = () => {
                           ]}
                         >
                           <Input
-                            placeholder="Nhập họ và tên"
+                            placeholder={
+                              isAuthenticated && user?.fullName
+                                ? user.fullName
+                                : "Nhập họ và tên"
+                            }
                             prefix={<UserOutlined />}
+                            disabled={loading}
                           />
                         </Form.Item>
                       </Col>
@@ -403,7 +537,14 @@ const BookingPage: React.FC = () => {
                             },
                           ]}
                         >
-                          <Input placeholder="Nhập số điện thoại" />
+                          <Input
+                            placeholder={
+                              isAuthenticated && user?.phone
+                                ? user.phone
+                                : "Nhập số điện thoại"
+                            }
+                            disabled={loading}
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -416,7 +557,14 @@ const BookingPage: React.FC = () => {
                         { type: "email", message: "Email không hợp lệ" },
                       ]}
                     >
-                      <Input placeholder="Nhập email" />
+                      <Input
+                        placeholder={
+                          isAuthenticated && user?.email
+                            ? user.email
+                            : "Nhập email"
+                        }
+                        disabled={loading}
+                      />
                     </Form.Item>
 
                     <Form.Item label="Ghi chú (tùy chọn)" name="notes">
@@ -485,7 +633,22 @@ const BookingPage: React.FC = () => {
                   <Title level={4}>Xác nhận thông tin đặt sân</Title>
                   <div className="confirmation-content">
                     <div className="confirmation-section">
-                      <Title level={5}>Thông tin khách hàng</Title>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          marginBottom: 12,
+                        }}
+                      >
+                        <Title level={5} style={{ margin: 0 }}>
+                          Thông tin khách hàng
+                        </Title>
+                        {isAuthenticated && user && (
+                          <Tag color="green" style={{ marginLeft: 8 }}>
+                            Tài khoản đã xác thực
+                          </Tag>
+                        )}
+                      </div>
                       <div className="info-row">
                         <Text strong>Họ tên:</Text>
                         <Text>{form.getFieldValue("fullName")}</Text>
@@ -498,6 +661,12 @@ const BookingPage: React.FC = () => {
                         <Text strong>Email:</Text>
                         <Text>{form.getFieldValue("email")}</Text>
                       </div>
+                      {form.getFieldValue("notes") && (
+                        <div className="info-row">
+                          <Text strong>Ghi chú:</Text>
+                          <Text>{form.getFieldValue("notes")}</Text>
+                        </div>
+                      )}
                     </div>
 
                     <Divider />
@@ -554,7 +723,7 @@ const BookingPage: React.FC = () => {
             <Card className="booking-summary-card" title="Thông tin đặt sân">
               <div className="summary-content">
                 <div className="court-info">
-                  <Title level={5}>{bookingData.courtName}</Title>
+                  <Title level={5}>{bookingData.courtNames}</Title>
 
                   <div className="booking-details">
                     <div className="detail-item">

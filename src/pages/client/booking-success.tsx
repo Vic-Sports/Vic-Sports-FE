@@ -16,7 +16,6 @@ import {
   CheckCircleOutlined,
   CalendarOutlined,
   ClockCircleOutlined,
-  UserOutlined,
   CreditCardOutlined,
   HomeOutlined,
   PhoneOutlined,
@@ -32,6 +31,7 @@ interface BookingResult {
   bookingRef: string;
   courtIds: string[];
   courtNames?: string;
+  courtQuantity?: number;
   venue: string;
   date: string;
   timeSlots: {
@@ -137,7 +137,7 @@ const BookingSuccessPage: React.FC = () => {
 
   const getPaymentMethodName = (method: string) => {
     const methods: Record<string, string> = {
-      vnpay: "VNPay",
+      payos: "PayOS",
       momo: "MoMo",
       zalopay: "ZaloPay",
       banking: "Chuyển khoản ngân hàng",
@@ -213,263 +213,246 @@ const BookingSuccessPage: React.FC = () => {
   if (!finalBookingData) {
     return (
       <div className="booking-success-page">
-        <div className="container">
-          <Row gutter={[24, 24]} justify="center">
-            <Col xs={24} lg={16}>
-              <Card className="success-card">
-                <Result
-                  status="warning"
-                  title="Không tìm thấy thông tin đặt sân"
-                  subTitle="Dữ liệu booking không hợp lệ hoặc đã bị mất."
-                  extra={
-                    <Space size="large">
-                      <Button type="primary" onClick={() => navigate("/")}>
-                        Về trang chủ
-                      </Button>
-                      <Button onClick={() => navigate("/history")}>
-                        Xem lịch sử đặt sân
-                      </Button>
-                    </Space>
-                  }
-                />
-              </Card>
-            </Col>
-          </Row>
+        <div className="booking-success-page">
+          <div className="container">
+            {/* Success Card on top */}
+            <Row gutter={[24, 24]} justify="center">
+              <Col xs={24} md={18} lg={12}>
+                <Card className="success-card">
+                  <Result
+                    status="success"
+                    title="Đặt sân thành công!"
+                    subTitle={`Mã đặt sân: ${
+                      finalBookingData?.bookingRef || "N/A"
+                    }`}
+                    icon={<CheckCircleOutlined />}
+                    extra={
+                      <Space size="large">
+                        <Button type="primary" onClick={() => navigate("/")}>
+                          Về trang chủ
+                        </Button>
+                        <Button onClick={() => navigate("/history")}>
+                          Xem lịch sử đặt sân
+                        </Button>
+                      </Space>
+                    }
+                  />
+                </Card>
+              </Col>
+            </Row>
+
+            {/* Details and Instructions side by side */}
+            <Row gutter={[24, 24]} justify="center" style={{ marginTop: 24 }}>
+              <Col xs={24} md={12} lg={10}>
+                <Card title="Chi tiết đặt sân" className="booking-details-card">
+                  <Row gutter={[24, 24]}>
+                    <Col xs={24} md={12}>
+                      <div className="detail-section">
+                        <Title level={5}>Thông tin sân</Title>
+                        <div className="detail-item">
+                          <HomeOutlined />
+                          <div>
+                            <Text strong>
+                              {finalBookingData?.courtNames ||
+                                `${
+                                  finalBookingData?.courtQuantity !== undefined
+                                    ? finalBookingData.courtQuantity
+                                    : finalBookingData?.courtIds?.length || 0
+                                } sân`}
+                            </Text>
+                            <br />
+                          </div>
+                        </div>
+                        <div className="detail-item">
+                          <CalendarOutlined />
+                          <div>
+                            <Text strong>
+                              {finalBookingData?.date
+                                ? dayjs(finalBookingData.date).format(
+                                    "dddd, DD/MM/YYYY"
+                                  )
+                                : "N/A"}
+                            </Text>
+                            <br />
+                            <Text type="secondary">Ngày sử dụng</Text>
+                          </div>
+                        </div>
+                        <div className="detail-item">
+                          <ClockCircleOutlined />
+                          <div>
+                            <Space wrap>
+                              {finalBookingData?.timeSlots?.map(
+                                (slot, index) => (
+                                  <Tag key={index} color="blue">
+                                    {slot.start} - {slot.end}
+                                  </Tag>
+                                )
+                              ) || <Text type="secondary">N/A</Text>}
+                            </Space>
+                            <br />
+                            <Text type="secondary">Thời gian sử dụng</Text>
+                          </div>
+                        </div>
+                      </div>
+                    </Col>
+
+                    <Col xs={24} md={12}>
+                      <div className="detail-section">
+                        <Title level={5}>Thông tin khách hàng</Title>
+                        <div className="detail-item">
+                          <HomeOutlined />
+                          <div>
+                            <Text strong>
+                              Số lượng sân:{" "}
+                              {finalBookingData?.courtIds?.length || 0}
+                            </Text>
+                            <br />
+                            <Text type="secondary">
+                              Tên sân: {finalBookingData?.courtNames || "N/A"}
+                            </Text>
+                          </div>
+                        </div>
+                        <div className="detail-item">
+                          <PhoneOutlined />
+                          <div>
+                            <Text strong>
+                              {finalBookingData?.customerInfo?.phone || "N/A"}
+                            </Text>
+                            <br />
+                            <Text type="secondary">Số điện thoại</Text>
+                          </div>
+                        </div>
+                        <div className="detail-item">
+                          <MailOutlined />
+                          <div>
+                            <Text strong>
+                              {finalBookingData?.customerInfo?.email || "N/A"}
+                            </Text>
+                            <br />
+                            <Text type="secondary">Email</Text>
+                          </div>
+                        </div>
+                      </div>
+                    </Col>
+                  </Row>
+
+                  <Divider />
+
+                  <Row gutter={[24, 24]}>
+                    <Col xs={24} md={12}>
+                      <div className="detail-section">
+                        <Title level={5}>Thông tin thanh toán</Title>
+                        <div className="payment-info">
+                          <div className="payment-item">
+                            <Text>Phương thức:</Text>
+                            <Tag color="blue" icon={<CreditCardOutlined />}>
+                              {getPaymentMethodName(
+                                finalBookingData?.paymentMethod || "cash"
+                              )}
+                            </Tag>
+                          </div>
+                          <div className="payment-item">
+                            <Text>Trạng thái:</Text>
+                            <Tag
+                              color={
+                                getPaymentStatusName(
+                                  finalBookingData?.paymentStatus || "pending"
+                                ).color
+                              }
+                            >
+                              {
+                                getPaymentStatusName(
+                                  finalBookingData?.paymentStatus || "pending"
+                                ).text
+                              }
+                            </Tag>
+                          </div>
+                          <div className="payment-item total">
+                            <Text strong>Tổng tiền:</Text>
+                            <Text strong className="amount">
+                              {formatCurrency(
+                                finalBookingData?.totalPrice || 0
+                              )}
+                            </Text>
+                          </div>
+                        </div>
+                      </div>
+                    </Col>
+
+                    <Col xs={24} md={12}>
+                      <div className="detail-section">
+                        <Title level={5}>Trạng thái đặt sân</Title>
+                        <Timeline items={timelineItems} />
+                      </div>
+                    </Col>
+                  </Row>
+
+                  {finalBookingData?.notes && (
+                    <>
+                      <Divider />
+                      <div className="detail-section">
+                        <Title level={5}>Ghi chú</Title>
+                        <Paragraph>{finalBookingData.notes}</Paragraph>
+                      </div>
+                    </>
+                  )}
+                </Card>
+              </Col>
+              <Col xs={24} md={12} lg={8}>
+                <Card title="Hướng dẫn sử dụng" className="instructions-card">
+                  <div className="instructions">
+                    <div className="instruction-item">
+                      <CheckCircleOutlined className="instruction-icon" />
+                      <div>
+                        <Text strong>Đến sân đúng giờ</Text>
+                        <br />
+                        <Text type="secondary">
+                          Vui lòng có mặt trước 15 phút so với giờ đặt sân để
+                          làm thủ tục check-in
+                        </Text>
+                      </div>
+                    </div>
+                    <div className="instruction-item">
+                      <CheckCircleOutlined className="instruction-icon" />
+                      <div>
+                        <Text strong>Mang theo giấy tờ</Text>
+                        <br />
+                        <Text type="secondary">
+                          Cần xuất trình CMND/CCCD hoặc giấy tờ tùy thân có ảnh
+                          để xác minh
+                        </Text>
+                      </div>
+                    </div>
+                    <div className="instruction-item">
+                      <CheckCircleOutlined className="instruction-icon" />
+                      <div>
+                        <Text strong>Tuân thủ quy định</Text>
+                        <br />
+                        <Text type="secondary">
+                          Vui lòng tuân thủ các quy định của sân và sử dụng đúng
+                          mục đích
+                        </Text>
+                      </div>
+                    </div>
+                    <div className="instruction-item">
+                      <CheckCircleOutlined className="instruction-icon" />
+                      <div>
+                        <Text strong>Liên hệ hỗ trợ</Text>
+                        <br />
+                        <Text type="secondary">
+                          Gọi hotline 1900 123 456 nếu cần hỗ trợ hoặc có thắc
+                          mắc
+                        </Text>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </Col>
+            </Row>
+          </div>
         </div>
       </div>
     );
   }
-
-  return (
-    <div className="booking-success-page">
-      <div className="container">
-        <Row gutter={[24, 24]} justify="center">
-          <Col xs={24} lg={16}>
-            <Card className="success-card">
-              <Result
-                status="success"
-                title="Đặt sân thành công!"
-                subTitle={`Mã đặt sân: ${bookingData.bookingRef}`}
-                icon={<CheckCircleOutlined />}
-                extra={
-                  <Space size="large">
-                    <Button type="primary" onClick={() => navigate("/")}>
-                      Về trang chủ
-                    </Button>
-                    <Button onClick={() => navigate("/history")}>
-                      Xem lịch sử đặt sân
-                    </Button>
-                  </Space>
-                }
-              />
-            </Card>
-          </Col>
-
-          <Col xs={24} lg={16}>
-            <Card title="Chi tiết đặt sân" className="booking-details-card">
-              <Row gutter={[24, 24]}>
-                <Col xs={24} md={12}>
-                  <div className="detail-section">
-                    <Title level={5}>Thông tin sân</Title>
-                    <div className="detail-item">
-                      <HomeOutlined />
-                      <div>
-                        <Text strong>
-                          {finalBookingData?.courtNames ||
-                            `${finalBookingData?.courtIds?.length || 0} sân`}
-                        </Text>
-                        <br />
-                        <Text type="secondary">
-                          Mã sân:{" "}
-                          {finalBookingData?.courtIds?.join(", ") || "N/A"}
-                        </Text>
-                      </div>
-                    </div>
-                    <div className="detail-item">
-                      <CalendarOutlined />
-                      <div>
-                        <Text strong>
-                          {finalBookingData?.date
-                            ? dayjs(finalBookingData.date).format(
-                                "dddd, DD/MM/YYYY"
-                              )
-                            : "N/A"}
-                        </Text>
-                        <br />
-                        <Text type="secondary">Ngày sử dụng</Text>
-                      </div>
-                    </div>
-                    <div className="detail-item">
-                      <ClockCircleOutlined />
-                      <div>
-                        <Space wrap>
-                          {finalBookingData?.timeSlots?.map((slot, index) => (
-                            <Tag key={index} color="blue">
-                              {slot.start} - {slot.end}
-                            </Tag>
-                          )) || <Text type="secondary">N/A</Text>}
-                        </Space>
-                        <br />
-                        <Text type="secondary">Thời gian sử dụng</Text>
-                      </div>
-                    </div>
-                  </div>
-                </Col>
-
-                <Col xs={24} md={12}>
-                  <div className="detail-section">
-                    <Title level={5}>Thông tin khách hàng</Title>
-                    <div className="detail-item">
-                      <UserOutlined />
-                      <div>
-                        <Text strong>
-                          {finalBookingData?.customerInfo?.fullName || "N/A"}
-                        </Text>
-                        <br />
-                        <Text type="secondary">Họ và tên</Text>
-                      </div>
-                    </div>
-                    <div className="detail-item">
-                      <PhoneOutlined />
-                      <div>
-                        <Text strong>
-                          {finalBookingData?.customerInfo?.phone || "N/A"}
-                        </Text>
-                        <br />
-                        <Text type="secondary">Số điện thoại</Text>
-                      </div>
-                    </div>
-                    <div className="detail-item">
-                      <MailOutlined />
-                      <div>
-                        <Text strong>
-                          {finalBookingData?.customerInfo?.email || "N/A"}
-                        </Text>
-                        <br />
-                        <Text type="secondary">Email</Text>
-                      </div>
-                    </div>
-                  </div>
-                </Col>
-              </Row>
-
-              <Divider />
-
-              <Row gutter={[24, 24]}>
-                <Col xs={24} md={12}>
-                  <div className="detail-section">
-                    <Title level={5}>Thông tin thanh toán</Title>
-                    <div className="payment-info">
-                      <div className="payment-item">
-                        <Text>Phương thức:</Text>
-                        <Tag color="blue" icon={<CreditCardOutlined />}>
-                          {getPaymentMethodName(
-                            finalBookingData?.paymentMethod || "cash"
-                          )}
-                        </Tag>
-                      </div>
-                      <div className="payment-item">
-                        <Text>Trạng thái:</Text>
-                        <Tag
-                          color={
-                            getPaymentStatusName(
-                              finalBookingData?.paymentStatus || "pending"
-                            ).color
-                          }
-                        >
-                          {
-                            getPaymentStatusName(
-                              finalBookingData?.paymentStatus || "pending"
-                            ).text
-                          }
-                        </Tag>
-                      </div>
-                      <div className="payment-item total">
-                        <Text strong>Tổng tiền:</Text>
-                        <Text strong className="amount">
-                          {formatCurrency(finalBookingData?.totalPrice || 0)}
-                        </Text>
-                      </div>
-                    </div>
-                  </div>
-                </Col>
-
-                <Col xs={24} md={12}>
-                  <div className="detail-section">
-                    <Title level={5}>Trạng thái đặt sân</Title>
-                    <Timeline items={timelineItems} />
-                  </div>
-                </Col>
-              </Row>
-
-              {finalBookingData?.notes && (
-                <>
-                  <Divider />
-                  <div className="detail-section">
-                    <Title level={5}>Ghi chú</Title>
-                    <Paragraph>{finalBookingData.notes}</Paragraph>
-                  </div>
-                </>
-              )}
-            </Card>
-          </Col>
-
-          <Col xs={24} lg={16}>
-            <Card title="Hướng dẫn sử dụng" className="instructions-card">
-              <div className="instructions">
-                <div className="instruction-item">
-                  <CheckCircleOutlined className="instruction-icon" />
-                  <div>
-                    <Text strong>Đến sân đúng giờ</Text>
-                    <br />
-                    <Text type="secondary">
-                      Vui lòng có mặt trước 15 phút so với giờ đặt sân để làm
-                      thủ tục check-in
-                    </Text>
-                  </div>
-                </div>
-
-                <div className="instruction-item">
-                  <CheckCircleOutlined className="instruction-icon" />
-                  <div>
-                    <Text strong>Mang theo giấy tờ</Text>
-                    <br />
-                    <Text type="secondary">
-                      Cần xuất trình CMND/CCCD hoặc giấy tờ tùy thân có ảnh để
-                      xác minh
-                    </Text>
-                  </div>
-                </div>
-
-                <div className="instruction-item">
-                  <CheckCircleOutlined className="instruction-icon" />
-                  <div>
-                    <Text strong>Tuân thủ quy định</Text>
-                    <br />
-                    <Text type="secondary">
-                      Vui lòng tuân thủ các quy định của sân và sử dụng đúng mục
-                      đích
-                    </Text>
-                  </div>
-                </div>
-
-                <div className="instruction-item">
-                  <CheckCircleOutlined className="instruction-icon" />
-                  <div>
-                    <Text strong>Liên hệ hỗ trợ</Text>
-                    <br />
-                    <Text type="secondary">
-                      Gọi hotline 1900 123 456 nếu cần hỗ trợ hoặc có thắc mắc
-                    </Text>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </Col>
-        </Row>
-      </div>
-    </div>
-  );
 };
-
 export default BookingSuccessPage;

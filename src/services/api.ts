@@ -2,60 +2,7 @@ import createInstanceAxios from "services/axios.customize";
 
 const axios = createInstanceAxios(import.meta.env.VITE_BACKEND_URL);
 
-const axiosPayment = createInstanceAxios(
-  import.meta.env.VITE_BACKEND_PAYMENT_URL
-);
-
-// =================== VNPay Payment APIs ===================
-export const getVNPayUrlAPI = (
-  amount: number,
-  locale: string,
-  paymentRef: string
-) => {
-  const urlBackend = "/vnpay/payment-url";
-  return axiosPayment.post<IBackendRes<{ url: string }>>(urlBackend, {
-    amount,
-    locale,
-    paymentRef,
-  });
-};
-
-export const createVNPayPaymentSandboxAPI = (
-  amount: number,
-  bookingId: string,
-  returnUrl: string,
-  locale: string = "vn",
-  orderInfo?: string
-) => {
-  const urlBackend = "/api/v1/payment/vnpay/create-url";
-  return axios.post<IBackendRes<{ paymentUrl: string; paymentRef: string }>>(
-    urlBackend,
-    {
-      amount,
-      bookingId,
-      returnUrl,
-      locale,
-      orderInfo: orderInfo || `Thanh toán đặt sân - Booking ID: ${bookingId}`,
-    }
-  );
-};
-
-export const verifyVNPayPaymentSandboxAPI = (vnpayParams: any) => {
-  const urlBackend = "/api/v1/payment/vnpay/verify";
-  return axios.post<IBackendRes<{ isValid: boolean; message: string }>>(
-    urlBackend,
-    vnpayParams
-  );
-};
-
-export const testVNPaySandboxAPI = (amount: number) => {
-  const urlBackend = "/api/v1/payment/test-vnpay";
-  return axios.post<IBackendRes<{ paymentUrl: string; paymentRef: string }>>(
-    urlBackend,
-    { amount }
-  );
-};
-
+// =================== PAYMENT APIs ===================
 export const updatePaymentOrderAPI = (
   paymentStatus: string,
   paymentRef: string

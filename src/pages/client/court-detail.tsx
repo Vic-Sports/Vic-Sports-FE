@@ -178,11 +178,18 @@ const CourtDetailPage: React.FC = () => {
     );
 
     const bookingData = {
-      courtId: court._id,
-      courtName: court.name,
+      courtIds: [court._id], // Đổi từ courtId thành courtIds array
+      courtNames: court.name, // Đổi từ courtName thành courtNames
       date: selectedDate.format("YYYY-MM-DD"),
-      timeSlot: selectedTimeSlot,
-      price: selectedSlot?.price || 0,
+      timeSlots: [
+        {
+          start: selectedTimeSlot.start,
+          end: selectedTimeSlot.end,
+          price: selectedSlot?.price || 0,
+        },
+      ], // Đổi từ timeSlot thành timeSlots array
+      courtQuantity: 1, // Thêm courtQuantity
+      totalPrice: selectedSlot?.price || 0, // Đổi từ price thành totalPrice
       venue: court.venueId,
     };
 

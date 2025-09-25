@@ -19,11 +19,9 @@ import {
   HistoryOutlined,
 } from "@ant-design/icons";
 import {
-  verifyVNPayPaymentAPI,
   getBookingByIdAPI,
   getPaymentTransactionAPI,
 } from "@/services/bookingApi";
-import type { IVNPayReturnParams } from "@/types/payment";
 import "./return.url.scss";
 
 const { Title, Text } = Typography;
@@ -47,113 +45,57 @@ const PaymentReturn: React.FC = () => {
 
   const processPaymentReturn = async () => {
     try {
-      // Extract VNPay parameters from URL
-      const vnpayParams: IVNPayReturnParams = {
-        vnp_Amount: searchParams.get("vnp_Amount") || "",
-        vnp_BankCode: searchParams.get("vnp_BankCode") || "",
-        vnp_BankTranNo: searchParams.get("vnp_BankTranNo") || "",
-        vnp_CardType: searchParams.get("vnp_CardType") || "",
-        vnp_OrderInfo: searchParams.get("vnp_OrderInfo") || "",
-        vnp_PayDate: searchParams.get("vnp_PayDate") || "",
-        vnp_ResponseCode: searchParams.get("vnp_ResponseCode") || "",
-        vnp_TmnCode: searchParams.get("vnp_TmnCode") || "",
-        vnp_TransactionNo: searchParams.get("vnp_TransactionNo") || "",
-        vnp_TransactionStatus: searchParams.get("vnp_TransactionStatus") || "",
-        vnp_TxnRef: searchParams.get("vnp_TxnRef") || "",
-        vnp_SecureHash: searchParams.get("vnp_SecureHash") || "",
-      };
+      // This is now a generic payment return handler
+      // PayOS-specific logic is in payos.return.tsx
 
-      console.log("VNPay return parameters:", vnpayParams);
+      const paymentRef = searchParams.get("ref") || searchParams.get("id");
+      const status = searchParams.get("status");
 
-      // Check if all required parameters are present
-      if (!vnpayParams.vnp_TxnRef || !vnpayParams.vnp_ResponseCode) {
-        throw new Error("Thiếu thông tin thanh toán từ VNPay");
+      if (!paymentRef) {
+        throw new Error("Thiếu thông tin thanh toán");
       }
 
-      // Step 1: Verify payment with backend
-      const verifyResponse = await verifyVNPayPaymentAPI(vnpayParams);
-
-      if (!verifyResponse.success) {
-        throw new Error(
-          verifyResponse.message || "Xác thực thanh toán thất bại"
-        );
-      }
-
-      console.log("Payment verification result:", verifyResponse.data);
-
-      let paymentResponseData = null;
-      let bookingResponseData = null;
-
-      // Step 2: Get payment transaction details
+      // Try to get payment transaction details
       try {
-        const paymentResponse = await getPaymentTransactionAPI(
-          vnpayParams.vnp_TxnRef
-        );
+        const paymentResponse = await getPaymentTransactionAPI(paymentRef);
         if (paymentResponse.success && paymentResponse.data) {
-          paymentResponseData = paymentResponse.data;
+          const paymentResponseData = paymentResponse.data;
           setPaymentData(paymentResponseData);
 
-          // Step 3: Get booking details
+          // Get booking details
           const bookingResponse = await getBookingByIdAPI(
             paymentResponseData.bookingId
           );
           if (bookingResponse.success && bookingResponse.data) {
-            bookingResponseData = bookingResponse.data;
-            setBookingData(bookingResponseData);
+            setBookingData(bookingResponse.data);
           }
         }
       } catch (error) {
         console.warn("Could not fetch payment/booking details:", error);
       }
 
-      // Determine payment status based on VNPay response code
-      if (
-        vnpayParams.vnp_ResponseCode === "00" &&
-        vnpayParams.vnp_TransactionStatus === "00"
-      ) {
+      // Determine payment status
+      if (status === "success" || status === "00") {
         setPaymentStatus("success");
         message.success("Thanh toán thành công!");
 
-        // After successful payment verification, redirect to booking success with data
+        // Redirect to booking success
         setTimeout(() => {
-          if (bookingResponseData) {
-            // Clear localStorage after successful use
+          if (bookingData) {
             localStorage.removeItem("currentBooking");
-            navigate("/booking-success", {
+            navigate("/booking/success", {
               state: {
-                booking: bookingResponseData,
-                paymentMethod: "vnpay",
-                paymentData: paymentResponseData,
+                booking: bookingData,
+                paymentMethod: "generic",
+                paymentData,
               },
             });
-          } else {
-            // Try to get booking from localStorage as fallback
-            const savedBooking = localStorage.getItem("currentBooking");
-            if (savedBooking) {
-              try {
-                const booking = JSON.parse(savedBooking);
-                localStorage.removeItem("currentBooking");
-                navigate("/booking-success", {
-                  state: {
-                    booking,
-                    paymentMethod: "vnpay",
-                    paymentData: paymentResponseData,
-                  },
-                });
-                return;
-              } catch (error) {
-                console.error("Error parsing saved booking:", error);
-              }
-            }
-            // If no booking data, stay on return page to show transaction details
-            console.warn("No booking data available for redirect");
           }
-        }, 2000); // Wait 2 seconds to show success message
+        }, 2000);
       } else {
         setPaymentStatus("failed");
-        const errorMsg = getVNPayErrorMessage(vnpayParams.vnp_ResponseCode);
-        setErrorMessage(errorMsg);
-        message.error(`Thanh toán thất bại: ${errorMsg}`);
+        setErrorMessage("Thanh toán thất bại");
+        message.error("Thanh toán thất bại");
       }
     } catch (error: any) {
       console.error("Payment return processing error:", error);
@@ -165,31 +107,6 @@ const PaymentReturn: React.FC = () => {
     }
   };
 
-  const getVNPayErrorMessage = (responseCode: string): string => {
-    const errorMessages: { [key: string]: string } = {
-      "01": "Giao dịch chưa hoàn tất",
-      "02": "Giao dịch bị lỗi",
-      "04": "Giao dịch đảo (Khách hàng đã bị trừ tiền tại Ngân hàng nhưng GD chưa thành công ở VNPAY)",
-      "05": "VNPAY đang xử lý giao dịch này (GD hoàn tiền)",
-      "06": "VNPAY đã gửi yêu cầu hoàn tiền sang Ngân hàng (GD hoàn tiền)",
-      "07": "Giao dịch bị nghi ngờ gian lận",
-      "09": "GD Hoàn trả bị từ chối",
-      "10": "Đã giao hàng",
-      "11": "Giao dịch không hợp lệ",
-      "12": "Giao dịch không thành công",
-      "13": "Tài khoản khách hàng bị khóa",
-      "24": "Khách hàng hủy giao dịch",
-      "51": "Tài khoản của quý khách không đủ số dư để thực hiện giao dịch",
-      "65": "Tài khoản của Quý khách đã vượt quá hạn mức giao dịch trong ngày",
-      "75": "Ngân hàng thanh toán đang bảo trì",
-      "79": "KH nhập sai mật khẩu thanh toán quá số lần quy định",
-    };
-
-    return (
-      errorMessages[responseCode] || `Lỗi không xác định (Mã: ${responseCode})`
-    );
-  };
-
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -197,18 +114,14 @@ const PaymentReturn: React.FC = () => {
     }).format(amount);
   };
 
-  const formatVNPayDate = (vnpPayDate: string) => {
-    // VNPay date format: yyyyMMddHHmmss
-    if (vnpPayDate.length !== 14) return vnpPayDate;
-
-    const year = vnpPayDate.substring(0, 4);
-    const month = vnpPayDate.substring(4, 6);
-    const day = vnpPayDate.substring(6, 8);
-    const hour = vnpPayDate.substring(8, 10);
-    const minute = vnpPayDate.substring(10, 12);
-    const second = vnpPayDate.substring(12, 14);
-
-    return `${day}/${month}/${year} ${hour}:${minute}:${second}`;
+  const formatPaymentDate = (payDate: string) => {
+    // Generic date format function
+    if (!payDate) return payDate;
+    try {
+      return new Date(payDate).toLocaleString("vi-VN");
+    } catch {
+      return payDate;
+    }
   };
 
   if (loading) {
@@ -319,7 +232,7 @@ const PaymentReturn: React.FC = () => {
                     {formatCurrency(paymentData.amount)}
                   </Descriptions.Item>
                   <Descriptions.Item label="Phương thức">
-                    <Tag color="blue">VNPay</Tag>
+                    <Tag color="blue">Generic Payment</Tag>
                   </Descriptions.Item>
                   <Descriptions.Item label="Trạng thái">
                     <Tag
@@ -333,21 +246,16 @@ const PaymentReturn: React.FC = () => {
                 </>
               )}
 
-              {/* VNPay transaction details */}
-              {searchParams.get("vnp_TransactionNo") && (
-                <>
-                  <Descriptions.Item label="Mã GD VNPay">
-                    {searchParams.get("vnp_TransactionNo")}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Ngân hàng">
-                    {searchParams.get("vnp_BankCode")}
-                  </Descriptions.Item>
-                  {searchParams.get("vnp_PayDate") && (
-                    <Descriptions.Item label="Thời gian thanh toán">
-                      {formatVNPayDate(searchParams.get("vnp_PayDate") || "")}
-                    </Descriptions.Item>
-                  )}
-                </>
+              {/* Generic transaction details */}
+              {searchParams.get("id") && (
+                <Descriptions.Item label="Mã giao dịch">
+                  {searchParams.get("id")}
+                </Descriptions.Item>
+              )}
+              {searchParams.get("date") && (
+                <Descriptions.Item label="Thời gian thanh toán">
+                  {formatPaymentDate(searchParams.get("date") || "")}
+                </Descriptions.Item>
               )}
             </Descriptions>
           </Card>
