@@ -70,6 +70,9 @@ const HomePage = () => {
         });
       }
       setShowResults(true);
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
     } catch (error) {
       console.error("Search error:", error);
       message.error("Không thể tìm kiếm. Vui lòng thử lại.");
@@ -85,6 +88,7 @@ const HomePage = () => {
     setSearchResults((prev) => ({ ...prev, page }));
   };
 
+  // Xóa hàm handleFindVenues vì scroll đã tích hợp vào handleSearch
   // Handle venue actions
   const handleViewCourts = (venueId: string) => {
     navigate(`/venue/${venueId}`);
@@ -278,7 +282,6 @@ const HomePage = () => {
 
             {/* New Search Filter */}
             <SearchFilter onSearch={handleSearch} loading={searchLoading} />
-
             {/* Stats */}
             <div className="hero-stats">
               <div className="stat-item">

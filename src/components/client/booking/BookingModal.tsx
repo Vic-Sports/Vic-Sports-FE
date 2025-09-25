@@ -217,10 +217,8 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
       setAvailableCourts(courtsWithNumbers);
 
-      // Auto select current court
-      setSelectedCourts(
-        courtsWithNumbers.filter((c) => c.isSelected).map((c) => c._id || "")
-      );
+      // Không chọn sân nào mặc định khi mở modal
+      setSelectedCourts([]);
     } catch (error) {
       console.error("Error loading courts:", error);
 

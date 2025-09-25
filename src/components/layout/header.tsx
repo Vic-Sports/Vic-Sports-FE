@@ -22,9 +22,11 @@ const Header = () => {
 
   const backendURL = import.meta.env.VITE_BACKEND_URL || "";
   const urlAvatar = useMemo(() => {
-    return user?.avatar
-      ? `${backendURL}/images/avatar/${user.avatar}`
-      : undefined;
+    if (!user?.avatar) return undefined;
+    // Nếu là link Google hoặc link cloud thì dùng trực tiếp
+    if (user.avatar.startsWith("http")) return user.avatar;
+    // Nếu là tên file thì dùng backendURL
+    return `${backendURL}/images/avatar/${user.avatar}`;
   }, [user?.avatar, backendURL]);
 
   // Không dùng trạng thái loading cho logout

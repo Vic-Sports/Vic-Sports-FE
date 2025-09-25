@@ -4,12 +4,7 @@ import { App, Pagination, Spin } from "antd";
 import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import {
-    FaMapMarkerAlt,
-    FaRobot,
-    FaStar,
-    FaWifi,
-} from "react-icons/fa";
+import { FaMapMarkerAlt, FaRobot, FaStar, FaWifi } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import "./home.scss";
 
@@ -53,7 +48,7 @@ const VenuesPage = () => {
   // Handle pagination
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Handle venue actions
@@ -71,7 +66,10 @@ const VenuesPage = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="futuristic-hero" style={{ paddingTop: "120px", paddingBottom: "60px" }}>
+      <section
+        className="futuristic-hero"
+        style={{ paddingTop: "120px", paddingBottom: "60px" }}
+      >
         <Container>
           <div className="text-center">
             <div className="hero-badge mb-4">
@@ -156,7 +154,8 @@ const VenuesPage = () => {
                                 alt={venue.name}
                                 className="venue-bg-image"
                                 onError={(e) => {
-                                  (e.target as HTMLImageElement).style.display = "none";
+                                  (e.target as HTMLImageElement).style.display =
+                                    "none";
                                 }}
                               />
                             ) : (
@@ -170,9 +169,7 @@ const VenuesPage = () => {
                           <div className="tech-badge-left">
                             <div className="status-dot"></div>
                             <span>
-                              {venue.isVerified
-                                ? "VERIFIED"
-                                : "UNVERIFIED"}
+                              {venue.isVerified ? "VERIFIED" : "UNVERIFIED"}
                             </span>
                           </div>
                           <div className="tech-badge-right">
@@ -210,21 +207,21 @@ const VenuesPage = () => {
 
                         {/* Venue Features */}
                         <div className="tech-features">
-                          {venue.amenities && venue.amenities.length > 0
-                            ? venue.amenities
-                                .slice(0, 3)
-                                .map((amenity, index) => (
-                                  <div key={index} className="tech-feature">
-                                    <FaWifi />
-                                    <span>{amenity.name}</span>
-                                  </div>
-                                ))
-                            : (
-                                <div className="tech-feature">
+                          {venue.amenities && venue.amenities.length > 0 ? (
+                            venue.amenities
+                              .slice(0, 3)
+                              .map((amenity, index) => (
+                                <div key={index} className="tech-feature">
                                   <FaWifi />
-                                  <span>Modern Amenities</span>
+                                  <span>{amenity.name}</span>
                                 </div>
-                              )}
+                              ))
+                          ) : (
+                            <div className="tech-feature">
+                              <FaWifi />
+                              <span>Modern Amenities</span>
+                            </div>
+                          )}
                         </div>
 
                         <div className="court-pricing">
@@ -282,13 +279,8 @@ const VenuesPage = () => {
               <div className="no-results-card">
                 <div className="no-results-icon">🏟️</div>
                 <h3>No Sports Venues Available</h3>
-                <p>
-                  Currently there are no sports venues in the system
-                </p>
-                <button
-                  className="view-all-btn"
-                  onClick={() => navigate("/")}
-                >
+                <p>Currently there are no sports venues in the system</p>
+                <button className="view-all-btn" onClick={() => navigate("/")}>
                   Back to Home
                 </button>
               </div>
