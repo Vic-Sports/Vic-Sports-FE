@@ -34,6 +34,8 @@ import { getVenueByIdAPI, getVenueCourtsAPI } from "@/services/venueApi";
 import BookingModal from "@/components/client/booking/BookingModal";
 import "./VenueCourts.scss";
 
+import VenueImageCarousel from "./VenueImageCarousel";
+
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 
@@ -301,17 +303,7 @@ const VenueCourts: React.FC = () => {
         <Row gutter={[24, 16]}>
           <Col xs={24} md={8}>
             <div className="venue-image">
-              <img
-                src={
-                  venue.images[0] ||
-                  "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=250&fit=crop&crop=center&auto=format&q=80"
-                }
-                alt={venue.name}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src =
-                    "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=250&fit=crop&crop=center&auto=format&q=80";
-                }}
-              />
+              <VenueImageCarousel images={venue.images} alt={venue.name} />
               {venue.isVerified && (
                 <div className="verified-badge">
                   <CrownOutlined />

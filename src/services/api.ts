@@ -23,7 +23,8 @@ export const registerAPI = (
   fullName: string,
   email: string,
   password: string,
-  phone: string
+  phone: string,
+  role: string
 ) => {
   const urlBackend = "/api/v1/auth/register";
   return axios.post<IBackendRes<IRegister>>(urlBackend, {
@@ -31,6 +32,7 @@ export const registerAPI = (
     email,
     password,
     phone,
+    role,
   });
 };
 
@@ -299,7 +301,10 @@ export const getDashboardAPI = () => {
   >(urlBackend);
 };
 
-export const loginWithGoogleAPI = (type: string, email: string) => {
+export const loginWithGoogleAPI = (
+  type: string,
+  payload: { email: string; name: string; picture: string }
+) => {
   const urlBackend = "/api/v1/auth/social-login";
-  return axios.post<IBackendRes<ILogin>>(urlBackend, { type, email });
+  return axios.post<IBackendRes<ILogin>>(urlBackend, { type, ...payload });
 };

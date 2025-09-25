@@ -70,6 +70,9 @@ const HomePage = () => {
         });
       }
       setShowResults(true);
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
     } catch (error) {
       console.error("Search error:", error);
       message.error("Không thể tìm kiếm. Vui lòng thử lại.");
@@ -85,6 +88,7 @@ const HomePage = () => {
     setSearchResults((prev) => ({ ...prev, page }));
   };
 
+  // Xóa hàm handleFindVenues vì scroll đã tích hợp vào handleSearch
   // Handle venue actions
   const handleViewCourts = (venueId: string) => {
     navigate(`/venue/${venueId}`);
@@ -278,7 +282,6 @@ const HomePage = () => {
 
             {/* New Search Filter */}
             <SearchFilter onSearch={handleSearch} loading={searchLoading} />
-
             {/* Stats */}
             <div className="hero-stats">
               <div className="stat-item">
@@ -471,12 +474,40 @@ const HomePage = () => {
             ) : (
               <div className="no-results-smart">
                 <div className="no-results-card">
-                  <div className="no-results-icon">🏟️</div>
-                  <h3>Không tìm thấy kết quả</h3>
-                  <p>
+                  <div
+                    className="no-results-icon"
+                    style={{ color: "#0099ff", fontSize: 48 }}
+                  >
+                    �️
+                  </div>
+                  <h3 style={{ color: "#0099ff", fontWeight: 700 }}>
+                    Không tìm thấy kết quả
+                  </h3>
+                  <p style={{ color: "#333", fontWeight: 500 }}>
                     Không có khu thể thao nào phù hợp với tiêu chí tìm kiếm của
                     bạn
                   </p>
+                  <div
+                    style={{
+                      color: "#0099ff",
+                      fontWeight: 600,
+                      margin: "12px 0 4px 0",
+                      fontSize: 16,
+                    }}
+                  >
+                    Using official Vietnam API v2 (updated after merger 07/2025)
+                  </div>
+                  <div
+                    style={{
+                      color: "#333",
+                      fontWeight: 500,
+                      marginBottom: 8,
+                      fontSize: 15,
+                    }}
+                  >
+                    🎯 Districts optimized for 6 major cities: HCM, HN, DN, HP,
+                    CT
+                  </div>
                   <button
                     className="view-all-btn"
                     onClick={() => setShowResults(false)}

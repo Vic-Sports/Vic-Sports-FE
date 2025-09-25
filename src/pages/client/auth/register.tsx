@@ -1,4 +1,4 @@
-import { App, Button, Form, Input } from "antd";
+import { App, Button, Form, Input, Radio } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import type { FormProps } from "antd";
 import { useState, useEffect } from "react";
@@ -9,13 +9,21 @@ import { useTranslation } from "react-i18next";
 import type { RuleObject } from "antd/es/form";
 import AnimationLottie from "@/share/animation-lottie";
 import registerAnimation from "@/assets/lottie/register-animation.json";
-import { FaUser, FaEnvelope, FaLock, FaPhone, FaRocket } from "react-icons/fa";
+import {
+  FaUser,
+  FaEnvelope,
+  FaLock,
+  FaPhone,
+  FaRocket,
+  FaAddressCard,
+} from "react-icons/fa";
 
 type FieldType = {
   fullName: string;
   email: string;
   password: string;
   phone: string;
+  role: string;
 };
 
 const RegisterPage = () => {
@@ -66,12 +74,13 @@ const RegisterPage = () => {
 
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     setIsSubmit(true);
-    const { email, fullName, password, phone } = values;
+    const { email, fullName, password, phone, role } = values;
 
     // Debug logging
-    console.log("Form values:", { fullName, email, password, phone });
+    console.log("Form values:", { fullName, email, password, phone, role });
 
-    const res = await registerAPI(fullName, email, password, phone);
+    // Pass role to registerAPI
+    const res = await registerAPI(fullName, email, password, phone, role);
     setIsSubmit(false);
 
     // Debug response
@@ -124,7 +133,7 @@ const RegisterPage = () => {
                   }
                   name="fullName"
                   rules={[
-                    { required: true, message: t("register.message_fullname") }
+                    { required: true, message: t("register.message_fullname") },
                   ]}
                 >
                   <Input
@@ -144,7 +153,7 @@ const RegisterPage = () => {
                   name="email"
                   rules={[
                     { required: true, message: t("register.message_email1") },
-                    { type: "email", message: t("register.message_email2") }
+                    { type: "email", message: t("register.message_email2") },
                   ]}
                 >
                   <Input
@@ -164,7 +173,7 @@ const RegisterPage = () => {
                   name="password"
                   rules={[
                     { required: true, message: t("register.message_password") },
-                    { validator: validatePassword }
+                    { validator: validatePassword },
                   ]}
                 >
                   <Input.Password
@@ -185,9 +194,9 @@ const RegisterPage = () => {
                   rules={[
                     {
                       required: true,
-                      message: t("register.message_phone_required")
+                      message: t("register.message_phone_required"),
                     },
-                    { validator: validatePhone }
+                    { validator: validatePhone },
                   ]}
                 >
                   <Input
@@ -195,6 +204,27 @@ const RegisterPage = () => {
                     className="futuristic-input"
                     prefix={<FaPhone className="input-icon" />}
                   />
+                </Form.Item>
+                <Form.Item<FieldType>
+                  label={
+                    <span className="form-label">
+                      <FaAddressCard className="label-icon" />
+                      {t("register.role") || "Role"}
+                    </span>
+                  }
+                  name="role"
+                  initialValue="customer"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select a role",
+                    },
+                  ]}
+                >
+                  <Radio.Group>
+                    <Radio value="customer">Customer</Radio>
+                    <Radio value="owner">Owner</Radio>
+                  </Radio.Group>
                 </Form.Item>
 
                 <Form.Item>
