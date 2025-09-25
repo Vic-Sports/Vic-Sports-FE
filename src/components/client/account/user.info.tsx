@@ -1,34 +1,33 @@
 import { useCurrentApp } from "@/components/context/app.context";
-import {
-  AntDesignOutlined,
-  UploadOutlined,
-  UserOutlined,
-  PhoneOutlined,
-  MailOutlined,
-  EnvironmentOutlined
-} from "@ant-design/icons";
-import {
-  App,
-  Avatar,
-  Button,
-  Col,
-  Form,
-  Input,
-  Row,
-  Upload,
-  DatePicker,
-  Select,
-  Card,
-  Typography,
-  Divider
-} from "antd";
-import { useEffect, useState } from "react";
-import type { FormProps } from "antd";
-import type { UploadChangeParam } from "antd/es/upload";
-import type { UploadRequestOption as RcCustomRequestOptions } from "rc-upload/lib/interface";
 import { updateUserInfoAPI, uploadFileAPI } from "@/services/api";
-import type { UploadFile } from "antd";
+import {
+    AntDesignOutlined,
+    EnvironmentOutlined,
+    MailOutlined,
+    PhoneOutlined,
+    UploadOutlined,
+    UserOutlined
+} from "@ant-design/icons";
+import type { FormProps, UploadFile } from "antd";
+import {
+    App,
+    Avatar,
+    Button,
+    Card,
+    Col,
+    DatePicker,
+    Divider,
+    Form,
+    Input,
+    Row,
+    Select,
+    Typography,
+    Upload
+} from "antd";
+import type { UploadChangeParam } from "antd/es/upload";
 import dayjs from "dayjs";
+import type { UploadRequestOption as RcCustomRequestOptions } from "rc-upload/lib/interface";
+import { useEffect, useState } from "react";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -140,6 +139,7 @@ const UserInfo = () => {
 
       //force renew token
       localStorage.removeItem("access_token");
+      sessionStorage.removeItem("access_token");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra",

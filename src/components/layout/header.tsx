@@ -30,15 +30,30 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       const res = await logoutAPI();
+      // Luôn logout dù API có thành công hay không
+      setUser(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("carts");
+      sessionStorage.removeItem("access_token");
+      sessionStorage.removeItem("refresh_token");
+      sessionStorage.removeItem("user");
+      
       if (res?.data) {
-        setUser(null);
-        setIsAuthenticated(false);
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        localStorage.removeItem("carts");
+        console.log("Logout successful");
       }
     } catch (error) {
       console.error("Logout error:", error);
+      // Vẫn logout ngay cả khi có lỗi
+      setUser(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("carts");
+      sessionStorage.removeItem("access_token");
+      sessionStorage.removeItem("refresh_token");
+      sessionStorage.removeItem("user");
     }
   };
 
