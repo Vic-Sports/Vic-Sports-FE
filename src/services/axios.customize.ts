@@ -18,8 +18,16 @@ const createInstanceAxios = (baseURL: string) => {
       const res = await instance.post("/api/v1/auth/refresh-token", {
         refreshToken
       });
-      if (res && res.data) return res.data.access_token;
-      else return null;
+      const newToken = res?.data?.token;
+      const newRefreshToken = res?.data?.refreshToken;
+      if (newToken) {
+        localStorage.setItem("access_token", newToken);
+        if (newRefreshToken) {
+          localStorage.setItem("refresh_token", newRefreshToken);
+        }
+        return newToken;
+      }
+      return null;
     });
   };
 
@@ -53,10 +61,9 @@ const createInstanceAxios = (baseURL: string) => {
       // Any status codes that falls outside the range of 2xx cause this function to trigger
       // Do something with response error
       if (error.config && error.response && +error.response.status === 401) {
-        const access_token = await handleRefreshToken();
-        if (access_token) {
-          error.config.headers["Authorization"] = `Bearer ${access_token}`;
-          localStorage.setItem("access_token", access_token);
+        const newToken = await handleRefreshToken();
+        if (newToken) {
+          error.config.headers["Authorization"] = `Bearer ${newToken}`;
           return instance.request(error.config);
         }
       }

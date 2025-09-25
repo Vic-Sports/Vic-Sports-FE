@@ -51,7 +51,7 @@ export const registerAPI = (
 };
 
 export const fetchAccountAPI = () => {
-  const urlBackend = "/api/v1/auth/account";
+  const urlBackend = "/api/v1/auth/me";
   return axios.get<IBackendRes<IFetchAccount>>(urlBackend);
 };
 
@@ -124,6 +124,52 @@ export const updateUserAPI = (_id: string, fullName: string, phone: string) => {
 export const deleteUserAPI = (_id: string) => {
   const urlBackend = `/api/v1/user/${_id}`;
   return axios.delete<IBackendRes<IRegister>>(urlBackend);
+};
+
+// =============== ADMIN - USERS ===============
+export const getAdminUsersAPI = (params: {
+  page?: number;
+  limit?: number;
+  role?: string;
+  status?: string;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}) => {
+  const query = new URLSearchParams();
+  if (params.page) query.set("page", String(params.page));
+  if (params.limit) query.set("limit", String(params.limit));
+  if (params.role) query.set("role", params.role);
+  if (params.status) query.set("status", params.status);
+  if (params.search) query.set("search", params.search);
+  if (params.sortBy) query.set("sortBy", params.sortBy);
+  if (params.sortOrder) query.set("sortOrder", params.sortOrder);
+  const urlBackend = `/api/v1/admin/users?${query.toString()}`;
+  return axios.get<
+    IBackendRes<{
+      users: IUser[];
+      pagination: {
+        currentPage: number;
+        totalPages: number;
+        totalUsers: number;
+        hasNext: boolean;
+        hasPrev: boolean;
+      };
+    }>
+  >(urlBackend);
+};
+
+export const banUserAdminAPI = (
+  userId: string,
+  body: { reason?: string; duration?: number }
+) => {
+  const urlBackend = `/api/v1/admin/users/${userId}/ban`;
+  return axios.put<IBackendRes<any>>(urlBackend, body);
+};
+
+export const unbanUserAdminAPI = (userId: string) => {
+  const urlBackend = `/api/v1/admin/users/${userId}/unban`;
+  return axios.put<IBackendRes<any>>(urlBackend, {});
 };
 
 export const getBooksAPI = (query: string) => {
@@ -318,4 +364,111 @@ export const getDashboardAPI = () => {
 export const loginWithGoogleAPI = (type: string, email: string) => {
   const urlBackend = "/api/v1/auth/social-media";
   return axios.post<IBackendRes<ILogin>>(urlBackend, { type, email });
+};
+
+// =============== ANALYTICS (Admin) ===============
+export const getDashboardOverviewAPI = (period: string = "30d") => {
+  const urlBackend = `/api/v1/analytics/dashboard?period=${period}`;
+  return axios.get<
+    IBackendRes<{
+      overview: {
+        totalUsers: number;
+        totalVenues: number;
+        totalBookings: number;
+        totalRevenue: number;
+        newUsers: number;
+        newVenues: number;
+        pendingApprovals: number;
+        period: string;
+      };
+    }>
+  >(urlBackend);
+};
+
+export const getRevenueReportsAPI = (
+  period: string = "30d",
+  venueId?: string
+) => {
+  const query = new URLSearchParams({ period });
+  if (venueId) query.set("venueId", venueId);
+  const urlBackend = `/api/v1/analytics/revenue?${query.toString()}`;
+  return axios.get<
+    IBackendRes<{
+      revenueData: Array<{
+        _id: any;
+        totalRevenue: number;
+        totalBookings: number;
+        averageBookingValue: number;
+      }>;
+      summary: {
+        totalRevenue: number;
+        totalBookings: number;
+        averageBookingValue: number;
+        period: string;
+      };
+    }>
+  >(urlBackend);
+};
+
+export const getBookingAnalyticsAPI = (
+  period: string = "30d",
+  venueId?: string
+) => {
+  const query = new URLSearchParams({ period });
+  if (venueId) query.set("venueId", venueId);
+  const urlBackend = `/api/v1/analytics/bookings?${query.toString()}`;
+  return axios.get<
+    IBackendRes<{
+      analytics: {
+        statusDistribution: Array<{ _id: string; count: number }>;
+        popularTimeSlots: Array<{ _id: string; count: number }>;
+        popularSports: Array<{ _id: string; count: number }>;
+        period: string;
+      };
+    }>
+  >(urlBackend);
+};
+
+export const getUserStatisticsAPI = (period: string = "30d") => {
+  const urlBackend = `/api/v1/analytics/users?period=${period}`;
+  return axios.get<
+    IBackendRes<{
+      statistics: {
+        registrationTrends: Array<{ _id: any; count: number }>;
+        roleDistribution: Array<{ _id: string; count: number }>;
+        loyaltyTierDistribution: Array<{ _id: string; count: number }>;
+        activeUsers: number;
+        totalUsers: number;
+        period: string;
+      };
+    }>
+  >(urlBackend);
+};
+
+export const getVenuePerformanceAPI = (
+  period: string = "30d",
+  venueId?: string
+) => {
+  const query = new URLSearchParams({ period });
+  if (venueId) query.set("venueId", venueId);
+  const urlBackend = `/api/v1/analytics/venues?${query.toString()}`;
+  return axios.get<
+    IBackendRes<{
+      performance: {
+        topVenues: Array<{
+          venueName: string;
+          totalBookings: number;
+          totalRevenue: number;
+          averageRating: number;
+        }>;
+        venueUtilizationByCity: Array<{
+          city: string;
+          totalBookings: number;
+          totalRevenue: number;
+          venueCount: number;
+        }>;
+        period: string;
+      };
+    }>
+  >(urlBackend);
 };

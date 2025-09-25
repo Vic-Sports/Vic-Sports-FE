@@ -20,6 +20,7 @@ import ForgotPasswordPage from "./pages/client/auth/forgot-password";
 import ResetPasswordPage from "./pages/client/auth/reset-password";
 import HomePage from "./pages/client/home";
 import DashBoardPage from "./pages/admin/dashboard";
+import ManageUserPage from "./pages/admin/manage.user";
 import NotFoundPage from "./components/auth/404";
 import ServerErrorPage from "./components/auth/500";
 
@@ -47,12 +48,12 @@ const router = createBrowserRouter([
         )
       },
       {
-        // path: "user",
-        // element: (
-        //   <ProtectedRoute>
-        //     {/* <ManageUserPage /> */}
-        //   </ProtectedRoute>
-        // )
+        path: "user",
+        element: (
+          <ProtectedRoute>
+            <ManageUserPage />
+          </ProtectedRoute>
+        )
       }
     ]
   },

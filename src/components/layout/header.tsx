@@ -36,6 +36,8 @@ const Header = () => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         localStorage.removeItem("carts");
+        // Điều hướng về trang đăng nhập để reset UI mà không cần reload
+        navigate("/login", { replace: true });
       }
     } catch (error) {
       console.error("Logout error:", error);

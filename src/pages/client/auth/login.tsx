@@ -75,7 +75,13 @@ const LoginPage = () => {
       if (res?.data) {
         setIsAuthenticated(true);
         setUser(res.data.user);
-        localStorage.setItem("access_token", res.data.access_token);
+        // Backend returns { token, refreshToken }
+        if (res.data.token) {
+          localStorage.setItem("access_token", res.data.token);
+        }
+        if (res.data.refreshToken) {
+          localStorage.setItem("refresh_token", res.data.refreshToken);
+        }
         message.success(t("login.login_success"));
         navigate("/");
       } else {
@@ -187,7 +193,12 @@ const LoginPage = () => {
         if (res?.data) {
           setIsAuthenticated(true);
           setUser(res.data.user);
-          localStorage.setItem("access_token", res.data.access_token);
+          if (res.data.token) {
+            localStorage.setItem("access_token", res.data.token);
+          }
+          if (res.data.refreshToken) {
+            localStorage.setItem("refresh_token", res.data.refreshToken);
+          }
           message.success(t("login.login_success"));
           navigate("/");
         } else {

@@ -1,6 +1,8 @@
 import { ProCard, StatisticCard } from "@ant-design/pro-components";
 import RcResizeObserver from "rc-resize-observer";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Card, Flex, Segmented, Spin, Typography } from "antd";
+import { getDashboardOverviewAPI, getRevenueReportsAPI } from "@/services/api";
 
 const { Statistic } = StatisticCard;
 
@@ -12,6 +14,51 @@ const imgStyle = {
 
 const AdminDashboard = () => {
   const [responsive, setResponsive] = useState(false);
+  const [period, setPeriod] = useState<string>("30d");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [overview, setOverview] = useState<{
+    totalUsers: number;
+    totalVenues: number;
+    totalBookings: number;
+    totalRevenue: number;
+    newUsers: number;
+    newVenues: number;
+    pendingApprovals: number;
+    period: string;
+  } | null>(null);
+
+  const [revenueSummary, setRevenueSummary] = useState<{
+    totalRevenue: number;
+    totalBookings: number;
+    averageBookingValue: number;
+  } | null>(null);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      try {
+        const [ov, rev] = await Promise.all([
+          getDashboardOverviewAPI(period),
+          getRevenueReportsAPI(period)
+        ]);
+        if (ov?.data?.overview) setOverview(ov.data.overview);
+        if (rev?.data?.summary) setRevenueSummary(rev.data.summary);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [period]);
+
+  const kpi = useMemo(
+    () => ({
+      revenue: revenueSummary?.totalRevenue ?? 0,
+      bookings: revenueSummary?.totalBookings ?? 0,
+      avgOrder: revenueSummary?.averageBookingValue ?? 0,
+      users: overview?.totalUsers ?? 0
+    }),
+    [overview, revenueSummary]
+  );
 
   return (
     <RcResizeObserver
@@ -20,64 +67,57 @@ const AdminDashboard = () => {
         setResponsive(offset.width < 596);
       }}
     >
-      <StatisticCard.Group direction={responsive ? "column" : "row"}>
-        <StatisticCard
-          statistic={{
-            title: "支付金额",
-            value: 2176,
-            icon: (
-              <img
-                style={imgStyle}
-                src="https://gw.alipayobjects.com/mdn/rms_7bc6d8/afts/img/A*dr_0RKvVzVwAAAAAAAAAAABkARQnAQ"
-                alt="icon"
-              />
-            )
-          }}
+      <Flex align="center" justify="space-between" style={{ marginBottom: 12 }}>
+        <Typography.Title level={4} style={{ margin: 0 }}>
+          Dashboard Overview
+        </Typography.Title>
+        <Segmented
+          options={[
+            { label: "7 ngày", value: "7d" },
+            { label: "30 ngày", value: "30d" },
+            { label: "90 ngày", value: "90d" }
+          ]}
+          value={period}
+          onChange={(v) => setPeriod(v as string)}
         />
-        <StatisticCard
-          statistic={{
-            title: "访客数",
-            value: 475,
-            icon: (
-              <img
-                style={imgStyle}
-                src="https://gw.alipayobjects.com/mdn/rms_7bc6d8/afts/img/A*-jVKQJgA1UgAAAAAAAAAAABkARQnAQ"
-                alt="icon"
-              />
-            )
-          }}
-        />
-        <StatisticCard
-          statistic={{
-            title: "成功订单数",
-            value: 87,
-            icon: (
-              <img
-                style={imgStyle}
-                src="https://gw.alipayobjects.com/mdn/rms_7bc6d8/afts/img/A*FPlYQoTNlBEAAAAAAAAAAABkARQnAQ"
-                alt="icon"
-              />
-            )
-          }}
-        />
-        <StatisticCard
-          statistic={{
-            title: "浏览量",
-            value: 1754,
-            icon: (
-              <img
-                style={imgStyle}
-                src="https://gw.alipayobjects.com/mdn/rms_7bc6d8/afts/img/A*pUkAQpefcx8AAAAAAAAAAABkARQnAQ"
-                alt="icon"
-              />
-            )
-          }}
-        />
-      </StatisticCard.Group>
+      </Flex>
+
+      <Spin spinning={loading}>
+        <StatisticCard.Group direction={responsive ? "column" : "row"}>
+          <StatisticCard
+            statistic={{
+              title: "Tổng doanh thu",
+              value: kpi.revenue,
+              precision: 0,
+              suffix: "đ"
+            }}
+          />
+          <StatisticCard
+            statistic={{
+              title: "Số đơn hoàn tất",
+              value: kpi.bookings
+            }}
+          />
+          <StatisticCard
+            statistic={{
+              title: "Giá trị đơn TB",
+              value: kpi.avgOrder,
+              precision: 0,
+              suffix: "đ"
+            }}
+          />
+          <StatisticCard
+            statistic={{
+              title: "Tổng người dùng",
+              value: kpi.users
+            }}
+          />
+        </StatisticCard.Group>
+      </Spin>
 
       <ProCard
-        title="数据概览"
-        extra="2019年9月28日 星期五"
+        title="Tổng quan"
+        extra={overview ? `Kỳ: ${overview.period}` : ""}
         split={responsive ? "horizontal" : "vertical"}
         headerBordered
         bordered
@@ -87,23 +127,25 @@ const AdminDashboard = () => {
             <ProCard split="vertical">
               <StatisticCard
                 statistic={{
-                  title: "昨日全部流量",
-                  value: 234,
+                  title: "Đăng ký mới",
+                  value: overview?.newUsers ?? 0,
                   description: (
                     <Statistic
-                      title="较本月平均流量"
-                      value="8.04%"
-                      trend="down"
+                      title="Tổng người dùng"
+                      value={overview?.totalUsers ?? 0}
                     />
                   )
                 }}
               />
               <StatisticCard
                 statistic={{
-                  title: "本月累计流量",
-                  value: 234,
+                  title: "Địa điểm mới",
+                  value: overview?.newVenues ?? 0,
                   description: (
-                    <Statistic title="月同比" value="8.04%" trend="up" />
+                    <Statistic
+                      title="Tổng sân hoạt động"
+                      value={overview?.totalVenues ?? 0}
+                    />
                   )
                 }}
               />
@@ -111,22 +153,20 @@ const AdminDashboard = () => {
             <ProCard split="vertical">
               <StatisticCard
                 statistic={{
-                  title: "运行中实验",
-                  value: "12/56",
-                  suffix: "个"
+                  title: "Yêu cầu chờ duyệt",
+                  value: overview?.pendingApprovals ?? 0
                 }}
               />
               <StatisticCard
                 statistic={{
-                  title: "历史实验总数",
-                  value: "134",
-                  suffix: "个"
+                  title: "Tổng đơn hoàn tất",
+                  value: kpi.bookings
                 }}
               />
             </ProCard>
           </ProCard>
           <StatisticCard
-            title="流量走势"
+            title="Doanh thu (minh hoạ)"
             chart={
               <img
                 src="https://gw.alipayobjects.com/zos/alicdn/_dZIob2NB/zhuzhuangtu.svg"
@@ -136,11 +176,11 @@ const AdminDashboard = () => {
           />
         </ProCard>
         <StatisticCard
-          title="流量占用情况"
+          title="Phân bố (minh hoạ)"
           chart={
             <img
               src="https://gw.alipayobjects.com/zos/alicdn/qoYmFMxWY/jieping2021-03-29%252520xiawu4.32.34.png"
-              alt="大盘"
+              alt="chart"
               width="100%"
             />
           }

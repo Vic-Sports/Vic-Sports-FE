@@ -1,4 +1,9 @@
-import { deleteUserAPI, getUsersAPI } from "@/services/api";
+import {
+  deleteUserAPI,
+  getAdminUsersAPI,
+  banUserAdminAPI,
+  unbanUserAdminAPI
+} from "@/services/api";
 import { dateRangeValidate } from "@/services/helper";
 import {
   CloudUploadOutlined,
@@ -64,11 +69,6 @@ const TableUser = () => {
 
   const columns: ProColumns<IUserTable>[] = [
     {
-      dataIndex: "index",
-      valueType: "indexBorder",
-      width: 48
-    },
-    {
       title: "Id",
       dataIndex: "_id",
       hideInSearch: true,
@@ -96,6 +96,33 @@ const TableUser = () => {
       copyable: true
     },
     {
+      dataIndex: "index",
+      valueType: "indexBorder",
+      width: 48
+    },
+    {
+      title: "Role",
+      dataIndex: "role",
+      valueType: "select",
+      valueEnum: {
+        customer: { text: "customer" },
+        owner: { text: "owner" },
+        coach: { text: "coach" },
+        admin: { text: "admin" }
+      }
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      valueType: "select",
+      valueEnum: {
+        ACTIVE: { text: "ACTIVE" },
+        INACTIVE: { text: "INACTIVE" },
+        BANNED: { text: "BANNED" }
+      }
+    },
+
+    {
       title: "Created At",
       dataIndex: "createdAt",
       valueType: "date",
@@ -116,6 +143,7 @@ const TableUser = () => {
       title: "Action",
       hideInSearch: true,
       render(dom, entity) {
+        const banned = (entity as any).isBlocked || entity.status === "BANNED";
         return (
           <>
             <EditTwoTone
@@ -126,22 +154,48 @@ const TableUser = () => {
                 setOpenModalUpdate(true);
               }}
             />
-            <Popconfirm
-              placement="leftTop"
-              title={"Xác nhận xóa user"}
-              description={"Bạn có chắc chắn muốn xóa user này ?"}
-              onConfirm={() => handleDeleteUser(entity._id)}
-              okText="Xác nhận"
-              cancelText="Hủy"
-              okButtonProps={{ loading: isDeleteUser }}
-            >
-              <span style={{ cursor: "pointer", marginLeft: 20 }}>
-                <DeleteTwoTone
-                  twoToneColor="#ff4d4f"
-                  style={{ cursor: "pointer" }}
-                />
-              </span>
-            </Popconfirm>
+            {banned ? (
+              <Button
+                size="small"
+                onClick={async () => {
+                  const res = await unbanUserAdminAPI((entity as any)._id);
+                  if ((res as any)?.success !== false) {
+                    message.success("Đã mở khoá tài khoản");
+                    refreshTable();
+                  } else {
+                    notification.error({
+                      message: (res as any).message || "Không thể mở khoá"
+                    });
+                  }
+                }}
+                style={{ marginLeft: 10 }}
+              >
+                Unban
+              </Button>
+            ) : (
+              <Popconfirm
+                placement="leftTop"
+                title={"Khoá tài khoản"}
+                description={"Bạn có chắc chắn muốn khoá user này ?"}
+                onConfirm={async () => {
+                  const res = await banUserAdminAPI((entity as any)._id, {});
+                  if ((res as any)?.success !== false) {
+                    message.success("Đã khoá tài khoản");
+                    refreshTable();
+                  } else {
+                    notification.error({
+                      message: (res as any).message || "Không thể khoá"
+                    });
+                  }
+                }}
+                okText="Xác nhận"
+                cancelText="Hủy"
+              >
+                <span style={{ cursor: "pointer", marginLeft: 20 }}>
+                  <DeleteTwoTone twoToneColor="#ff4d4f" />
+                </span>
+              </Popconfirm>
+            )}
           </>
         );
       }
@@ -158,41 +212,48 @@ const TableUser = () => {
         columns={columns}
         actionRef={actionRef}
         cardBordered
-        request={async (params, sort) => {
-          let query = "";
-          if (params) {
-            query += `current=${params.current}&pageSize=${params.pageSize}`;
-            if (params.email) {
-              query += `&email=/${params.email}/i`;
-            }
-            if (params.fullName) {
-              query += `&fullName=/${params.fullName}/i`;
-            }
-
-            const createDateRange = dateRangeValidate(params.createdAtRange);
-            if (createDateRange) {
-              query += `&createdAt>=${createDateRange[0]}&createdAt<=${createDateRange[1]}`;
-            }
+        request={async (params, sort, filter) => {
+          const role = (filter?.role as string[])?.[0];
+          const status = (filter?.status as string[])?.[0];
+          const res = await getAdminUsersAPI({
+            page: params?.current,
+            limit: params?.pageSize,
+            role,
+            status,
+            search: params?.fullName || params?.email,
+            sortBy: "createdAt",
+            sortOrder: sort?.createdAt === "ascend" ? "asc" : "desc"
+          });
+          // Handle error responses unified by axios interceptor
+          if ((res as any)?.success === false) {
+            notification.error({
+              message: "Không thể tải danh sách user",
+              description: (res as any)?.message || "Đã xảy ra lỗi"
+            });
+            return {
+              data: [],
+              page: 1,
+              success: false,
+              total: 0
+            };
           }
 
-          //default
-
-          if (sort && sort.createdAt) {
-            query += `&sort=${
-              sort.createdAt === "ascend" ? "createdAt" : "-createdAt"
-            }`;
-          } else query += `&sort=-createdAt`;
-
-          const res = await getUsersAPI(query);
-          if (res.data) {
-            setMeta(res.data.meta);
-            setCurrentDataTable(res.data?.result ?? []); // gán data để export
+          const users = (res as any)?.data?.users ?? [];
+          const pagination = (res as any)?.data?.pagination;
+          setCurrentDataTable(users as any);
+          if (pagination) {
+            setMeta({
+              current: pagination.currentPage,
+              pageSize: params?.pageSize || 10,
+              pages: pagination.totalPages,
+              total: pagination.totalUsers
+            });
           }
           return {
-            data: res.data?.result,
+            data: users as any,
             page: 1,
             success: true,
-            total: res.data?.meta.total
+            total: pagination?.totalUsers || 0
           };
         }}
         rowKey="_id"
