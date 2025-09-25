@@ -27,7 +27,14 @@ const Header = () => {
       : undefined;
   }, [user?.avatar, backendURL]);
 
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
   const handleLogout = async () => {
+    // Prevent multiple logout calls
+    if (isLoggingOut) return;
+    
+    setIsLoggingOut(true);
+    
     try {
       const res = await logoutAPI();
       // Luôn logout dù API có thành công hay không
@@ -43,6 +50,9 @@ const Header = () => {
       if (res?.data) {
         console.log("Logout successful");
       }
+      
+      // Navigate to home page after logout
+      navigate("/");
     } catch (error) {
       console.error("Logout error:", error);
       // Vẫn logout ngay cả khi có lỗi
@@ -54,6 +64,11 @@ const Header = () => {
       sessionStorage.removeItem("access_token");
       sessionStorage.removeItem("refresh_token");
       sessionStorage.removeItem("user");
+      
+      // Navigate to home page even on error
+      navigate("/");
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
@@ -108,10 +123,14 @@ const Header = () => {
     {
       label: (
         <span
-          style={{ cursor: "pointer", color: "#1a1a1a" }}
-          onClick={handleLogout}
+          style={{ 
+            cursor: isLoggingOut ? "not-allowed" : "pointer", 
+            color: isLoggingOut ? "#999" : "#1a1a1a",
+            opacity: isLoggingOut ? 0.6 : 1
+          }}
+          onClick={isLoggingOut ? undefined : handleLogout}
         >
-          {t("appHeader.logout")}
+          {isLoggingOut ? "Đang đăng xuất..." : t("appHeader.logout")}
         </span>
       ),
       key: "logout"
@@ -586,21 +605,22 @@ const Header = () => {
           <div
             className="mobile-nav-item"
             style={{ 
-              color: "#e74c3c",
+              color: isLoggingOut ? "#999" : "#e74c3c",
               padding: "16px 20px",
               borderRadius: "12px",
               fontWeight: "600",
               fontSize: "16px",
               transition: "all 0.3s ease",
               background: "transparent",
-              cursor: "pointer"
+              cursor: isLoggingOut ? "not-allowed" : "pointer",
+              opacity: isLoggingOut ? 0.6 : 1
             }}
-            onClick={() => {
+            onClick={isLoggingOut ? undefined : () => {
               handleLogout();
               setOpenDrawer(false);
             }}
           >
-            {t("appHeader.logout")}
+            {isLoggingOut ? "Đang đăng xuất..." : t("appHeader.logout")}
           </div>
         </div>
       </Drawer>
