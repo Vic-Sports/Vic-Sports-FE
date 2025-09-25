@@ -27,17 +27,12 @@ const Header = () => {
       : undefined;
   }, [user?.avatar, backendURL]);
 
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  // Không dùng trạng thái loading cho logout
 
   const handleLogout = async () => {
-    // Prevent multiple logout calls
-    if (isLoggingOut) return;
-    
-    setIsLoggingOut(true);
-    
+    console.log("Logout button clicked");
     try {
       const res = await logoutAPI();
-      // Luôn logout dù API có thành công hay không
       setUser(null);
       setIsAuthenticated(false);
       localStorage.removeItem("access_token");
@@ -46,16 +41,7 @@ const Header = () => {
       sessionStorage.removeItem("access_token");
       sessionStorage.removeItem("refresh_token");
       sessionStorage.removeItem("user");
-      
-      if (res?.data) {
-        console.log("Logout successful");
-      }
-      
-      // Navigate to home page after logout
-      navigate("/");
     } catch (error) {
-      console.error("Logout error:", error);
-      // Vẫn logout ngay cả khi có lỗi
       setUser(null);
       setIsAuthenticated(false);
       localStorage.removeItem("access_token");
@@ -64,11 +50,10 @@ const Header = () => {
       sessionStorage.removeItem("access_token");
       sessionStorage.removeItem("refresh_token");
       sessionStorage.removeItem("user");
-      
-      // Navigate to home page even on error
-      navigate("/");
+      window?.alert?.("Có lỗi khi đăng xuất! Dữ liệu đã được xóa cục bộ.");
+      console.error("Logout error:", error);
     } finally {
-      setIsLoggingOut(false);
+      navigate("/");
     }
   };
 
@@ -83,58 +68,63 @@ const Header = () => {
   };
 
   const menuItems = [
-    ...(user?.role === "admin"
-      ? [
-          {
-            label: (
-              <Link
-                to="/admin"
-                style={{ color: "#1a1a1a", textDecoration: "none" }}
-              >
-                {t("appHeader.dashboard")}
-              </Link>
-            ),
-            key: "admin"
-          }
-        ]
-      : []),
     {
       label: (
-        <span
-          style={{ cursor: "pointer", color: "#1a1a1a" }}
+        <div
+          style={{
+            cursor: "pointer",
+            color: "#1a1a1a",
+            padding: "8px 12px",
+            borderRadius: "8px",
+            fontWeight: 600,
+            fontSize: "16px",
+            transition: "all 0.3s ease",
+          }}
           onClick={() => setOpenManageAccount(true)}
         >
           {t("appHeader.profile")}
-        </span>
+        </div>
       ),
-      key: "account"
+      key: "account",
     },
     {
       label: (
-        <Link
-          to="/history"
-          style={{ color: "#1a1a1a", textDecoration: "none" }}
+        <div
+          style={{
+            cursor: "pointer",
+            color: "#1a1a1a",
+            padding: "8px 12px",
+            borderRadius: "8px",
+            fontWeight: 600,
+            fontSize: "16px",
+            transition: "all 0.3s ease",
+          }}
+          onClick={() => navigate("/history")}
         >
           {t("appHeader.history")}
-        </Link>
+        </div>
       ),
-      key: "history"
+      key: "history",
     },
     {
       label: (
-        <span
-          style={{ 
-            cursor: isLoggingOut ? "not-allowed" : "pointer", 
-            color: isLoggingOut ? "#999" : "#1a1a1a",
-            opacity: isLoggingOut ? 0.6 : 1
+        <div
+          style={{
+            cursor: "pointer",
+            color: "#1a1a1a",
+            padding: "8px 12px",
+            borderRadius: "8px",
+            fontWeight: 600,
+            fontSize: "16px",
+            transition: "all 0.3s ease",
           }}
-          onClick={isLoggingOut ? undefined : handleLogout}
+          onClick={handleLogout}
         >
-          {isLoggingOut ? "Đang đăng xuất..." : t("appHeader.logout")}
-        </span>
+          {t("appHeader.logout")}
+        </div>
       ),
-      key: "logout"
-    }
+      key: "logout",
+    },
   ];
 
   const languageMenuItems = [
@@ -149,7 +139,7 @@ const Header = () => {
           <img src={enFlag} style={{ width: 20, height: 20 }} alt="English" />
           <span>English</span>
         </div>
-      )
+      ),
     },
     {
       key: "vi",
@@ -166,8 +156,8 @@ const Header = () => {
           />
           <span>Tiếng Việt</span>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -183,7 +173,7 @@ const Header = () => {
           zIndex: 1000,
           boxShadow: "0 2px 20px rgba(0,0,0,0.08)",
           backdropFilter: "blur(10px)",
-          borderBottom: "1px solid rgba(0,0,0,0.05)"
+          borderBottom: "1px solid rgba(0,0,0,0.05)",
         }}
       >
         <Container>
@@ -198,14 +188,15 @@ const Header = () => {
                 style={{
                   width: "45px",
                   height: "45px",
-                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  background:
+                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                   borderRadius: "15px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   marginRight: "15px",
                   boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
-                  transition: "all 0.3s ease"
+                  transition: "all 0.3s ease",
                 }}
               >
                 <FaBolt style={{ color: "white", fontSize: "22px" }} />
@@ -215,13 +206,14 @@ const Header = () => {
                   style={{
                     fontSize: "26px",
                     fontWeight: "800",
-                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    background:
+                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                     backgroundClip: "text",
                     margin: 0,
                     lineHeight: 1.1,
-                    letterSpacing: "-0.5px"
+                    letterSpacing: "-0.5px",
                   }}
                 >
                   VIC SPORTS
@@ -233,7 +225,7 @@ const Header = () => {
                     fontWeight: "600",
                     letterSpacing: "2px",
                     margin: 0,
-                    textTransform: "uppercase"
+                    textTransform: "uppercase",
                   }}
                 >
                   FUTURE OF SPORTS
@@ -256,10 +248,14 @@ const Header = () => {
                         fontSize: "15px",
                         height: "auto",
                         border: "none",
-                        background: isActive ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" : "transparent",
+                        background: isActive
+                          ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                          : "transparent",
                         color: isActive ? "white" : "#1a1a1a",
                         transition: "all 0.3s ease",
-                        boxShadow: isActive ? "0 4px 15px rgba(102, 126, 234, 0.3)" : "none"
+                        boxShadow: isActive
+                          ? "0 4px 15px rgba(102, 126, 234, 0.3)"
+                          : "none",
                       }}
                     >
                       {t("appHeader.home")}
@@ -278,10 +274,14 @@ const Header = () => {
                         fontSize: "15px",
                         height: "auto",
                         border: "none",
-                        background: isActive ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" : "transparent",
+                        background: isActive
+                          ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                          : "transparent",
                         color: isActive ? "white" : "#1a1a1a",
                         transition: "all 0.3s ease",
-                        boxShadow: isActive ? "0 4px 15px rgba(102, 126, 234, 0.3)" : "none"
+                        boxShadow: isActive
+                          ? "0 4px 15px rgba(102, 126, 234, 0.3)"
+                          : "none",
                       }}
                     >
                       {t("appHeader.venues")}
@@ -300,10 +300,14 @@ const Header = () => {
                         fontSize: "15px",
                         height: "auto",
                         border: "none",
-                        background: isActive ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" : "transparent",
+                        background: isActive
+                          ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                          : "transparent",
                         color: isActive ? "white" : "#1a1a1a",
                         transition: "all 0.3s ease",
-                        boxShadow: isActive ? "0 4px 15px rgba(102, 126, 234, 0.3)" : "none"
+                        boxShadow: isActive
+                          ? "0 4px 15px rgba(102, 126, 234, 0.3)"
+                          : "none",
                       }}
                     >
                       {t("appHeader.coaches")}
@@ -322,10 +326,14 @@ const Header = () => {
                         fontSize: "15px",
                         height: "auto",
                         border: "none",
-                        background: isActive ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" : "transparent",
+                        background: isActive
+                          ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                          : "transparent",
                         color: isActive ? "white" : "#1a1a1a",
                         transition: "all 0.3s ease",
-                        boxShadow: isActive ? "0 4px 15px rgba(102, 126, 234, 0.3)" : "none"
+                        boxShadow: isActive
+                          ? "0 4px 15px rgba(102, 126, 234, 0.3)"
+                          : "none",
                       }}
                     >
                       {t("appHeader.community")}
@@ -347,7 +355,7 @@ const Header = () => {
                 borderRadius: "12px",
                 border: "none",
                 background: "rgba(102, 126, 234, 0.1)",
-                transition: "all 0.3s ease"
+                transition: "all 0.3s ease",
               }}
             >
               ☰
@@ -365,8 +373,8 @@ const Header = () => {
                     border: "1px solid rgba(0,0,0,0.1)",
                     borderRadius: "15px",
                     boxShadow: "0 8px 30px rgba(0,0,0,0.15)",
-                    padding: "8px"
-                  }
+                    padding: "8px",
+                  },
                 }}
                 trigger={["click"]}
                 placement="bottomRight"
@@ -382,7 +390,7 @@ const Header = () => {
                     alignItems: "center",
                     gap: "8px",
                     transition: "all 0.3s ease",
-                    boxShadow: "none"
+                    boxShadow: "none",
                   }}
                 >
                   {renderFlag(i18n.resolvedLanguage || "en")}
@@ -395,7 +403,8 @@ const Header = () => {
                   type="primary"
                   className="login-btn"
                   style={{
-                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    background:
+                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                     border: "none",
                     borderRadius: "25px",
                     padding: "12px 24px",
@@ -403,7 +412,7 @@ const Header = () => {
                     fontSize: "15px",
                     height: "auto",
                     boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
-                    transition: "all 0.3s ease"
+                    transition: "all 0.3s ease",
                   }}
                   onClick={() => navigate("/login")}
                 >
@@ -419,29 +428,29 @@ const Header = () => {
                       border: "1px solid rgba(0,0,0,0.1)",
                       borderRadius: "15px",
                       boxShadow: "0 8px 30px rgba(0,0,0,0.15)",
-                      padding: "8px"
-                    }
+                      padding: "8px",
+                    },
                   }}
                   trigger={["click"]}
                   placement="bottomRight"
                 >
                   <div
                     className="d-flex align-items-center gap-3 user-menu"
-                    style={{ 
+                    style={{
                       cursor: "pointer",
                       padding: "8px 12px",
                       borderRadius: "15px",
                       background: "rgba(102, 126, 234, 0.05)",
                       transition: "all 0.3s ease",
-                      border: "1px solid rgba(102, 126, 234, 0.1)"
+                      border: "1px solid rgba(102, 126, 234, 0.1)",
                     }}
                   >
-                    <Avatar 
-                      src={urlAvatar} 
+                    <Avatar
+                      src={urlAvatar}
                       size={36}
                       style={{
                         border: "2px solid rgba(102, 126, 234, 0.2)",
-                        boxShadow: "0 2px 8px rgba(102, 126, 234, 0.2)"
+                        boxShadow: "0 2px 8px rgba(102, 126, 234, 0.2)",
                       }}
                     >
                       {user.fullName?.[0] || "U"}
@@ -454,7 +463,7 @@ const Header = () => {
                           fontWeight: "700",
                           color: "#1a1a1a",
                           margin: 0,
-                          lineHeight: 1.2
+                          lineHeight: 1.2,
                         }}
                       >
                         {user.fullName || "User Pro"}
@@ -464,10 +473,10 @@ const Header = () => {
                           fontSize: "12px",
                           color: "rgba(26, 26, 26, 0.7)",
                           margin: 0,
-                          fontWeight: "500"
+                          fontWeight: "500",
                         }}
                       >
-                        Level 15
+                        {user.rewardPoints || 0} VIC token
                       </div>
                     </div>
                   </div>
@@ -489,7 +498,7 @@ const Header = () => {
                 borderRadius: "12px",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
+                justifyContent: "center",
               }}
             >
               <FaBolt style={{ color: "white", fontSize: "18px" }} />
@@ -503,31 +512,31 @@ const Header = () => {
         onClose={() => setOpenDrawer(false)}
         open={openDrawer}
         styles={{
-          body: { 
-            backgroundColor: "#FFFFFF", 
+          body: {
+            backgroundColor: "#FFFFFF",
             color: "#1a1a1a",
-            padding: "24px"
+            padding: "24px",
           },
           header: {
             backgroundColor: "#FFFFFF",
             color: "#1a1a1a",
             borderBottom: "1px solid rgba(0,0,0,0.1)",
-            padding: "20px 24px"
-          }
+            padding: "20px 24px",
+          },
         }}
       >
         <div className="d-flex flex-column gap-2">
           <NavLink
             to="/"
             className="text-decoration-none mobile-nav-item"
-            style={{ 
+            style={{
               color: "#1a1a1a",
               padding: "16px 20px",
               borderRadius: "12px",
               fontWeight: "600",
               fontSize: "16px",
               transition: "all 0.3s ease",
-              background: "transparent"
+              background: "transparent",
             }}
             onClick={() => setOpenDrawer(false)}
           >
@@ -536,14 +545,14 @@ const Header = () => {
           <NavLink
             to="/venues"
             className="text-decoration-none mobile-nav-item"
-            style={{ 
+            style={{
               color: "#1a1a1a",
               padding: "16px 20px",
               borderRadius: "12px",
               fontWeight: "600",
               fontSize: "16px",
               transition: "all 0.3s ease",
-              background: "transparent"
+              background: "transparent",
             }}
             onClick={() => setOpenDrawer(false)}
           >
@@ -552,14 +561,14 @@ const Header = () => {
           <NavLink
             to="/coaches"
             className="text-decoration-none mobile-nav-item"
-            style={{ 
+            style={{
               color: "#1a1a1a",
               padding: "16px 20px",
               borderRadius: "12px",
               fontWeight: "600",
               fontSize: "16px",
               transition: "all 0.3s ease",
-              background: "transparent"
+              background: "transparent",
             }}
             onClick={() => setOpenDrawer(false)}
           >
@@ -568,23 +577,7 @@ const Header = () => {
           <NavLink
             to="/community"
             className="text-decoration-none mobile-nav-item"
-            style={{ 
-              color: "#1a1a1a",
-              padding: "16px 20px",
-              borderRadius: "12px",
-              fontWeight: "600",
-              fontSize: "16px",
-              transition: "all 0.3s ease",
-              background: "transparent"
-            }}
-            onClick={() => setOpenDrawer(false)}
-          >
-            {t("appHeader.community")}
-          </NavLink>
-          <Divider style={{ borderColor: "rgba(0,0,0,0.1)", margin: "20px 0" }} />
-          <div
-            className="mobile-nav-item"
-            style={{ 
+            style={{
               color: "#1a1a1a",
               padding: "16px 20px",
               borderRadius: "12px",
@@ -592,7 +585,25 @@ const Header = () => {
               fontSize: "16px",
               transition: "all 0.3s ease",
               background: "transparent",
-              cursor: "pointer"
+            }}
+            onClick={() => setOpenDrawer(false)}
+          >
+            {t("appHeader.community")}
+          </NavLink>
+          <Divider
+            style={{ borderColor: "rgba(0,0,0,0.1)", margin: "20px 0" }}
+          />
+          <div
+            className="mobile-nav-item"
+            style={{
+              color: "#1a1a1a",
+              padding: "16px 20px",
+              borderRadius: "12px",
+              fontWeight: "600",
+              fontSize: "16px",
+              transition: "all 0.3s ease",
+              background: "transparent",
+              cursor: "pointer",
             }}
             onClick={() => {
               setOpenManageAccount(true);
@@ -601,26 +612,27 @@ const Header = () => {
           >
             {t("appHeader.profile")}
           </div>
-          <Divider style={{ borderColor: "rgba(0,0,0,0.1)", margin: "20px 0" }} />
+          <Divider
+            style={{ borderColor: "rgba(0,0,0,0.1)", margin: "20px 0" }}
+          />
           <div
             className="mobile-nav-item"
-            style={{ 
-              color: isLoggingOut ? "#999" : "#e74c3c",
+            style={{
+              color: "#e74c3c",
               padding: "16px 20px",
               borderRadius: "12px",
               fontWeight: "600",
               fontSize: "16px",
               transition: "all 0.3s ease",
               background: "transparent",
-              cursor: isLoggingOut ? "not-allowed" : "pointer",
-              opacity: isLoggingOut ? 0.6 : 1
+              cursor: "pointer",
             }}
-            onClick={isLoggingOut ? undefined : () => {
-              handleLogout();
+            onClick={() => {
               setOpenDrawer(false);
+              handleLogout();
             }}
           >
-            {isLoggingOut ? "Đang đăng xuất..." : t("appHeader.logout")}
+            {t("appHeader.logout")}
           </div>
         </div>
       </Drawer>

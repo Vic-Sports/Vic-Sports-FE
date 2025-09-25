@@ -1,12 +1,12 @@
 import { logoutAPI } from "@/services/api";
 import {
-    AppstoreOutlined,
-    BellOutlined,
-    DollarCircleOutlined,
-    ExceptionOutlined,
-    MenuFoldOutlined,
-    MenuUnfoldOutlined,
-    UserOutlined
+  AppstoreOutlined,
+  BellOutlined,
+  DollarCircleOutlined,
+  ExceptionOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Avatar, Badge, Dropdown, Layout, Menu, Popover, Space } from "antd";
@@ -35,7 +35,7 @@ const LayoutAdmin = () => {
         </Link>
       ),
       key: "/admin",
-      icon: <AppstoreOutlined />
+      icon: <AppstoreOutlined />,
     },
     {
       label: (
@@ -44,7 +44,7 @@ const LayoutAdmin = () => {
         </Link>
       ),
       key: "/admin/user",
-      icon: <UserOutlined />
+      icon: <UserOutlined />,
     },
     {
       label: (
@@ -53,7 +53,7 @@ const LayoutAdmin = () => {
         </Link>
       ),
       key: "/admin/book",
-      icon: <ExceptionOutlined />
+      icon: <ExceptionOutlined />,
     },
     {
       label: (
@@ -62,14 +62,14 @@ const LayoutAdmin = () => {
         </Link>
       ),
       key: "/admin/order",
-      icon: <DollarCircleOutlined />
-    }
+      icon: <DollarCircleOutlined />,
+    },
   ];
 
   // Fake notifications
   const [notifications] = useState([
     { id: 1, message: "Đơn đặt sân #A12 đã được xác nhận." },
-    { id: 2, message: "Lịch sân C lúc 18:00 đã bị hủy." }
+    { id: 2, message: "Lịch sân C lúc 18:00 đã bị hủy." },
   ]);
 
   const notificationContent = (
@@ -83,7 +83,7 @@ const LayoutAdmin = () => {
             style={{
               padding: "8px 0",
               borderBottom: "1px solid #eee",
-              fontSize: 13
+              fontSize: 13,
             }}
           >
             {n.message}
@@ -113,7 +113,7 @@ const LayoutAdmin = () => {
       sessionStorage.removeItem("refresh_token");
       sessionStorage.removeItem("user");
       navigate("/");
-      
+
       if (res.data) {
         console.log("Logout successful");
       }
@@ -142,7 +142,7 @@ const LayoutAdmin = () => {
           Quản lý tài khoản
         </label>
       ),
-      key: "account"
+      key: "account",
     },
     {
       label: (
@@ -150,7 +150,7 @@ const LayoutAdmin = () => {
           Trang chủ
         </Link>
       ),
-      key: "home"
+      key: "home",
     },
     {
       label: (
@@ -158,8 +158,8 @@ const LayoutAdmin = () => {
           Đăng xuất
         </label>
       ),
-      key: "logout"
-    }
+      key: "logout",
+    },
   ];
 
   const urlAvatar = `${import.meta.env.VITE_BACKEND_URL}/images/avatar/${
@@ -186,7 +186,7 @@ const LayoutAdmin = () => {
             height: 32,
             margin: 16,
             textAlign: "center",
-            fontWeight: "bold"
+            fontWeight: "bold",
           }}
         >
           VIC SPORTS
@@ -208,7 +208,7 @@ const LayoutAdmin = () => {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            padding: "0 15px"
+            padding: "0 15px",
           }}
         >
           <span>
@@ -216,7 +216,7 @@ const LayoutAdmin = () => {
               collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
               {
                 className: "trigger",
-                onClick: () => setCollapsed(!collapsed)
+                onClick: () => setCollapsed(!collapsed),
               }
             )}
           </span>

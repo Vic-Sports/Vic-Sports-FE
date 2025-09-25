@@ -30,6 +30,7 @@ import BookingSuccessPage from "./pages/client/booking-success";
 import CourtDetailPage from "./pages/client/court-detail";
 import HomePage from "./pages/client/home";
 import VenuesPage from "./pages/client/venues";
+import EmailVerificationPage from "./pages/client/auth/email-verification";
 
 const router = createBrowserRouter([
   {
@@ -131,6 +132,10 @@ const router = createBrowserRouter([
   {
     path: "*",
     element: <NotFoundPage />,
+  },
+  {
+    path: "/auth/email-verification",
+    element: <EmailVerificationPage />, // import đúng component
   },
 ]);
 
