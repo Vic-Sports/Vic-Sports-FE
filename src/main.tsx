@@ -13,6 +13,7 @@ import "./i18n"; //👈 phải import trước App
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import NotFoundPage from "./components/auth/404";
 import ServerErrorPage from "./components/auth/500";
+
 import PaymentPage from "./components/client/booking/payment";
 import PaymentReturnPage from "./components/client/booking/return.url";
 import PayOSReturnPage from "./components/client/booking/payos.return";
@@ -30,6 +31,7 @@ import CourtDetailPage from "./pages/client/court-detail";
 import HomePage from "./pages/client/home";
 import VenuesPage from "./pages/client/venues";
 import EmailVerificationPage from "./pages/client/auth/email-verification";
+import BookingHistory from "./pages/client/history";
 import LayoutAdmin from "./components/layout/layout.admin";
 import ManageUserPage from "./pages/admin/manage.user";
 import LayoutOwner from "./components/layout/layout.owner";
@@ -78,9 +80,13 @@ const router = createBrowserRouter([
       },
       {
         path: "booking/payos-return",
-        element: <PayOSReturnPage />
-      }
-    ]
+        element: <PayOSReturnPage />,
+      },
+      {
+        path: "history",
+        element: <BookingHistory />,
+      },
+    ],
   },
   {
     path: "admin",
