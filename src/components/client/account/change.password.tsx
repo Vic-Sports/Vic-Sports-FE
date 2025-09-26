@@ -1,5 +1,5 @@
 import { useCurrentApp } from "@/components/context/app.context";
-import { updateUserPasswordAPI } from "@/services/api";
+import { changePasswordAPI } from "@/services/api";
 import { App, Button, Col, Form, Input, Row } from "antd";
 import { useEffect, useState } from "react";
 import type { FormProps } from "antd";
@@ -23,20 +23,30 @@ const ChangePassword = () => {
   }, [user]);
 
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
-    const { email, oldpass, newpass } = values;
+    const { oldpass, newpass } = values;
     setIsSubmit(true);
-    const res = await updateUserPasswordAPI(email, oldpass, newpass);
-    if (res && res.data) {
-      message.success("Cập nhật mật khẩu thành công");
-      form.setFieldValue("oldpass", "");
-      form.setFieldValue("newpass", "");
-    } else {
+    try {
+      const token =
+        localStorage.getItem("access_token") ||
+        sessionStorage.getItem("access_token");
+      const res = await changePasswordAPI(oldpass, newpass, token || "");
+      if (res && res.data) {
+        message.success("Cập nhật mật khẩu thành công");
+        form.setFieldValue("oldpass", "");
+        form.setFieldValue("newpass", "");
+        form.setFieldValue("confirmNewpass", "");
+      } else {
+        notification.error({
+          message: "Đã có lỗi xảy ra",
+          description: res.data?.message || "",
+        });
+      }
+    } catch (err: any) {
       notification.error({
         message: "Đã có lỗi xảy ra",
-        description: res.message
+        description: err?.response?.data?.message || err.message || "",
       });
     }
-
     setIsSubmit(false);
   };
 
@@ -56,7 +66,7 @@ const ChangePassword = () => {
               label="Email"
               name="email"
               rules={[
-                { required: true, message: "Email không được để trống!" }
+                { required: true, message: "Email không được để trống!" },
               ]}
             >
               <Input disabled />
@@ -67,7 +77,7 @@ const ChangePassword = () => {
               label="Mật khẩu hiện tại"
               name="oldpass"
               rules={[
-                { required: true, message: "Mật khẩu không được để trống!" }
+                { required: true, message: "Mật khẩu không được để trống!" },
               ]}
             >
               <Input.Password />
@@ -78,7 +88,29 @@ const ChangePassword = () => {
               label="Mật khẩu mới"
               name="newpass"
               rules={[
-                { required: true, message: "Mật khẩu không được để trống!" }
+                { required: true, message: "Mật khẩu không được để trống!" },
+              ]}
+            >
+              <Input.Password />
+            </Form.Item>
+
+            <Form.Item
+              labelCol={{ span: 24 }}
+              label="Xác nhận mật khẩu mới"
+              name="confirmNewpass"
+              dependencies={["newpass"]}
+              rules={[
+                { required: true, message: "Vui lòng xác nhận mật khẩu mới!" },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("newpass") === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("Mật khẩu xác nhận không khớp!")
+                    );
+                  },
+                }),
               ]}
             >
               <Input.Password />
