@@ -18,7 +18,6 @@ import PaymentPage from "./components/client/booking/payment";
 import PaymentReturnPage from "./components/client/booking/return.url";
 import PayOSReturnPage from "./components/client/booking/payos.return";
 import VenueCourts from "./components/client/venue/VenueCourts";
-import LayoutAdmin from "./components/layout/layout.dashboard";
 import DashBoardPage from "./pages/admin/dashboard";
 import EmailVerificationFailedPage from "./pages/client/auth/email-verification-failed";
 import EmailVerifiedPage from "./pages/client/auth/email-verified";
@@ -33,6 +32,10 @@ import HomePage from "./pages/client/home";
 import VenuesPage from "./pages/client/venues";
 import EmailVerificationPage from "./pages/client/auth/email-verification";
 import BookingHistory from "./pages/client/history";
+import LayoutAdmin from "./components/layout/layout.admin";
+import ManageUserPage from "./pages/admin/manage.user";
+import LayoutOwner from "./components/layout/layout.owner";
+import OwnerDashBoardPage from "./pages/owner/dashboard";
 
 const router = createBrowserRouter([
   {
@@ -41,39 +44,39 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />,
+        element: <HomePage />
       },
       {
         path: "venues",
-        element: <VenuesPage />,
+        element: <VenuesPage />
       },
       {
         path: "venue/:venueId",
-        element: <VenueCourts />,
+        element: <VenueCourts />
       },
       {
         path: "court/:courtId",
-        element: <CourtDetailPage />,
+        element: <CourtDetailPage />
       },
       {
         path: "booking",
-        element: <BookingPage />,
+        element: <BookingPage />
       },
       {
         path: "booking/success",
-        element: <BookingSuccessPage />,
+        element: <BookingSuccessPage />
       },
       {
         path: "payment",
-        element: <PaymentPage />,
+        element: <PaymentPage />
       },
       {
         path: "payment/return",
-        element: <PaymentReturnPage />,
+        element: <PaymentReturnPage />
       },
       {
         path: "payment/success",
-        element: <PaymentReturnPage />,
+        element: <PaymentReturnPage />
       },
       {
         path: "booking/payos-return",
@@ -95,54 +98,68 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             <DashBoardPage />
           </ProtectedRoute>
-        ),
+        )
       },
       {
-        // path: "user",
-        // element: (
-        //   <ProtectedRoute>
-        //     {/* <ManageUserPage /> */}
-        //   </ProtectedRoute>
-        // )
-      },
-    ],
+        path: "user",
+        element: (
+          <ProtectedRoute>
+            <ManageUserPage />
+          </ProtectedRoute>
+        )
+      }
+    ]
+  },
+  {
+    path: "owner",
+    element: <LayoutOwner />,
+    children: [
+      {
+        index: true,
+        element: (
+          <ProtectedRoute>
+            <OwnerDashBoardPage />
+          </ProtectedRoute>
+        )
+      }
+    ]
   },
   {
     path: "/login",
-    element: <LoginPage />,
+    element: <LoginPage />
   },
   {
     path: "/register",
-    element: <RegisterPage />,
+    element: <RegisterPage />
   },
   {
     path: "/email-verified",
-    element: <EmailVerifiedPage />,
+    element: <EmailVerifiedPage />
   },
   {
     path: "/email-verification-failed",
-    element: <EmailVerificationFailedPage />,
+    element: <EmailVerificationFailedPage />
   },
   {
     path: "/forgot-password",
-    element: <ForgotPasswordPage />,
+    element: <ForgotPasswordPage />
   },
   {
     path: "/reset-password",
-    element: <ResetPasswordPage />,
+    element: <ResetPasswordPage />
   },
   {
     path: "/500",
-    element: <ServerErrorPage />,
+    element: <ServerErrorPage />
   },
   {
     path: "*",
-    element: <NotFoundPage />,
+    element: <NotFoundPage />
   },
   {
     path: "/auth/email-verification",
-    element: <EmailVerificationPage />, // import đúng component
-  },
+    element: <EmailVerificationPage /> // import đúng component
+  }
 ]);
 
 createRoot(document.getElementById("root")!).render(
