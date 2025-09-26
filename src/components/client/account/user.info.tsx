@@ -1,28 +1,28 @@
 import { useCurrentApp } from "@/components/context/app.context";
 import { updateUserInfoAPI, uploadFileAPI } from "@/services/api";
 import {
-    AntDesignOutlined,
-    EnvironmentOutlined,
-    MailOutlined,
-    PhoneOutlined,
-    UploadOutlined,
-    UserOutlined
+  AntDesignOutlined,
+  EnvironmentOutlined,
+  MailOutlined,
+  PhoneOutlined,
+  UploadOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import type { FormProps, UploadFile } from "antd";
 import {
-    App,
-    Avatar,
-    Button,
-    Card,
-    Col,
-    DatePicker,
-    Divider,
-    Form,
-    Input,
-    Row,
-    Select,
-    Typography,
-    Upload
+  App,
+  Avatar,
+  Button,
+  Card,
+  Col,
+  DatePicker,
+  Divider,
+  Form,
+  Input,
+  Row,
+  Select,
+  Typography,
+  Upload,
 } from "antd";
 import type { UploadChangeParam } from "antd/es/upload";
 import dayjs from "dayjs";
@@ -60,23 +60,54 @@ const UserInfo = () => {
   }/images/avatar/${userAvatar}`;
 
   useEffect(() => {
-    if (user) {
-      form.setFieldsValue({
-        _id: user.id,
-        email: user.email,
-        phone: user.phone,
-        fullName: user.fullName,
-        dateOfBirth: user.dateOfBirth ? dayjs(user.dateOfBirth) : null,
-        gender: user.gender || undefined,
-        address: {
-          province: user.address?.province || "",
-          district: user.address?.district || "",
-          ward: user.address?.ward || "",
-          street: user.address?.street || ""
+    // Luôn fetch lại user khi mở trang
+    const fetchUser = async () => {
+      try {
+        const accountRes = await import("@/services/api").then((m) =>
+          m.fetchAccountAPI()
+        );
+        if (accountRes && accountRes.data && accountRes.data.user) {
+          setUser(accountRes.data.user);
+          sessionStorage.setItem("user", JSON.stringify(accountRes.data.user));
+          form.setFieldsValue({
+            _id: accountRes.data.user.id,
+            email: accountRes.data.user.email,
+            phone: accountRes.data.user.phone ?? "",
+            fullName: accountRes.data.user.fullName ?? "",
+            dateOfBirth: accountRes.data.user.dateOfBirth
+              ? dayjs(accountRes.data.user.dateOfBirth)
+              : null,
+            gender: accountRes.data.user.gender ?? "",
+            address: {
+              province: accountRes.data.user.address?.province ?? "",
+              district: accountRes.data.user.address?.district ?? "",
+              ward: accountRes.data.user.address?.ward ?? "",
+              street: accountRes.data.user.address?.street ?? "",
+            },
+          });
+          return;
         }
-      });
-    }
-  }, [user]);
+      } catch {}
+      // fallback: dùng user từ context nếu có
+      if (user) {
+        form.setFieldsValue({
+          _id: user.id,
+          email: user.email,
+          phone: user.phone ?? "",
+          fullName: user.fullName ?? "",
+          dateOfBirth: user.dateOfBirth ? dayjs(user.dateOfBirth) : null,
+          gender: user.gender ?? "",
+          address: {
+            province: user.address?.province ?? "",
+            district: user.address?.district ?? "",
+            ward: user.address?.ward ?? "",
+            street: user.address?.street ?? "",
+          },
+        });
+      }
+    };
+    fetchUser();
+  }, [form]);
 
   const handleUploadFile = async (options: RcCustomRequestOptions) => {
     const { onSuccess } = options;
@@ -107,7 +138,7 @@ const UserInfo = () => {
       } else if (info.file.status === "error") {
         message.error(`Upload file thất bại`);
       }
-    }
+    },
   };
 
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
@@ -119,31 +150,40 @@ const UserInfo = () => {
       phone,
       dateOfBirth: dateOfBirth ? dateOfBirth.toISOString() : null,
       gender,
-      address
+      address,
     };
 
     const res = await updateUserInfoAPI(_id, userAvatar, formattedValues);
 
     if (res && res.data) {
-      //update react context
-      setUser({
-        ...user!,
-        avatar: userAvatar,
-        fullName,
-        phone,
-        dateOfBirth: formattedValues.dateOfBirth,
-        gender,
-        address
-      });
+      // Sau khi cập nhật, luôn fetch lại user từ backend để lấy đủ thông tin
+      try {
+        const accountRes = await import("@/services/api").then((m) =>
+          m.fetchAccountAPI()
+        );
+        if (accountRes && accountRes.data && accountRes.data.user) {
+          setUser(accountRes.data.user);
+          sessionStorage.setItem("user", JSON.stringify(accountRes.data.user));
+        }
+      } catch (err) {
+        // fallback: chỉ cập nhật các trường vừa sửa
+        const updatedUser = {
+          ...user!,
+          avatar: userAvatar,
+          fullName,
+          phone,
+          dateOfBirth: formattedValues.dateOfBirth,
+          gender,
+          address,
+        };
+        setUser(updatedUser);
+        sessionStorage.setItem("user", JSON.stringify(updatedUser));
+      }
       message.success("Cập nhật thông tin user thành công");
-
-      //force renew token
-      localStorage.removeItem("access_token");
-      sessionStorage.removeItem("access_token");
     } else {
       notification.error({
         message: "Đã có lỗi xảy ra",
-        description: res.message
+        description: res.message,
       });
     }
     setIsSubmit(false);
@@ -166,7 +206,7 @@ const UserInfo = () => {
               </Col>
               <Col flex="1">
                 <Title level={4} style={{ margin: 0 }}>
-                  <UserOutlined /> Thông tin cá nhân
+                  <UserOutlined /> {user?.fullName || "Người dùng"}
                 </Title>
                 <Text type="secondary">
                   Cập nhật thông tin cá nhân và ảnh đại diện
@@ -204,7 +244,7 @@ const UserInfo = () => {
                     label="Email"
                     name="email"
                     rules={[
-                      { required: true, message: "Email không được để trống!" }
+                      { required: true, message: "Email không được để trống!" },
                     ]}
                   >
                     <Input
@@ -221,8 +261,8 @@ const UserInfo = () => {
                     rules={[
                       {
                         required: true,
-                        message: "Tên hiển thị không được để trống!"
-                      }
+                        message: "Tên hiển thị không được để trống!",
+                      },
                     ]}
                   >
                     <Input
@@ -241,8 +281,8 @@ const UserInfo = () => {
                     rules={[
                       {
                         required: true,
-                        message: "Số điện thoại không được để trống!"
-                      }
+                        message: "Số điện thoại không được để trống!",
+                      },
                     ]}
                   >
                     <Input
