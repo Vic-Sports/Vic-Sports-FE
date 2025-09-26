@@ -80,6 +80,30 @@ const ProtectedRoute = (props: IProps) => {
     }
   }
 
+  const isOwnerRoute = location.pathname.includes("owner");
+  if (isAuthenticated === true && isOwnerRoute === true) {
+    const role = user?.role;
+    if (role === "customer") {
+      return (
+        <div className="auth-error-container">
+          <div className="orb-3"></div>
+          <Result
+            status="403"
+            title={t("auth.forbidden_title")}
+            subTitle={t("auth.forbidden_subtitle")}
+            extra={[
+              <Button type="primary" key="home" size="large">
+                <Link to="/">
+                  <FaHome /> {t("auth.home_button")}
+                </Link>
+              </Button>
+            ]}
+          />
+        </div>
+      );
+    }
+  }
+
   // Kiểm tra xem user có tồn tại không
   if (isAuthenticated === true && !user) {
     return (
