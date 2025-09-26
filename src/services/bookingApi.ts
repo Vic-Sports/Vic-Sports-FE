@@ -18,8 +18,11 @@ export const getBookingByIdAPI = (bookingId: string) => {
   return axios.get<IBackendRes<IBookingResponse>>(urlBackend);
 };
 
-export const getUserBookingsAPI = (userId: string) => {
-  const urlBackend = `/api/v1/bookings/user/${userId}`;
+// Nếu user thường, không truyền userId, sẽ gọi /me
+export const getUserBookingsAPI = (userId?: string) => {
+  const urlBackend = userId
+    ? `/api/v1/bookings/user/${userId}` // admin
+    : "/api/v1/bookings/user/me"; // user thường
   return axios.get<IBackendRes<IBookingResponse[]>>(urlBackend);
 };
 
