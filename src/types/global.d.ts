@@ -1,4 +1,4 @@
-export { };
+export {};
 
 declare global {
   interface IBackendRes<T> {
@@ -88,6 +88,7 @@ declare global {
     totalSpent?: number;
     rank?: string;
     isVerified?: boolean;
+    isEmailVerified?: boolean;
   }
 
   interface IFetchAccount {
@@ -150,6 +151,4 @@ declare global {
     paymentStatus: string;
     paymentRef: string;
   }
-
-  interface IOrderTable extends IHistory {}
 }

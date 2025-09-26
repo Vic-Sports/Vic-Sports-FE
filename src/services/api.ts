@@ -66,6 +66,24 @@ export const resetPasswordAPI = (token: string, newPassword: string) => {
   return axios.post<IBackendRes<any>>(urlBackend, { token, newPassword });
 };
 
+// Đổi mật khẩu (PUT /api/v1/auth/change-password)
+export const changePasswordAPI = (
+  currentPassword: string,
+  newPassword: string,
+  token: string
+) => {
+  const urlBackend = "/api/v1/auth/change-password";
+  return axios.put<IBackendRes<any>>(
+    urlBackend,
+    { currentPassword, newPassword },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
 export const getUsersAPI = (query: string) => {
   const urlBackend = `/api/v1/user?${query}`;
   return axios.get<IBackendRes<IModelPaginate<IUserTable>>>(urlBackend);
@@ -161,27 +179,7 @@ export const createBookAPI = (
   });
 };
 
-export const updateBookAPI = (
-  _id: string,
-  mainText: string,
-  author: string,
-  price: number,
-  quantity: number,
-  category: string,
-  thumbnail: string,
-  slider: string[]
-) => {
-  const urlBackend = `/api/v1/book/${_id}`;
-  return axios.put<IBackendRes<IRegister>>(urlBackend, {
-    mainText,
-    author,
-    price,
-    quantity,
-    category,
-    thumbnail,
-    slider,
-  });
-};
+// ...existing code...
 
 export const deleteBookAPI = (_id: string) => {
   const urlBackend = `/api/v1/book/${_id}`;
@@ -240,19 +238,6 @@ export const updateUserInfoAPI = (
     ...userData,
     avatar,
     _id,
-  });
-};
-
-export const updateUserPasswordAPI = (
-  email: string,
-  oldpass: string,
-  newpass: string
-) => {
-  const urlBackend = "/api/v1/user/change-password";
-  return axios.post<IBackendRes<IRegister>>(urlBackend, {
-    email,
-    oldpass,
-    newpass,
   });
 };
 
