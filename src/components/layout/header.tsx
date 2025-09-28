@@ -69,98 +69,113 @@ const Header = () => {
     );
   };
 
-  // Create menu items with conditional Owner Dashboard
-  const createMenuItems = () => {
-    const items = [
-      {
-        label: (
-          <div
-            style={{
-              cursor: "pointer",
-              color: "#1a1a1a",
-              padding: "8px 12px",
-              borderRadius: "8px",
-              fontWeight: 600,
-              fontSize: "16px",
-              transition: "all 0.3s ease",
-            }}
-            onClick={() => setOpenManageAccount(true)}
-          >
-            {t("appHeader.profile")}
-          </div>
-        ),
-        key: "account",
-      },
-    ];
-
-    // Add Owner Dashboard if user is an owner
-    if (user?.role === "owner") {
-      items.push({
-        label: (
-          <div
-            style={{
-              cursor: "pointer",
-              color: "#1a1a1a",
-              padding: "8px 12px",
-              borderRadius: "8px",
-              fontWeight: 600,
-              fontSize: "16px",
-              transition: "all 0.3s ease",
-            }}
-            onClick={() => navigate("/owner")}
-          >
-            {t("appHeader.ownerDashboard")}
-          </div>
-        ),
-        key: "owner-dashboard",
-      });
+  const menuItems = [
+    {
+      label: (
+        <div
+          style={{
+            cursor: "pointer",
+            color: "#1a1a1a",
+            padding: "8px 12px",
+            borderRadius: "8px",
+            fontWeight: 600,
+            fontSize: "16px",
+            transition: "all 0.3s ease"
+          }}
+          onClick={() => setOpenManageAccount(true)}
+        >
+          {t("appHeader.profile")}
+        </div>
+      ),
+      key: "account"
+    },
+    {
+      label: (
+        <div
+          style={{
+            cursor: "pointer",
+            color: "#1a1a1a",
+            padding: "8px 12px",
+            borderRadius: "8px",
+            fontWeight: 600,
+            fontSize: "16px",
+            transition: "all 0.3s ease"
+          }}
+          onClick={() => navigate("/history")}
+        >
+          {t("appHeader.history")}
+        </div>
+      ),
+      key: "history"
+    },
+    // Thêm dashboard cho admin
+    ...(user?.role === "admin"
+      ? [
+          {
+            label: (
+              <div
+                style={{
+                  cursor: "pointer",
+                  color: "#1a1a1a",
+                  padding: "8px 12px",
+                  borderRadius: "8px",
+                  fontWeight: 600,
+                  fontSize: "16px",
+                  transition: "all 0.3s ease"
+                }}
+                onClick={() => navigate("/admin")}
+              >
+                Dashboard Admin
+              </div>
+            ),
+            key: "admin-dashboard"
+          }
+        ]
+      : []),
+    // Thêm dashboard cho owner
+    ...(user?.role === "owner"
+      ? [
+          {
+            label: (
+              <div
+                style={{
+                  cursor: "pointer",
+                  color: "#1a1a1a",
+                  padding: "8px 12px",
+                  borderRadius: "8px",
+                  fontWeight: 600,
+                  fontSize: "16px",
+                  transition: "all 0.3s ease"
+                }}
+                onClick={() => navigate("/owner")}
+              >
+                Dashboard Owner
+              </div>
+            ),
+            key: "owner-dashboard"
+          }
+        ]
+      : []),
+    {
+      label: (
+        <div
+          style={{
+            cursor: "pointer",
+            color: "#1a1a1a",
+            padding: "8px 12px",
+            borderRadius: "8px",
+            fontWeight: 600,
+            fontSize: "16px",
+            transition: "all 0.3s ease"
+          }}
+          onClick={handleLogout}
+        >
+          {t("appHeader.logout")}
+        </div>
+      ),
+      key: "logout"
     }
-
-    items.push(
-      {
-        label: (
-          <div
-            style={{
-              cursor: "pointer",
-              color: "#1a1a1a",
-              padding: "8px 12px",
-              borderRadius: "8px",
-              fontWeight: 600,
-              fontSize: "16px",
-              transition: "all 0.3s ease",
-            }}
-            onClick={() => navigate("/history")}
-          >
-            {t("appHeader.history")}
-          </div>
-        ),
-        key: "history",
-      },
-      {
-        label: (
-          <div
-            style={{
-              cursor: "pointer",
-              color: "#1a1a1a",
-              padding: "8px 12px",
-              borderRadius: "8px",
-              fontWeight: 600,
-              fontSize: "16px",
-              transition: "all 0.3s ease",
-            }}
-            onClick={handleLogout}
-          >
-            {t("appHeader.logout")}
-          </div>
-        ),
-        key: "logout",
-      }
-    );
-
-    return items;
-  };
-
-  const menuItems = createMenuItems();
+  ];
 
   const languageMenuItems = [
     {
@@ -174,7 +189,7 @@ const Header = () => {
           <img src={enFlag} style={{ width: 20, height: 20 }} alt="English" />
           <span>English</span>
         </div>
-      ),
+      )
     },
     {
       key: "vi",
@@ -191,8 +206,8 @@ const Header = () => {
           />
           <span>Tiếng Việt</span>
         </div>
-      ),
-    },
+      )
+    }
   ];
 
   return (
@@ -208,7 +223,7 @@ const Header = () => {
           zIndex: 1000,
           boxShadow: "0 2px 20px rgba(0,0,0,0.08)",
           backdropFilter: "blur(10px)",
-          borderBottom: "1px solid rgba(0,0,0,0.05)",
+          borderBottom: "1px solid rgba(0,0,0,0.05)"
         }}
       >
         <Container>
@@ -231,7 +246,7 @@ const Header = () => {
                   justifyContent: "center",
                   marginRight: "15px",
                   boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
-                  transition: "all 0.3s ease",
+                  transition: "all 0.3s ease"
                 }}
               >
                 <FaBolt style={{ color: "white", fontSize: "22px" }} />
@@ -248,7 +263,7 @@ const Header = () => {
                     backgroundClip: "text",
                     margin: 0,
                     lineHeight: 1.1,
-                    letterSpacing: "-0.5px",
+                    letterSpacing: "-0.5px"
                   }}
                 >
                   VIC SPORTS
@@ -260,7 +275,7 @@ const Header = () => {
                     fontWeight: "600",
                     letterSpacing: "2px",
                     margin: 0,
-                    textTransform: "uppercase",
+                    textTransform: "uppercase"
                   }}
                 >
                   FUTURE OF SPORTS
@@ -290,7 +305,7 @@ const Header = () => {
                         transition: "all 0.3s ease",
                         boxShadow: isActive
                           ? "0 4px 15px rgba(102, 126, 234, 0.3)"
-                          : "none",
+                          : "none"
                       }}
                     >
                       {t("appHeader.home")}
@@ -316,7 +331,7 @@ const Header = () => {
                         transition: "all 0.3s ease",
                         boxShadow: isActive
                           ? "0 4px 15px rgba(102, 126, 234, 0.3)"
-                          : "none",
+                          : "none"
                       }}
                     >
                       {t("appHeader.venues")}
@@ -342,7 +357,7 @@ const Header = () => {
                         transition: "all 0.3s ease",
                         boxShadow: isActive
                           ? "0 4px 15px rgba(102, 126, 234, 0.3)"
-                          : "none",
+                          : "none"
                       }}
                     >
                       {t("appHeader.coaches")}
@@ -368,7 +383,7 @@ const Header = () => {
                         transition: "all 0.3s ease",
                         boxShadow: isActive
                           ? "0 4px 15px rgba(102, 126, 234, 0.3)"
-                          : "none",
+                          : "none"
                       }}
                     >
                       {t("appHeader.community")}
@@ -390,7 +405,7 @@ const Header = () => {
                 borderRadius: "12px",
                 border: "none",
                 background: "rgba(102, 126, 234, 0.1)",
-                transition: "all 0.3s ease",
+                transition: "all 0.3s ease"
               }}
             >
               ☰
@@ -408,8 +423,8 @@ const Header = () => {
                     border: "1px solid rgba(0,0,0,0.1)",
                     borderRadius: "15px",
                     boxShadow: "0 8px 30px rgba(0,0,0,0.15)",
-                    padding: "8px",
-                  },
+                    padding: "8px"
+                  }
                 }}
                 trigger={["click"]}
                 placement="bottomRight"
@@ -425,7 +440,7 @@ const Header = () => {
                     alignItems: "center",
                     gap: "8px",
                     transition: "all 0.3s ease",
-                    boxShadow: "none",
+                    boxShadow: "none"
                   }}
                 >
                   {renderFlag(i18n.resolvedLanguage || "en")}
@@ -447,7 +462,7 @@ const Header = () => {
                     fontSize: "15px",
                     height: "auto",
                     boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
-                    transition: "all 0.3s ease",
+                    transition: "all 0.3s ease"
                   }}
                   onClick={() => navigate("/login")}
                 >
@@ -463,8 +478,8 @@ const Header = () => {
                       border: "1px solid rgba(0,0,0,0.1)",
                       borderRadius: "15px",
                       boxShadow: "0 8px 30px rgba(0,0,0,0.15)",
-                      padding: "8px",
-                    },
+                      padding: "8px"
+                    }
                   }}
                   trigger={["click"]}
                   placement="bottomRight"
@@ -477,7 +492,7 @@ const Header = () => {
                       borderRadius: "15px",
                       background: "rgba(102, 126, 234, 0.05)",
                       transition: "all 0.3s ease",
-                      border: "1px solid rgba(102, 126, 234, 0.1)",
+                      border: "1px solid rgba(102, 126, 234, 0.1)"
                     }}
                   >
                     <Avatar
@@ -485,7 +500,7 @@ const Header = () => {
                       size={36}
                       style={{
                         border: "2px solid rgba(102, 126, 234, 0.2)",
-                        boxShadow: "0 2px 8px rgba(102, 126, 234, 0.2)",
+                        boxShadow: "0 2px 8px rgba(102, 126, 234, 0.2)"
                       }}
                     >
                       {user.fullName?.[0] || "U"}
@@ -498,7 +513,7 @@ const Header = () => {
                           fontWeight: "700",
                           color: "#1a1a1a",
                           margin: 0,
-                          lineHeight: 1.2,
+                          lineHeight: 1.2
                         }}
                       >
                         {user.fullName || "User Pro"}
@@ -508,7 +523,7 @@ const Header = () => {
                           fontSize: "12px",
                           color: "rgba(26, 26, 26, 0.7)",
                           margin: 0,
-                          fontWeight: "500",
+                          fontWeight: "500"
                         }}
                       >
                         {user.rewardPoints || 0} VIC token
@@ -533,7 +548,7 @@ const Header = () => {
                 borderRadius: "12px",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
+                justifyContent: "center"
               }}
             >
               <FaBolt style={{ color: "white", fontSize: "18px" }} />
@@ -550,14 +565,14 @@ const Header = () => {
           body: {
             backgroundColor: "#FFFFFF",
             color: "#1a1a1a",
-            padding: "24px",
+            padding: "24px"
           },
           header: {
             backgroundColor: "#FFFFFF",
             color: "#1a1a1a",
             borderBottom: "1px solid rgba(0,0,0,0.1)",
-            padding: "20px 24px",
-          },
+            padding: "20px 24px"
+          }
         }}
       >
         <div className="d-flex flex-column gap-2">
@@ -571,7 +586,7 @@ const Header = () => {
               fontWeight: "600",
               fontSize: "16px",
               transition: "all 0.3s ease",
-              background: "transparent",
+              background: "transparent"
             }}
             onClick={() => setOpenDrawer(false)}
           >
@@ -587,7 +602,7 @@ const Header = () => {
               fontWeight: "600",
               fontSize: "16px",
               transition: "all 0.3s ease",
-              background: "transparent",
+              background: "transparent"
             }}
             onClick={() => setOpenDrawer(false)}
           >
@@ -603,7 +618,7 @@ const Header = () => {
               fontWeight: "600",
               fontSize: "16px",
               transition: "all 0.3s ease",
-              background: "transparent",
+              background: "transparent"
             }}
             onClick={() => setOpenDrawer(false)}
           >
@@ -619,7 +634,7 @@ const Header = () => {
               fontWeight: "600",
               fontSize: "16px",
               transition: "all 0.3s ease",
-              background: "transparent",
+              background: "transparent"
             }}
             onClick={() => setOpenDrawer(false)}
           >
@@ -638,7 +653,7 @@ const Header = () => {
               fontSize: "16px",
               transition: "all 0.3s ease",
               background: "transparent",
-              cursor: "pointer",
+              cursor: "pointer"
             }}
             onClick={() => {
               setOpenManageAccount(true);
@@ -647,6 +662,50 @@ const Header = () => {
           >
             {t("appHeader.profile")}
           </div>
+          {/* Thêm dashboard cho admin trong mobile menu */}
+          {user?.role === "admin" && (
+            <div
+              className="mobile-nav-item"
+              style={{
+                color: "#1a1a1a",
+                padding: "16px 20px",
+                borderRadius: "12px",
+                fontWeight: "600",
+                fontSize: "16px",
+                transition: "all 0.3s ease",
+                background: "transparent",
+                cursor: "pointer"
+              }}
+              onClick={() => {
+                navigate("/admin");
+                setOpenDrawer(false);
+              }}
+            >
+              Dashboard Admin
+            </div>
+          )}
+          {/* Thêm dashboard cho owner trong mobile menu */}
+          {user?.role === "owner" && (
+            <div
+              className="mobile-nav-item"
+              style={{
+                color: "#1a1a1a",
+                padding: "16px 20px",
+                borderRadius: "12px",
+                fontWeight: "600",
+                fontSize: "16px",
+                transition: "all 0.3s ease",
+                background: "transparent",
+                cursor: "pointer"
+              }}
+              onClick={() => {
+                navigate("/owner");
+                setOpenDrawer(false);
+              }}
+            >
+              Dashboard Owner
+            </div>
+          )}
           <Divider
             style={{ borderColor: "rgba(0,0,0,0.1)", margin: "20px 0" }}
           />
@@ -660,7 +719,7 @@ const Header = () => {
               fontSize: "16px",
               transition: "all 0.3s ease",
               background: "transparent",
-              cursor: "pointer",
+              cursor: "pointer"
             }}
             onClick={() => {
               setOpenDrawer(false);

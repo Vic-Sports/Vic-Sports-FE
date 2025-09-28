@@ -83,25 +83,34 @@ const LayoutAdmin = () => {
   }, [location]);
 
   const handleLogout = async () => {
-    //todo
-    const res = await logoutAPI();
-    if (res.data) {
+    console.log("Logout button clicked");
+    try {
+      const res = await logoutAPI();
       setUser(null);
       setIsAuthenticated(false);
       localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("carts");
+      sessionStorage.removeItem("access_token");
+      sessionStorage.removeItem("refresh_token");
+      sessionStorage.removeItem("user");
+    } catch (error) {
+      setUser(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("carts");
+      sessionStorage.removeItem("access_token");
+      sessionStorage.removeItem("refresh_token");
+      sessionStorage.removeItem("user");
+      window?.alert?.("Có lỗi khi đăng xuất! Dữ liệu đã được xóa cục bộ.");
+      console.error("Logout error:", error);
+    } finally {
       navigate("/");
     }
   };
 
   const itemsDropdown = [
-    {
-      label: (
-        <label style={{ cursor: "pointer" }} onClick={() => alert("me")}>
-          Quản lý tài khoản
-        </label>
-      ),
-      key: "account"
-    },
     {
       label: (
         <Link style={{ textDecoration: "none" }} to={"/"}>

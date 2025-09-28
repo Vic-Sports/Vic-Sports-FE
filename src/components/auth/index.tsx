@@ -59,7 +59,7 @@ const ProtectedRoute = (props: IProps) => {
   const isAdminRoute = location.pathname.includes("admin");
   if (isAuthenticated === true && isAdminRoute === true) {
     const role = user?.role;
-    if (role === "customer") {
+    if (role !== "admin") {
       return (
         <div className="auth-error-container">
           <div className="orb-3"></div>
@@ -83,7 +83,7 @@ const ProtectedRoute = (props: IProps) => {
   const isOwnerRoute = location.pathname.includes("owner");
   if (isAuthenticated === true && isOwnerRoute === true) {
     const role = user?.role;
-    if (role === "customer") {
+    if (role !== "owner") {
       return (
         <div className="auth-error-container">
           <div className="orb-3"></div>

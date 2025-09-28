@@ -34,11 +34,13 @@ import EmailVerificationPage from "./pages/client/auth/email-verification";
 import BookingHistory from "./pages/client/history";
 import LayoutAdmin from "./components/layout/layout.admin";
 import ManageUserPage from "./pages/admin/manage.user";
+import ManageVenueAdminPage from "./pages/admin/manage.venue";
 import LayoutOwner from "./components/layout/layout.owner";
 import OwnerDashBoardPage from "./pages/owner/dashboard";
 import OwnerVenuesPage from "./pages/owner/venues";
 import OwnerCourtsPage from "./pages/owner/courts";
 import OwnerBookingsPage from "./pages/owner/bookings";
+import ManageUserOwnerPage from "./pages/owner/manage.user";
 
 const router = createBrowserRouter([
   {
@@ -111,6 +113,14 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "venues",
+        element: (
+          <ProtectedRoute>
+            <ManageVenueAdminPage />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
   {
@@ -149,6 +159,14 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "user",
+        element: (
+          <ProtectedRoute>
+            <ManageUserOwnerPage />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
   {
@@ -176,16 +194,16 @@ const router = createBrowserRouter([
     element: <ResetPasswordPage />,
   },
   {
+    path: "/auth/email-verification",
+    element: <EmailVerificationPage />,
+  },
+  {
     path: "/500",
     element: <ServerErrorPage />,
   },
   {
     path: "*",
     element: <NotFoundPage />,
-  },
-  {
-    path: "/auth/email-verification",
-    element: <EmailVerificationPage />, // import đúng component
   },
 ]);
 
