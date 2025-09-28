@@ -36,6 +36,9 @@ import LayoutAdmin from "./components/layout/layout.admin";
 import ManageUserPage from "./pages/admin/manage.user";
 import LayoutOwner from "./components/layout/layout.owner";
 import OwnerDashBoardPage from "./pages/owner/dashboard";
+import OwnerVenuesPage from "./pages/owner/venues";
+import OwnerCourtsPage from "./pages/owner/courts";
+import OwnerBookingsPage from "./pages/owner/bookings";
 
 const router = createBrowserRouter([
   {
@@ -44,39 +47,39 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />
+        element: <HomePage />,
       },
       {
         path: "venues",
-        element: <VenuesPage />
+        element: <VenuesPage />,
       },
       {
         path: "venue/:venueId",
-        element: <VenueCourts />
+        element: <VenueCourts />,
       },
       {
         path: "court/:courtId",
-        element: <CourtDetailPage />
+        element: <CourtDetailPage />,
       },
       {
         path: "booking",
-        element: <BookingPage />
+        element: <BookingPage />,
       },
       {
         path: "booking/success",
-        element: <BookingSuccessPage />
+        element: <BookingSuccessPage />,
       },
       {
         path: "payment",
-        element: <PaymentPage />
+        element: <PaymentPage />,
       },
       {
         path: "payment/return",
-        element: <PaymentReturnPage />
+        element: <PaymentReturnPage />,
       },
       {
         path: "payment/success",
-        element: <PaymentReturnPage />
+        element: <PaymentReturnPage />,
       },
       {
         path: "booking/payos-return",
@@ -98,7 +101,7 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             <DashBoardPage />
           </ProtectedRoute>
-        )
+        ),
       },
       {
         path: "user",
@@ -106,9 +109,9 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             <ManageUserPage />
           </ProtectedRoute>
-        )
-      }
-    ]
+        ),
+      },
+    ],
   },
   {
     path: "owner",
@@ -120,56 +123,81 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             <OwnerDashBoardPage />
           </ProtectedRoute>
-        )
-      }
-    ]
+        ),
+      },
+      {
+        path: "venues",
+        element: (
+          <ProtectedRoute>
+            <OwnerVenuesPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "courts",
+        element: (
+          <ProtectedRoute>
+            <OwnerCourtsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "bookings",
+        element: (
+          <ProtectedRoute>
+            <OwnerBookingsPage />
+          </ProtectedRoute>
+        ),
+      },
+    ],
   },
   {
     path: "/login",
-    element: <LoginPage />
+    element: <LoginPage />,
   },
   {
     path: "/register",
-    element: <RegisterPage />
+    element: <RegisterPage />,
   },
   {
     path: "/email-verified",
-    element: <EmailVerifiedPage />
+    element: <EmailVerifiedPage />,
   },
   {
     path: "/email-verification-failed",
-    element: <EmailVerificationFailedPage />
+    element: <EmailVerificationFailedPage />,
   },
   {
     path: "/forgot-password",
-    element: <ForgotPasswordPage />
+    element: <ForgotPasswordPage />,
   },
   {
     path: "/reset-password",
-    element: <ResetPasswordPage />
+    element: <ResetPasswordPage />,
   },
   {
     path: "/500",
-    element: <ServerErrorPage />
+    element: <ServerErrorPage />,
   },
   {
     path: "*",
-    element: <NotFoundPage />
+    element: <NotFoundPage />,
   },
   {
     path: "/auth/email-verification",
-    element: <EmailVerificationPage /> // import đúng component
-  }
+    element: <EmailVerificationPage />, // import đúng component
+  },
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <App>
-      <AppProvider>
-        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-          <RouterProvider router={router} />
-        </GoogleOAuthProvider>
-      </AppProvider>
-    </App>
-  </StrictMode>
+  // Temporarily disable StrictMode to fix chart shadow DOM issues
+  // <StrictMode>
+  <App>
+    <AppProvider>
+      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+        <RouterProvider router={router} />
+      </GoogleOAuthProvider>
+    </AppProvider>
+  </App>
+  // </StrictMode>
 );

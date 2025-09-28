@@ -69,65 +69,98 @@ const Header = () => {
     );
   };
 
-  const menuItems = [
-    {
-      label: (
-        <div
-          style={{
-            cursor: "pointer",
-            color: "#1a1a1a",
-            padding: "8px 12px",
-            borderRadius: "8px",
-            fontWeight: 600,
-            fontSize: "16px",
-            transition: "all 0.3s ease",
-          }}
-          onClick={() => setOpenManageAccount(true)}
-        >
-          {t("appHeader.profile")}
-        </div>
-      ),
-      key: "account",
-    },
-    {
-      label: (
-        <div
-          style={{
-            cursor: "pointer",
-            color: "#1a1a1a",
-            padding: "8px 12px",
-            borderRadius: "8px",
-            fontWeight: 600,
-            fontSize: "16px",
-            transition: "all 0.3s ease",
-          }}
-          onClick={() => navigate("/history")}
-        >
-          {t("appHeader.history")}
-        </div>
-      ),
-      key: "history",
-    },
-    {
-      label: (
-        <div
-          style={{
-            cursor: "pointer",
-            color: "#1a1a1a",
-            padding: "8px 12px",
-            borderRadius: "8px",
-            fontWeight: 600,
-            fontSize: "16px",
-            transition: "all 0.3s ease",
-          }}
-          onClick={handleLogout}
-        >
-          {t("appHeader.logout")}
-        </div>
-      ),
-      key: "logout",
-    },
-  ];
+  // Create menu items with conditional Owner Dashboard
+  const createMenuItems = () => {
+    const items = [
+      {
+        label: (
+          <div
+            style={{
+              cursor: "pointer",
+              color: "#1a1a1a",
+              padding: "8px 12px",
+              borderRadius: "8px",
+              fontWeight: 600,
+              fontSize: "16px",
+              transition: "all 0.3s ease",
+            }}
+            onClick={() => setOpenManageAccount(true)}
+          >
+            {t("appHeader.profile")}
+          </div>
+        ),
+        key: "account",
+      },
+    ];
+
+    // Add Owner Dashboard if user is an owner
+    if (user?.role === "owner") {
+      items.push({
+        label: (
+          <div
+            style={{
+              cursor: "pointer",
+              color: "#1a1a1a",
+              padding: "8px 12px",
+              borderRadius: "8px",
+              fontWeight: 600,
+              fontSize: "16px",
+              transition: "all 0.3s ease",
+            }}
+            onClick={() => navigate("/owner")}
+          >
+            {t("appHeader.ownerDashboard")}
+          </div>
+        ),
+        key: "owner-dashboard",
+      });
+    }
+
+    items.push(
+      {
+        label: (
+          <div
+            style={{
+              cursor: "pointer",
+              color: "#1a1a1a",
+              padding: "8px 12px",
+              borderRadius: "8px",
+              fontWeight: 600,
+              fontSize: "16px",
+              transition: "all 0.3s ease",
+            }}
+            onClick={() => navigate("/history")}
+          >
+            {t("appHeader.history")}
+          </div>
+        ),
+        key: "history",
+      },
+      {
+        label: (
+          <div
+            style={{
+              cursor: "pointer",
+              color: "#1a1a1a",
+              padding: "8px 12px",
+              borderRadius: "8px",
+              fontWeight: 600,
+              fontSize: "16px",
+              transition: "all 0.3s ease",
+            }}
+            onClick={handleLogout}
+          >
+            {t("appHeader.logout")}
+          </div>
+        ),
+        key: "logout",
+      }
+    );
+
+    return items;
+  };
+
+  const menuItems = createMenuItems();
 
   const languageMenuItems = [
     {
