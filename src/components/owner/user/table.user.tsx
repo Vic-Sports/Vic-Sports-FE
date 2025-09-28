@@ -1,21 +1,11 @@
 import { deleteUserAPI, getUsersAPI } from "@/services/api";
 import { dateRangeValidate } from "@/services/helper";
-import {
-  CloudUploadOutlined,
-  DeleteTwoTone,
-  EditTwoTone,
-  ExportOutlined,
-  PlusOutlined
-} from "@ant-design/icons";
+import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { ProTable } from "@ant-design/pro-components";
-import { App, Button, Popconfirm, Tag } from "antd";
+import { App, Popconfirm, Tag } from "antd";
 import { useRef, useState } from "react";
 import DetailUser from "./detail.user";
-import CreateUser from "./create.user";
-import ImportUser from "./data/import.user";
-import UpdateUser from "./update.user";
-import { CSVLink } from "react-csv";
 
 type TSearch = {
   fullName: string;
@@ -29,7 +19,7 @@ type TSearch = {
   createdAtRange: string;
 };
 
-const TableUser = () => {
+const OwnerTableUser = () => {
   const actionRef = useRef<ActionType>();
   const [meta, setMeta] = useState({
     current: 1,
@@ -261,31 +251,6 @@ const TableUser = () => {
           }
         }}
         headerTitle="Table user"
-        toolBarRender={() => [
-          <CSVLink data={currentDataTable} filename="export-user.csv">
-            <Button icon={<ExportOutlined />} type="primary">
-              Export
-            </Button>
-          </CSVLink>,
-          <Button
-            icon={<CloudUploadOutlined />}
-            type="primary"
-            onClick={() => setOpenModalImport(true)}
-          >
-            Import
-          </Button>,
-
-          <Button
-            key="button"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setOpenModalCreate(true);
-            }}
-            type="primary"
-          >
-            Add new
-          </Button>
-        ]}
       />
       <DetailUser
         openViewDetail={openViewDetail}
@@ -293,28 +258,8 @@ const TableUser = () => {
         dataViewDetail={dataViewDetail}
         setDataViewDetail={setDataViewDetail}
       />
-
-      <CreateUser
-        openModalCreate={openModalCreate}
-        setOpenModalCreate={setOpenModalCreate}
-        refreshTable={refreshTable}
-      />
-
-      <ImportUser
-        openModalImport={openModalImport}
-        setOpenModalImport={setOpenModalImport}
-        refreshTable={refreshTable}
-      />
-
-      <UpdateUser
-        openModalUpdate={openModalUpdate}
-        setOpenModalUpdate={setOpenModalUpdate}
-        refreshTable={refreshTable}
-        setDataUpdate={setDataUpdate}
-        dataUpdate={dataUpdate}
-      />
     </>
   );
 };
 
-export default TableUser;
+export default OwnerTableUser;

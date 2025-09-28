@@ -10,7 +10,7 @@ export const updatePaymentOrderAPI = (
   const urlBackend = "/api/v1/order/update-payment-status";
   return axios.post<IBackendRes<any>>(urlBackend, {
     paymentStatus,
-    paymentRef,
+    paymentRef
   });
 };
 
@@ -32,7 +32,7 @@ export const registerAPI = (
     email,
     password,
     phone,
-    role,
+    role
   });
 };
 
@@ -78,15 +78,30 @@ export const changePasswordAPI = (
     { currentPassword, newPassword },
     {
       headers: {
-        Authorization: `Bearer ${token}`,
-      },
+        Authorization: `Bearer ${token}`
+      }
     }
   );
 };
 
 export const getUsersAPI = (query: string) => {
-  const urlBackend = `/api/v1/user?${query}`;
+  const urlBackend = `/api/v1/admin/users?${query}`;
   return axios.get<IBackendRes<IModelPaginate<IUserTable>>>(urlBackend);
+};
+
+export const getUserDetailsAPI = (userId: string) => {
+  const urlBackend = `/api/v1/admin/users/${userId}`;
+  return axios.get<IBackendRes<any>>(urlBackend);
+};
+
+export const banUserAPI = (userId: string) => {
+  const urlBackend = `/api/v1/admin/users/${userId}/ban`;
+  return axios.put<IBackendRes<any>>(urlBackend, {});
+};
+
+export const unbanUserAPI = (userId: string) => {
+  const urlBackend = `/api/v1/admin/users/${userId}/unban`;
+  return axios.put<IBackendRes<any>>(urlBackend, {});
 };
 
 export const createUserAPI = (
@@ -100,7 +115,7 @@ export const createUserAPI = (
     fullName,
     email,
     password,
-    phone,
+    phone
   });
 };
 
@@ -116,13 +131,9 @@ export const bulkCreateUserAPI = (
   return axios.post<IBackendRes<IResponseImport>>(urlBackend, hoidanit);
 };
 
-export const updateUserAPI = (_id: string, fullName: string, phone: string) => {
-  const urlBackend = "/api/v1/user";
-  return axios.put<IBackendRes<IRegister>>(urlBackend, {
-    _id,
-    fullName,
-    phone,
-  });
+export const updateUserAPI = (_id: string, payload: any) => {
+  const urlBackend = `/api/v1/admin/users/${_id}`;
+  return axios.put<IBackendRes<any>>(urlBackend, payload);
 };
 
 export const deleteUserAPI = (_id: string) => {
@@ -153,8 +164,8 @@ export const uploadFileAPI = (fileImg: any, folder: string) => {
     data: bodyFormData,
     headers: {
       "Content-Type": "multipart/form-data",
-      "upload-type": folder,
-    },
+      "upload-type": folder
+    }
   });
 };
 
@@ -175,7 +186,7 @@ export const createBookAPI = (
     quantity,
     category,
     thumbnail,
-    slider,
+    slider
   });
 };
 
@@ -208,7 +219,7 @@ export const createOrderAPI = (
     totalPrice,
     type,
     detail,
-    paymentRef,
+    paymentRef
   });
 };
 
@@ -237,7 +248,7 @@ export const updateUserInfoAPI = (
   return axios.put<IBackendRes<IRegister>>(urlBackend, {
     ...userData,
     avatar,
-    _id,
+    _id
   });
 };
 
@@ -266,7 +277,7 @@ export const updateUserPreferencesAPI = (
   const urlBackend = "/api/v1/user/preferences";
   return axios.put<IBackendRes<IRegister>>(urlBackend, {
     _id,
-    ...preferences,
+    ...preferences
   });
 };
 

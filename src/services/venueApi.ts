@@ -3,7 +3,7 @@ import type {
   IVenueFilterParams,
   IVenueSearchResponse,
   ICourtFilters,
-  ICourtsData,
+  ICourtsData
 } from "@/types/venue";
 import createInstanceAxios from "@/services/axios.customize";
 
@@ -54,4 +54,20 @@ export const getAvailableCitiesAPI = () => {
 export const getDistrictsByCityAPI = (city: string) => {
   const urlBackend = `/api/v1/venues/districts/${encodeURIComponent(city)}`;
   return axios.get<IBackendRes<string[]>>(urlBackend);
+};
+
+// Admin Venue APIs
+export const getPendingVenuesAdminAPI = (query: string) => {
+  const urlBackend = `/api/v1/admin/venues/pending?${query}`;
+  return axios.get<IBackendRes<IModelPaginate<any>>>(urlBackend);
+};
+
+export const approveVenueAdminAPI = (venueId: string) => {
+  const urlBackend = `/api/v1/admin/venues/${venueId}/approve`;
+  return axios.put<IBackendRes<any>>(urlBackend, {});
+};
+
+export const rejectVenueAdminAPI = (venueId: string) => {
+  const urlBackend = `/api/v1/admin/venues/${venueId}/reject`;
+  return axios.put<IBackendRes<any>>(urlBackend, {});
 };

@@ -100,6 +100,9 @@ declare global {
     fullName: string;
     email: string;
     phone: string;
+    gender: string;
+    status: string;
+    rewardPoints: number;
     role: string;
     avatar: string;
     isActive: boolean;

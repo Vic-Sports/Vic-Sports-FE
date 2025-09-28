@@ -34,8 +34,10 @@ import EmailVerificationPage from "./pages/client/auth/email-verification";
 import BookingHistory from "./pages/client/history";
 import LayoutAdmin from "./components/layout/layout.admin";
 import ManageUserPage from "./pages/admin/manage.user";
+import ManageVenueAdminPage from "./pages/admin/manage.venue";
 import LayoutOwner from "./components/layout/layout.owner";
 import OwnerDashBoardPage from "./pages/owner/dashboard";
+import ManageUserOwnerPage from "./pages/owner/manage.user";
 
 const router = createBrowserRouter([
   {
@@ -107,6 +109,14 @@ const router = createBrowserRouter([
             <ManageUserPage />
           </ProtectedRoute>
         )
+      },
+      {
+        path: "venues",
+        element: (
+          <ProtectedRoute>
+            <ManageVenueAdminPage />
+          </ProtectedRoute>
+        )
       }
     ]
   },
@@ -119,6 +129,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <OwnerDashBoardPage />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: "user",
+        element: (
+          <ProtectedRoute>
+            <ManageUserOwnerPage />
           </ProtectedRoute>
         )
       }
