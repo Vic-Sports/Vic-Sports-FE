@@ -21,6 +21,7 @@
     "axios": "^1.10.0",
     "bootstrap": "^5.3.7",
     "crypto-js": "^4.2.0",
+    "date-fns": "^4.1.0",
     "dayjs": "1.11.13",
     "exceljs": "4.4.0",
     "i18next": "^25.3.1",
@@ -39,6 +40,7 @@
     "react-router-dom": "^7.6.3",
     "react-spinners": "^0.17.0",
     "sass": "^1.89.2",
+    "socket.io-client": "^4.8.1",
     "uuid": "11.0.3"
   },
   "devDependencies": {

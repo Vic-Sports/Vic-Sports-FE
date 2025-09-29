@@ -15,10 +15,16 @@ import NotFoundPage from "./components/auth/404";
 import ServerErrorPage from "./components/auth/500";
 
 import PaymentPage from "./components/client/booking/payment";
-import PaymentReturnPage from "./components/client/booking/return.url";
 import PayOSReturnPage from "./components/client/booking/payos.return";
+import PaymentReturnPage from "./components/client/booking/return.url";
+import ChatPage from "./components/client/Chat/ChatPage";
 import VenueCourts from "./components/client/venue/VenueCourts";
+import LayoutAdmin from "./components/layout/layout.admin";
+import LayoutOwner from "./components/layout/layout.owner";
 import DashBoardPage from "./pages/admin/dashboard";
+import ManageUserPage from "./pages/admin/manage.user";
+import ManageVenueAdminPage from "./pages/admin/manage.venue";
+import EmailVerificationPage from "./pages/client/auth/email-verification";
 import EmailVerificationFailedPage from "./pages/client/auth/email-verification-failed";
 import EmailVerifiedPage from "./pages/client/auth/email-verified";
 import ForgotPasswordPage from "./pages/client/auth/forgot-password";
@@ -28,14 +34,9 @@ import ResetPasswordPage from "./pages/client/auth/reset-password";
 import BookingPage from "./pages/client/booking";
 import BookingSuccessPage from "./pages/client/booking-success";
 import CourtDetailPage from "./pages/client/court-detail";
+import BookingHistory from "./pages/client/history";
 import HomePage from "./pages/client/home";
 import VenuesPage from "./pages/client/venues";
-import EmailVerificationPage from "./pages/client/auth/email-verification";
-import BookingHistory from "./pages/client/history";
-import LayoutAdmin from "./components/layout/layout.admin";
-import ManageUserPage from "./pages/admin/manage.user";
-import ManageVenueAdminPage from "./pages/admin/manage.venue";
-import LayoutOwner from "./components/layout/layout.owner";
 import OwnerDashBoardPage from "./pages/owner/dashboard";
 import OwnerVenuesPage from "./pages/owner/venues";
 import OwnerCourtsPage from "./pages/owner/courts";
@@ -90,6 +91,14 @@ const router = createBrowserRouter([
       {
         path: "history",
         element: <BookingHistory />,
+      },
+      {
+        path: "chat",
+        element: (
+          <ProtectedRoute>
+            <ChatPage />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
@@ -207,15 +216,19 @@ const router = createBrowserRouter([
   },
 ]);
 
-createRoot(document.getElementById("root")!).render(
-  // Temporarily disable StrictMode to fix chart shadow DOM issues
+const rootElement = document.getElementById("root");
+if (!rootElement) {
+  throw new Error("Root element not found");
+}
+
+createRoot(rootElement).render(
   // <StrictMode>
-  <App>
-    <AppProvider>
-      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-        <RouterProvider router={router} />
-      </GoogleOAuthProvider>
-    </AppProvider>
-  </App>
+    <App>
+      <AppProvider>
+        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+          <RouterProvider router={router} />
+        </GoogleOAuthProvider>
+      </AppProvider>
+    </App>
   // </StrictMode>
 );
