@@ -1,25 +1,25 @@
 import {
-    MoreOutlined,
-    PaperClipOutlined,
-    PhoneOutlined,
-    PlusOutlined,
-    SearchOutlined,
-    SendOutlined,
-    SettingOutlined,
-    SmileOutlined,
-    UserOutlined,
-    VideoCameraOutlined
+  MoreOutlined,
+  PaperClipOutlined,
+  PhoneOutlined,
+  PlusOutlined,
+  SearchOutlined,
+  SendOutlined,
+  SettingOutlined,
+  SmileOutlined,
+  UserOutlined,
+  VideoCameraOutlined
 } from '@ant-design/icons';
 import {
-    message as antMessage,
-    Avatar,
-    Badge,
-    Button,
-    Input,
-    List,
-    Space,
-    Tooltip,
-    Typography
+  message as antMessage,
+  Avatar,
+  Badge,
+  Button,
+  Input,
+  List,
+  Space,
+  Tooltip,
+  Typography
 } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import { useSocket } from '../../../hooks/useSocket';
@@ -73,7 +73,7 @@ const ChatPage: React.FC = () => {
   const [searchText, setSearchText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [typingUsers, setTypingUsers] = useState<string[]>([]);
+  const [typingUsers, setTypingUsers] = useState<{userId: string; userName: string}[]>([]);
   
   // Modals
   const [isCreateGroupModalOpen, setIsCreateGroupModalOpen] = useState(false);
@@ -110,14 +110,28 @@ const ChatPage: React.FC = () => {
       setChats(prev => prev.map(chat => 
         chat._id === data.chat._id ? data.chat : chat
       ));
+      
+      // Update selected chat if it's the one being updated
+      if (selectedChat && selectedChat._id === data.chat._id) {
+        setSelectedChat(data.chat);
+      }
+    });
+
+    // Listen for new chat creation
+    socket.on('chat_created', (data: { chat: Chat }) => {
+      console.log('Chat created via socket:', data.chat); // Debug log
+      setChats(prev => [data.chat, ...prev]);
     });
 
     // Listen for typing indicators
     socket.on('user_typing', (data: { userId: string; userName: string; isTyping: boolean }) => {
       if (data.isTyping) {
-        setTypingUsers(prev => [...prev.filter(id => id !== data.userId), data.userId]);
+        setTypingUsers(prev => [
+          ...prev.filter(user => user.userId !== data.userId), 
+          { userId: data.userId, userName: data.userName }
+        ]);
       } else {
-        setTypingUsers(prev => prev.filter(id => id !== data.userId));
+        setTypingUsers(prev => prev.filter(user => user.userId !== data.userId));
       }
     });
 
@@ -147,6 +161,7 @@ const ChatPage: React.FC = () => {
     return () => {
       socket.off('new_message');
       socket.off('chat_updated');
+      socket.off('chat_created');
       socket.off('user_typing');
       socket.off('reaction_added');
       socket.off('reaction_removed');
@@ -164,8 +179,10 @@ const ChatPage: React.FC = () => {
     try {
       setIsLoading(true);
       const response = await chatApi.getUserChats();
-      setChats(response.data.chats);
+      console.log('Chats response:', response.data); // Debug log
+      setChats(response.data.chats || []);
     } catch (error) {
+      console.error('Failed to load chats:', error);
       antMessage.error('Failed to load chats');
     } finally {
       setIsLoading(false);
@@ -279,10 +296,27 @@ const ChatPage: React.FC = () => {
   }) => {
     try {
       const response = await chatApi.createGroupChat(groupData);
-      setChats(prev => [response.data.chat, ...prev]);
+      console.log('Create group response:', response.data); // Debug log
+      const newChat = response.data.chat;
+      
+      // Update chats list
+      setChats(prev => [newChat, ...prev]);
+      
+      // Auto select the new chat
+      setSelectedChat(newChat);
+      
+      // Load messages for the new chat
+      await loadMessages(newChat._id);
+      
+      // Join the chat room via socket
+      if (socket) {
+        socket.emit('join_chat', newChat._id);
+      }
+      
       setIsCreateGroupModalOpen(false);
       antMessage.success('Tạo nhóm chat thành công');
     } catch (error) {
+      console.error('Create group error:', error);
       antMessage.error('Không thể tạo nhóm chat');
     }
   };
@@ -290,9 +324,26 @@ const ChatPage: React.FC = () => {
   const handleStartDirectChat = async (userId: string) => {
     try {
       const response = await chatApi.createDirectChat({ participantId: userId });
-      setChats(prev => [response.data.chat, ...prev]);
+      console.log('Create direct chat response:', response.data); // Debug log
+      const newChat = response.data.chat;
+      
+      // Update chats list
+      setChats(prev => [newChat, ...prev]);
+      
+      // Auto select the new chat
+      setSelectedChat(newChat);
+      
+      // Load messages for the new chat
+      await loadMessages(newChat._id);
+      
+      // Join the chat room via socket
+      if (socket) {
+        socket.emit('join_chat', newChat._id);
+      }
+      
       antMessage.success('Bắt đầu chat thành công');
     } catch (error) {
+      console.error('Create direct chat error:', error);
       antMessage.error('Không thể bắt đầu chat');
     }
   };
@@ -406,6 +457,7 @@ const ChatPage: React.FC = () => {
 
       <div className="chat-main">
         {selectedChat ? (
+          console.log('Rendering chat for:', selectedChat._id, selectedChat) || (
           <>
             <div className="chat-header">
               <div className="chat-info">
@@ -468,8 +520,8 @@ const ChatPage: React.FC = () => {
                     <div className="typing-indicator">
                       <Text type="secondary">
                         {typingUsers.length === 1 
-                          ? `${typingUsers[0]} is typing...`
-                          : `${typingUsers.length} people are typing...`
+                          ? `${typingUsers[0].userName} đang nhập...`
+                          : `${typingUsers.length} người đang nhập...`
                         }
                       </Text>
                     </div>
@@ -482,7 +534,11 @@ const ChatPage: React.FC = () => {
 
             <div className="chat-input">
               <Space.Compact style={{ width: '100%' }}>
-                <Button type="text" icon={<PaperClipOutlined />} />
+                <Button type="text" icon={<PaperClipOutlined />} 
+                style={{ 
+                    height: '48px', 
+                    width: '48px'
+                  }}/>
                 <Input
                   value={newMessage}
                   onChange={handleTyping}
@@ -497,10 +553,15 @@ const ChatPage: React.FC = () => {
                   icon={<SendOutlined />} 
                   onClick={sendMessage}
                   disabled={!newMessage.trim()}
+                  style={{ 
+                    height: '48px', 
+                    width: '48px'
+                  }}
                 />
               </Space.Compact>
             </div>
           </>
+          )
         ) : (
           <div className="chat-placeholder">
             <Title level={3}>Chọn cuộc trò chuyện để bắt đầu</Title>

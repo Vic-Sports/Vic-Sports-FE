@@ -412,7 +412,7 @@ const Header = () => {
                           : "none"
                       }}
                     >
-                      Chat
+                      CHAT
                     </Button>
                   )}
                 </NavLink>

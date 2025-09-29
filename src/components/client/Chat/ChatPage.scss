@@ -2,63 +2,67 @@
   display: flex;
   height: calc(100vh - 80px);
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 20px;
+  border-radius: 24px;
   margin: 20px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+  border: 3px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
 
   .chat-sidebar {
     width: 380px;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
-    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    border-right: 3px solid rgba(102, 126, 234, 0.3);
     display: flex;
     flex-direction: column;
-    border-radius: 20px 0 0 20px;
+    border-radius: 24px 0 0 24px;
 
     .chat-header {
-      padding: 24px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      padding: 29px;
+      border-bottom: 2px solid rgba(102, 126, 234, 0.2);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(255, 255, 255, 0.8);
-      border-radius: 20px 0 0 0;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 24px 0 0 0;
 
       h4 {
         margin: 0;
         font-weight: 700;
         color: #333;
-        font-size: 20px;
+        font-size: 22px;
       }
 
       .ant-btn {
-        border-radius: 12px;
-        border: none;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 16px;
+        border: 2px solid rgba(102, 126, 234, 0.2);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
         transition: all 0.3s ease;
+        padding: 8px 16px;
 
         &:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(102, 126, 234, 0.25);
+          border-color: rgba(102, 126, 234, 0.4);
         }
       }
     }
 
     .chat-search {
-      padding: 20px 24px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      padding: 24px 28px;
+      border-bottom: 2px solid rgba(102, 126, 234, 0.15);
 
       .ant-input {
-        border-radius: 25px;
-        border: 2px solid rgba(0, 0, 0, 0.1);
-        padding: 12px 20px;
-        font-size: 14px;
+        border-radius: 28px;
+        border: 3px solid rgba(102, 126, 234, 0.2);
+        padding: 14px 24px;
+        font-size: 15px;
         transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
         &:focus {
           border-color: #667eea;
-          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+          box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
         }
       }
     }
@@ -66,29 +70,33 @@
     .chat-list {
       flex: 1;
       overflow-y: auto;
-      padding: 8px;
+      padding: 12px;
 
       .chat-item {
-        padding: 16px 20px;
-        margin: 4px 8px;
+        padding: 20px 24px;
+        margin: 6px 12px;
         cursor: pointer;
-        border-radius: 16px;
+        border-radius: 20px;
         transition: all 0.3s ease;
-        border: 2px solid transparent;
+        border: 3px solid transparent;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
         &:hover {
-          background: rgba(102, 126, 234, 0.1);
-          transform: translateX(4px);
+          background: rgba(102, 126, 234, 0.12);
+          transform: translateX(6px);
+          border-color: rgba(102, 126, 234, 0.3);
+          box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
         }
 
         &.selected {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
-          box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-          transform: translateX(8px);
+          box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+          transform: translateX(10px);
+          border-color: rgba(255, 255, 255, 0.3);
 
           .chat-time, .chat-last-message {
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.9);
           }
         }
 
@@ -96,8 +104,8 @@
           .ant-list-item-meta-avatar {
             .ant-badge {
               .ant-avatar {
-                border: 3px solid rgba(255, 255, 255, 0.2);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                border: 4px solid rgba(255, 255, 255, 0.3);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
               }
             }
           }
@@ -111,16 +119,16 @@
         }
 
         .chat-time {
-          font-size: 12px;
+          font-size: 14px;
           color: #999;
           font-weight: 500;
         }
 
         .chat-last-message {
-          font-size: 14px;
+          font-size: 16px;
           color: #666;
           max-width: 200px;
-          line-height: 1.4;
+          line-height: 1.5;
         }
       }
     }
@@ -132,16 +140,17 @@
     flex-direction: column;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
-    border-radius: 0 20px 20px 0;
+    border-radius: 0 24px 24px 0;
+    border-left: 3px solid rgba(102, 126, 234, 0.2);
 
     .chat-header {
-      padding: 24px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      padding: 21px;
+      border-bottom: 2px solid rgba(102, 126, 234, 0.2);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(255, 255, 255, 0.8);
-      border-radius: 0 20px 0 0;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 0 24px 0 0;
 
       .chat-info {
         display: flex;
@@ -149,8 +158,8 @@
         gap: 16px;
 
         .ant-avatar {
-          border: 3px solid rgba(102, 126, 234, 0.2);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          border: 4px solid rgba(102, 126, 234, 0.3);
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
         }
 
         .chat-details {
@@ -161,25 +170,27 @@
             margin: 0;
             font-weight: 700;
             color: #333;
-            font-size: 18px;
+            font-size: 20px;
           }
 
           span {
             color: #666;
-            font-size: 14px;
+            font-size: 15px;
           }
         }
       }
 
       .ant-btn {
-        border-radius: 12px;
-        border: none;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 16px;
+        border: 2px solid rgba(102, 126, 234, 0.2);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
         transition: all 0.3s ease;
+        padding: 8px 16px;
 
         &:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(102, 126, 234, 0.25);
+          border-color: rgba(102, 126, 234, 0.4);
         }
       }
     }
@@ -187,8 +198,10 @@
     .chat-messages {
       flex: 1;
       overflow-y: auto;
-      padding: 24px;
+      padding: 28px;
       background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      border-left: 2px solid rgba(102, 126, 234, 0.1);
+      border-right: 2px solid rgba(102, 126, 234, 0.1);
 
       .loading-messages {
         display: flex;
@@ -199,18 +212,20 @@
       }
 
       .typing-indicator {
-        padding: 12px 20px;
+        padding: 16px 24px;
         font-style: italic;
         color: #999;
-        background: rgba(102, 126, 234, 0.1);
-        border-radius: 20px;
-        margin: 8px 0;
+        background: rgba(102, 126, 234, 0.12);
+        border-radius: 24px;
+        margin: 12px 0;
         display: inline-block;
+        border: 2px solid rgba(102, 126, 234, 0.2);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
       }
 
       .message {
         display: flex;
-        margin-bottom: 20px;
+        margin-bottom: 28px;
         align-items: flex-end;
 
         &.current-user {
@@ -222,34 +237,35 @@
             .message-bubble {
               background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
               color: white;
-              border-radius: 20px 20px 4px 20px;
-              box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+              border-radius: 24px 24px 6px 24px;
+              box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+              border: 2px solid rgba(255, 255, 255, 0.2);
             }
           }
         }
 
         &.other-user {
           .message-bubble {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             color: #333;
-            border-radius: 20px 20px 20px 4px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 24px 24px 24px 6px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            border: 2px solid rgba(102, 126, 234, 0.15);
           }
         }
 
         .message-content {
-          max-width: 70%;
+          max-width: 75%;
           display: flex;
           flex-direction: column;
 
           .message-bubble {
-            padding: 16px 20px;
-            margin: 4px 0;
+            padding: 20px 28px;
+            margin: 8px 0;
             word-wrap: break-word;
             position: relative;
-            font-size: 15px;
-            line-height: 1.4;
+            font-size: 18px;
+            line-height: 1.6;
 
             .attachments {
               margin-bottom: 12px;
@@ -291,9 +307,9 @@
           .message-footer {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-top: 8px;
-            font-size: 12px;
+            gap: 14px;
+            margin-top: 10px;
+            font-size: 14px;
             color: #999;
 
             .message-reactions {
@@ -320,49 +336,53 @@
 
       .system-message {
         text-align: center;
-        margin: 20px 0;
-        padding: 12px 20px;
-        background: rgba(102, 126, 234, 0.1);
-        border-radius: 20px;
-        font-size: 13px;
+        margin: 24px 0;
+        padding: 16px 24px;
+        background: rgba(102, 126, 234, 0.12);
+        border-radius: 24px;
+        font-size: 15px;
         color: #666;
-        border: 1px solid rgba(102, 126, 234, 0.2);
+        border: 2px solid rgba(102, 126, 234, 0.2);
       }
     }
 
     .chat-input {
-      padding: 24px;
-      border-top: 1px solid rgba(0, 0, 0, 0.1);
-      background: rgba(255, 255, 255, 0.8);
-      border-radius: 0 0 20px 0;
+      padding: 28px;
+      border-top: 2px solid rgba(102, 126, 234, 0.2);
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 0 0 24px 0;
 
       .ant-input-group {
         .ant-input {
-          border-radius: 25px;
-          padding: 12px 20px;
-          border: 2px solid rgba(0, 0, 0, 0.1);
-          font-size: 15px;
+          border-radius: 28px;
+          padding: 16px 24px;
+          border: 3px solid rgba(102, 126, 234, 0.2);
+          font-size: 16px;
           transition: all 0.3s ease;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
           &:focus {
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
           }
         }
 
         .ant-btn {
-          border-radius: 25px;
-          border: none;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          border-radius: 28px;
+          border: 2px solid rgba(102, 126, 234, 0.2);
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
           transition: all 0.3s ease;
+          padding: 8px 16px;
 
           &:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.25);
+            border-color: rgba(102, 126, 234, 0.4);
           }
 
           &.ant-btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: rgba(255, 255, 255, 0.3);
           }
         }
       }
