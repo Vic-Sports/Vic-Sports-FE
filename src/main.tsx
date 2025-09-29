@@ -38,6 +38,9 @@ import BookingHistory from "./pages/client/history";
 import HomePage from "./pages/client/home";
 import VenuesPage from "./pages/client/venues";
 import OwnerDashBoardPage from "./pages/owner/dashboard";
+import OwnerVenuesPage from "./pages/owner/venues";
+import OwnerCourtsPage from "./pages/owner/courts";
+import OwnerBookingsPage from "./pages/owner/bookings";
 import ManageUserOwnerPage from "./pages/owner/manage.user";
 
 const router = createBrowserRouter([
@@ -47,39 +50,39 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />
+        element: <HomePage />,
       },
       {
         path: "venues",
-        element: <VenuesPage />
+        element: <VenuesPage />,
       },
       {
         path: "venue/:venueId",
-        element: <VenueCourts />
+        element: <VenueCourts />,
       },
       {
         path: "court/:courtId",
-        element: <CourtDetailPage />
+        element: <CourtDetailPage />,
       },
       {
         path: "booking",
-        element: <BookingPage />
+        element: <BookingPage />,
       },
       {
         path: "booking/success",
-        element: <BookingSuccessPage />
+        element: <BookingSuccessPage />,
       },
       {
         path: "payment",
-        element: <PaymentPage />
+        element: <PaymentPage />,
       },
       {
         path: "payment/return",
-        element: <PaymentReturnPage />
+        element: <PaymentReturnPage />,
       },
       {
         path: "payment/success",
-        element: <PaymentReturnPage />
+        element: <PaymentReturnPage />,
       },
       {
         path: "booking/payos-return",
@@ -109,7 +112,7 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             <DashBoardPage />
           </ProtectedRoute>
-        )
+        ),
       },
       {
         path: "user",
@@ -117,7 +120,7 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             <ManageUserPage />
           </ProtectedRoute>
-        )
+        ),
       },
       {
         path: "venues",
@@ -125,9 +128,9 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             <ManageVenueAdminPage />
           </ProtectedRoute>
-        )
-      }
-    ]
+        ),
+      },
+    ],
   },
   {
     path: "owner",
@@ -139,7 +142,31 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             <OwnerDashBoardPage />
           </ProtectedRoute>
-        )
+        ),
+      },
+      {
+        path: "venues",
+        element: (
+          <ProtectedRoute>
+            <OwnerVenuesPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "courts",
+        element: (
+          <ProtectedRoute>
+            <OwnerCourtsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "bookings",
+        element: (
+          <ProtectedRoute>
+            <OwnerBookingsPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "user",
@@ -147,46 +174,46 @@ const router = createBrowserRouter([
           <ProtectedRoute>
             <ManageUserOwnerPage />
           </ProtectedRoute>
-        )
-      }
-    ]
+        ),
+      },
+    ],
   },
   {
     path: "/login",
-    element: <LoginPage />
+    element: <LoginPage />,
   },
   {
     path: "/register",
-    element: <RegisterPage />
+    element: <RegisterPage />,
   },
   {
     path: "/email-verified",
-    element: <EmailVerifiedPage />
+    element: <EmailVerifiedPage />,
   },
   {
     path: "/email-verification-failed",
-    element: <EmailVerificationFailedPage />
+    element: <EmailVerificationFailedPage />,
   },
   {
     path: "/forgot-password",
-    element: <ForgotPasswordPage />
+    element: <ForgotPasswordPage />,
   },
   {
     path: "/reset-password",
-    element: <ResetPasswordPage />
-  },
-  {
-    path: "/500",
-    element: <ServerErrorPage />
-  },
-  {
-    path: "*",
-    element: <NotFoundPage />
+    element: <ResetPasswordPage />,
   },
   {
     path: "/auth/email-verification",
-    element: <EmailVerificationPage /> // import đúng component
-  }
+    element: <EmailVerificationPage />,
+  },
+  {
+    path: "/500",
+    element: <ServerErrorPage />,
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
+  },
 ]);
 
 const rootElement = document.getElementById("root");
@@ -195,7 +222,7 @@ if (!rootElement) {
 }
 
 createRoot(rootElement).render(
-  <StrictMode>
+  // <StrictMode>
     <App>
       <AppProvider>
         <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
@@ -203,5 +230,5 @@ createRoot(rootElement).render(
         </GoogleOAuthProvider>
       </AppProvider>
     </App>
-  </StrictMode>
+  // </StrictMode>
 );
