@@ -390,6 +390,32 @@ const Header = () => {
                     </Button>
                   )}
                 </NavLink>
+                <NavLink to="/chat" className="nav-button-wrapper">
+                  {({ isActive }) => (
+                    <Button
+                      type="text"
+                      className={`header-nav-link ${isActive ? "active" : ""}`}
+                      style={{
+                        padding: "10px 20px",
+                        borderRadius: "25px",
+                        fontWeight: "600",
+                        fontSize: "15px",
+                        height: "auto",
+                        border: "none",
+                        background: isActive
+                          ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                          : "transparent",
+                        color: isActive ? "white" : "#1a1a1a",
+                        transition: "all 0.3s ease",
+                        boxShadow: isActive
+                          ? "0 4px 15px rgba(102, 126, 234, 0.3)"
+                          : "none"
+                      }}
+                    >
+                      Chat
+                    </Button>
+                  )}
+                </NavLink>
               </div>
             </nav>
 
@@ -639,6 +665,22 @@ const Header = () => {
             onClick={() => setOpenDrawer(false)}
           >
             {t("appHeader.community")}
+          </NavLink>
+          <NavLink
+            to="/chat"
+            className="text-decoration-none mobile-nav-item"
+            style={{
+              color: "#1a1a1a",
+              padding: "16px 20px",
+              borderRadius: "12px",
+              fontWeight: "600",
+              fontSize: "16px",
+              transition: "all 0.3s ease",
+              background: "transparent"
+            }}
+            onClick={() => setOpenDrawer(false)}
+          >
+            Chat
           </NavLink>
           <Divider
             style={{ borderColor: "rgba(0,0,0,0.1)", margin: "20px 0" }}

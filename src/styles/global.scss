@@ -22,6 +22,8 @@ $spacers: (
 html, body, #root {
     background-color: #FFFFFF !important;
     color: #1a1a1a !important;
+    min-height: 100vh !important;
+    height: 100vh !important;
 }
 
 // Global styles with fixed light theme

@@ -304,3 +304,6 @@ export const loginWithGoogleAPI = (
   const urlBackend = "/api/v1/auth/social-login";
   return axios.post<IBackendRes<ILogin>>(urlBackend, { type, ...payload });
 };
+
+// Export axios instance as api
+export const api = axios;
