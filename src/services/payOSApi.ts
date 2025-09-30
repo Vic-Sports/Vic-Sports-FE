@@ -30,14 +30,7 @@ export interface IPayOSReturnParams {
   orderCode: string;
 }
 
-// PayOS Item interface (required theo docs)
-interface IPayOSItem {
-  name: string;
-  quantity: number;
-  price: number;
-  unit?: string;
-  taxPercentage?: number;
-}
+// Note: Item shape is handled on BE; FE doesn't need item typing here
 
 // Generate PayOS payment URL theo docs chính thức
 // FE chỉ gửi dữ liệu booking/payment lên BE, nhận về paymentUrl, qrCode...
@@ -70,7 +63,31 @@ export const createPayOSPayment = async (
     throw new Error(errorData.message || "PayOS BE error");
   }
   const responseData = await response.json();
-  return responseData;
+
+  // Normalize various backend response shapes to a unified interface
+  const payload = responseData?.data ?? responseData;
+
+  const paymentUrl =
+    payload?.paymentUrl ||
+    payload?.checkoutUrl ||
+    payload?.paymentLink ||
+    payload?.redirectUrl;
+
+  const paymentRef =
+    payload?.paymentRef ||
+    payload?.orderCode ||
+    payload?.paymentLinkId ||
+    payload?.paymentId;
+
+  if (!paymentUrl) {
+    throw new Error("PayOS: Backend did not return a payment URL");
+  }
+
+  return {
+    paymentUrl,
+    paymentRef,
+    qrCode: payload?.qrCode,
+  } as IPayOSCreateResponse;
 };
 
 // Verify PayOS webhook/return theo docs
@@ -120,6 +137,21 @@ export const getPayOSPaymentInfo = async (orderCode: string) => {
   if (!response.ok) {
     const errorData = await response.json();
     throw new Error(errorData.message || "PayOS BE error");
+  }
+  return await response.json();
+};
+
+// FE gọi BE để lấy trạng thái thanh toán PayOS (PENDING/PAID/FAILED...)
+export const getPayOSPaymentStatus = async (orderCode: string) => {
+  const response = await fetch(`/api/v1/payments/payos/status/${orderCode}`);
+  if (!response.ok) {
+    // 202 can be used to indicate pending; still return json for caller to interpret
+    try {
+      const data = await response.json();
+      return data;
+    } catch {
+      throw new Error("PayOS BE status error");
+    }
   }
   return await response.json();
 };

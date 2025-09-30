@@ -337,21 +337,73 @@ const BookingPage: React.FC = () => {
 
       // Step 2: Handle payment method
       if (paymentMethod === "payos") {
-        // Tạm thời bỏ qua chuyển hướng thanh toán PayOS
-        // Commented out PayOS redirect/payment code
-        // Chuyển trạng thái sang đã thanh toán, chuyển đến trang thông tin, lưu vào DB
-        bookingResult.status = "paid";
-        localStorage.setItem("currentBooking", JSON.stringify(bookingResult));
-        setConfirmModalVisible(false);
-        setLoading(false);
-        message.success("Thanh toán thành công (giả lập)");
-        navigate("/booking/success", {
-          state: {
-            booking: bookingResult,
-            paymentMethod: paymentMethod,
-            paymentStatus: "paid",
-          },
-        });
+        try {
+          // 1) Nếu BE đã tạo link PayOS trong bước tạo booking, dùng ngay link đó
+          const existingPaymentUrl =
+            paymentInfo?.paymentUrl ||
+            paymentInfo?.checkoutUrl ||
+            (booking?.checkoutUrl as string) ||
+            (booking?.payosPaymentLinkId
+              ? `https://pay.payos.vn/web/${booking.payosPaymentLinkId}`
+              : undefined);
+
+          const existingPaymentRef =
+            paymentInfo?.paymentRef ||
+            paymentInfo?.orderCode ||
+            booking?.payosOrderCode;
+
+          if (existingPaymentUrl) {
+            const bookingToStore = {
+              ...bookingResult,
+              payosOrderCode: existingPaymentRef,
+            };
+            localStorage.setItem(
+              "currentBooking",
+              JSON.stringify(bookingToStore)
+            );
+            window.location.href = existingPaymentUrl;
+            return;
+          }
+
+          // 2) Nếu BE chưa tạo link thì mới gọi endpoint PayOS riêng một lần
+          const amount = booking?.totalPrice || calculateTotal();
+          const bookingId = bookingRef || booking._id || booking.bookingId;
+          if (!bookingId) {
+            throw new Error(
+              "Không tìm thấy mã booking để tạo thanh toán PayOS"
+            );
+          }
+
+          const payosResponse = await createPayOSPayment({
+            amount: amount,
+            bookingId: String(bookingId),
+            description: `Thanh toán đặt sân ${
+              bookingResult.courtNames || ""
+            } - ${dayjs(bookingResult.date).format("DD/MM/YYYY")}`,
+            buyerName: customerInfo.fullName,
+            buyerEmail: customerInfo.email,
+            buyerPhone: customerInfo.phone,
+          });
+
+          const bookingToStore = {
+            ...bookingResult,
+            payosOrderCode: payosResponse.paymentRef,
+          };
+          localStorage.setItem(
+            "currentBooking",
+            JSON.stringify(bookingToStore)
+          );
+          window.location.href = payosResponse.paymentUrl;
+          return;
+        } catch (payosError: any) {
+          console.error("Create/Redirect PayOS error:", payosError);
+          message.error(
+            payosError.message || "Không thể khởi tạo/chuyển hướng PayOS"
+          );
+          setLoading(false);
+          setConfirmModalVisible(false);
+          return;
+        }
       } else {
         // Handle other payment methods (cash, banking, etc.)
         message.success("Đặt sân thành công! Vui lòng thanh toán khi đến sân.");
