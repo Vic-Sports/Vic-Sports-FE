@@ -390,11 +390,38 @@ const BookingModal: React.FC<BookingModalProps> = ({
           });
         }
 
+        // Prefer price returned by availability API if present; fallback to court pricing
+        let slotPrice: number | undefined = undefined;
+        if (selectedCourts.length === 1) {
+          const availability = availabilityResponses[0];
+          const timeSlotData = availability?.data?.timeSlots?.find(
+            (slot) => slot.start === start && slot.end === end
+          );
+          slotPrice = timeSlotData?.price;
+        } else {
+          // If multiple courts, ensure price is consistent; take first available price
+          const firstWithPrice = availabilityResponses.find((availability) => {
+            const timeSlotData = availability?.data?.timeSlots?.find(
+              (slot) => slot.start === start && slot.end === end
+            );
+            return typeof timeSlotData?.price === "number";
+          });
+          if (firstWithPrice) {
+            const timeSlotData = firstWithPrice?.data?.timeSlots?.find(
+              (slot) => slot.start === start && slot.end === end
+            );
+            slotPrice = timeSlotData?.price;
+          }
+        }
+
         timeSlots.push({
           start,
           end,
           isAvailable,
-          price: pricing?.pricePerHour || 100000,
+          price:
+            typeof slotPrice === "number"
+              ? slotPrice
+              : pricing?.pricePerHour || 100000,
         });
       }
 
