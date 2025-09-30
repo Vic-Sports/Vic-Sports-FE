@@ -125,8 +125,6 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
         ? mapSportTypeToBackend(formData.sportType)
         : undefined,
       location: searchLocation || undefined,
-      rating: 3, // Minimum rating filter
-      isVerified: true,
       sortBy: "rating",
       sortOrder: "desc",
       page: 1,

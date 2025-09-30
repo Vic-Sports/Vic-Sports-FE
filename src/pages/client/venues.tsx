@@ -32,10 +32,11 @@ const VenuesPage = () => {
         page: currentPage,
         limit: 12,
       });
-      if (response.data) {
-        setVenues(response.data.venues);
-        setTotal(response.data.total);
-        setTotalPages(response.data.totalPages);
+      const payload = response?.data?.data || response?.data;
+      if (payload) {
+        setVenues(payload.venues || []);
+        setTotal(payload.total || 0);
+        setTotalPages(payload.totalPages || 1);
       }
     } catch (error) {
       console.error("Error fetching venues:", error);
