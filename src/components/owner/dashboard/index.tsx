@@ -31,6 +31,7 @@ import {
 import { useState, useEffect } from "react";
 import { Line, Pie } from "@ant-design/plots";
 import { useNavigate } from "react-router-dom";
+import { useCurrentApp } from "@/components/context/app.context";
 import { ownerDashboardApi } from "@/services/ownerApi";
 
 const { Title, Text } = Typography;
@@ -60,6 +61,7 @@ interface RecentActivity {
 
 const OwnerDashboard = () => {
   const navigate = useNavigate();
+  const { user } = useCurrentApp();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<DashboardStats>({
     totalRevenue: 0,
@@ -76,6 +78,9 @@ const OwnerDashboard = () => {
   );
   const [revenueChartData, setRevenueChartData] = useState<any[]>([]);
   const [bookingStatsData, setBookingStatsData] = useState<any[]>([]);
+  const [sportPerformanceData, setSportPerformanceData] = useState<
+    { sport: string; bookings: number; percentage: number }[]
+  >([]);
 
   // Load dashboard data
   useEffect(() => {
@@ -143,50 +148,98 @@ const OwnerDashboard = () => {
 
       // Set booking stats
       if (bookingStatsRes.success) {
-        const statusDistribution = [
-          { type: "Hoàn thành", value: 0, color: "#52c41a" },
-          { type: "Đã duyệt", value: 0, color: "#1890ff" },
-          { type: "Chờ duyệt", value: 0, color: "#fa8c16" },
-          { type: "Đã hủy", value: 0, color: "#ff4d4f" },
-          { type: "Không đến", value: 0, color: "#8c8c8c" },
-        ];
+        // Debug: log raw booking-stats response
+        const statusMap: Record<string, string> = {
+          completed: "Hoàn thành",
+          approved: "Đã duyệt",
+          confirmed: "Đã duyệt",
+          pending: "Chờ duyệt",
+          cancelled: "Đã hủy",
+          "no-show": "Không đến",
+        };
 
-        // Process booking stats data
+        const distributionMap: Record<string, number> = {};
         bookingStatsRes.data.forEach((item) => {
-          const statusMap: Record<string, string> = {
-            completed: "Hoàn thành",
-            approved: "Đã duyệt",
-            pending: "Chờ duyệt",
-            cancelled: "Đã hủy",
-            "no-show": "Không đến",
-          };
-
-          const statusText = statusMap[item._id.status];
-          const statusItem = statusDistribution.find(
-            (s) => s.type === statusText
-          );
-          if (statusItem) {
-            statusItem.value += item.count;
-          }
+          const apiStatus = item?._id?.status || "pending";
+          const label = statusMap[apiStatus] || apiStatus;
+          distributionMap[label] =
+            (distributionMap[label] || 0) + (item?.count || 0);
         });
 
+        const palette = ["#52c41a", "#1890ff", "#fa8c16", "#ff4d4f", "#8c8c8c"];
+        const statusDistribution = Object.entries(distributionMap).map(
+          ([type, value], idx) => ({
+            type,
+            value,
+            color: palette[idx % palette.length],
+          })
+        );
+
         setBookingStatsData(statusDistribution);
+
+        // Build sport performance by aggregating counts per sportType
+        const sportToCount: Record<string, number> = {};
+        let total = 0;
+        bookingStatsRes.data.forEach((item) => {
+          const sport = item._id.sportType || "Khác";
+          sportToCount[sport] = (sportToCount[sport] || 0) + item.count;
+          total += item.count;
+        });
+        const performance = Object.entries(sportToCount)
+          .map(([sport, bookings]) => ({
+            sport,
+            bookings,
+            percentage: total > 0 ? Math.round((bookings / total) * 100) : 0,
+          }))
+          .sort((a, b) => b.bookings - a.bookings);
+        setSportPerformanceData(performance);
       }
 
-      // Set recent activities
+      // Set recent activities (bookings)
       if (activitiesRes.success) {
-        const formattedActivities: RecentActivity[] = activitiesRes.data
-          .slice(0, 5)
-          .map((booking: any) => ({
-            id: booking.id || booking._id,
-            type: "booking" as const,
-            title: `Booking từ ${
-              booking.customerInfo?.fullName || "Khách hàng"
-            }`,
-            description: `${booking.courtName} - ${booking.date}, ${booking.timeSlot?.start}-${booking.timeSlot?.end}`,
-            time: "Vừa xong",
-            status: booking.status,
-          }));
+        const rawData: any = activitiesRes.data;
+        const raw = Array.isArray(rawData) ? rawData : rawData?.data || [];
+
+        const formattedActivities: RecentActivity[] = raw
+          .slice(0, 6)
+          .map((booking: any) => {
+            const fullName =
+              booking?.customerInfo?.fullName ||
+              booking?.user?.fullName ||
+              "Khách hàng";
+            const courtName =
+              booking?.court?.name || booking?.courtName || "Sân";
+            const dateStr = booking?.date || "";
+            const timeSlots: Array<{ start: string; end: string }> =
+              booking?.timeSlots || [];
+            const timePart =
+              Array.isArray(timeSlots) && timeSlots.length > 0
+                ? timeSlots
+                    .slice()
+                    .sort((a, b) =>
+                      (a.start || "").localeCompare(b.start || "")
+                    )
+                    .map((ts) => `${ts.start}-${ts.end}`)
+                    .join(", ")
+                : booking?.timeSlot
+                ? `${booking.timeSlot.start}-${booking.timeSlot.end}`
+                : "";
+            const when = new Date(
+              booking?.updatedAt || booking?.createdAt || Date.now()
+            ).toLocaleString("vi-VN");
+
+            return {
+              id: booking?.id || booking?._id,
+              type: "booking" as const,
+              title: `Booking từ ${fullName}`,
+              description: `${courtName} - ${dateStr}${
+                timePart ? `, ${timePart}` : ""
+              }`,
+              time: when,
+              status: booking?.status || booking?.paymentStatus || "pending",
+            };
+          });
+
         setRecentActivities(formattedActivities);
       }
     } catch {
@@ -252,8 +305,8 @@ const OwnerDashboard = () => {
     }
   };
 
-  // Mock sport booking data (if needed later, can be fetched from API)
-  const sportBookingData = [
+  // Fallback mock if API empty
+  const mockSportPerformance = [
     { sport: "Bóng đá", bookings: 45, percentage: 35 },
     { sport: "Tennis", bookings: 32, percentage: 25 },
     { sport: "Cầu lông", bookings: 28, percentage: 22 },
@@ -278,6 +331,7 @@ const OwnerDashboard = () => {
       pending: { color: "orange", text: "Chờ xử lý" },
       success: { color: "green", text: "Thành công" },
       completed: { color: "blue", text: "Hoàn thành" },
+      confirmed: { color: "blue", text: "Đã duyệt" },
       cancelled: { color: "red", text: "Đã hủy" },
     };
 
@@ -485,25 +539,42 @@ const OwnerDashboard = () => {
                   color: "#8c8c8c",
                 }}
               >
-                <Spin tip="Đang tải biểu đồ doanh thu..." />
+                <Spin />
               </div>
             )}
           </Card>
         </Col>
         <Col xs={24} lg={8}>
           <Card title="Phân bố booking theo trạng thái">
-            {bookingStatsData.length > 0 &&
-            bookingStatsData.some((item) => item.value > 0) ? (
+            {bookingStatsData &&
+            Array.isArray(bookingStatsData) &&
+            bookingStatsData.some((item) => (item?.value || 0) > 0) ? (
               <Pie
                 key="booking-stats-chart"
-                data={bookingStatsData.filter((item) => item.value > 0)}
+                data={bookingStatsData.filter((item) => (item?.value || 0) > 0)}
                 height={300}
                 angleField="value"
                 colorField="type"
                 radius={0.8}
+                legend={{ position: "bottom" }}
+                tooltip={{
+                  fields: ["type", "value"],
+                  showTitle: false,
+                  formatter: (datum: any) => ({
+                    name: datum?.type || "Trạng thái",
+                    value: datum?.value,
+                  }),
+                }}
+                meta={{
+                  type: { alias: "Trạng thái" },
+                  value: { alias: "Số lượng" },
+                }}
                 label={{
-                  type: "outer",
-                  content: "{name} {percentage}",
+                  type: "spider",
+                  content: ({ type, percent }: any) => {
+                    const pct = percent ? Math.round(percent * 100) : 0;
+                    return `${type || ""} ${pct}%`;
+                  },
                 }}
               />
             ) : (
@@ -516,7 +587,7 @@ const OwnerDashboard = () => {
                   color: "#8c8c8c",
                 }}
               >
-                <Spin tip="Đang tải thống kê booking..." />
+                <Spin />
               </div>
             )}
           </Card>
@@ -528,7 +599,10 @@ const OwnerDashboard = () => {
         <Col xs={24} lg={12}>
           <Card title="Hiệu suất theo môn thể thao">
             <Space direction="vertical" style={{ width: "100%" }}>
-              {sportBookingData.map((sport, index) => (
+              {(sportPerformanceData.length > 0
+                ? sportPerformanceData
+                : mockSportPerformance
+              ).map((sport, index) => (
                 <div key={index}>
                   <div
                     style={{
@@ -596,47 +670,78 @@ const OwnerDashboard = () => {
       </Row>
 
       {/* Quick Actions */}
-      <Row gutter={[16, 16]} style={{ marginTop: "24px" }}>
+      <Row
+        gutter={[16, 16]}
+        style={{ marginTop: "24px" }}
+        justify="space-between"
+        align="middle"
+      >
         <Col xs={24}>
           <Card title="Thao tác nhanh">
-            <Row gutter={[16, 16]}>
-              <Col xs={12} sm={8} md={6}>
+            <Row gutter={[16, 16]} justify="space-between" align="middle">
+              <Col xs={24} sm={8} md={7} lg={7}>
                 <Button
                   block
                   type="primary"
                   icon={<HomeOutlined />}
                   onClick={() => navigate("/owner/venues")}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: 40,
+                  }}
                 >
                   Quản lý cơ sở
                 </Button>
               </Col>
-              <Col xs={12} sm={8} md={6}>
+              <Col xs={24} sm={8} md={7} lg={7}>
                 <Button
                   block
                   icon={<FieldTimeOutlined />}
                   onClick={() => navigate("/owner/courts")}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: 40,
+                  }}
                 >
                   Quản lý sân
                 </Button>
               </Col>
-              <Col xs={12} sm={8} md={6}>
+              <Col xs={24} sm={8} md={7} lg={7}>
                 <Button
                   block
                   icon={<CalendarOutlined />}
                   onClick={() => navigate("/owner/bookings")}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: 40,
+                  }}
                 >
                   Xem booking
                 </Button>
               </Col>
-              <Col xs={12} sm={8} md={6}>
-                <Button
-                  block
-                  icon={<UserOutlined />}
-                  onClick={() => navigate("/owner/user")}
-                >
-                  Quản lý khách hàng
-                </Button>
-              </Col>
+              {user?.role !== "owner" && (
+                <Col xs={24} sm={8} md={7} lg={7}>
+                  <Button
+                    block
+                    icon={<UserOutlined />}
+                    onClick={() => navigate("/owner/user")}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: 40,
+                    }}
+                  >
+                    Quản lý khách hàng
+                  </Button>
+                </Col>
+              )}
             </Row>
           </Card>
         </Col>

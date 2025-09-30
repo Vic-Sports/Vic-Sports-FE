@@ -5,7 +5,7 @@ import {
   UserOutlined,
   DollarCircleOutlined,
   MenuFoldOutlined,
-  MenuUnfoldOutlined
+  MenuUnfoldOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, Dropdown, Space, Avatar } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -35,7 +35,7 @@ const LayoutOwner = () => {
         </Link>
       ),
       key: "/owner",
-      icon: <AppstoreOutlined />
+      icon: <AppstoreOutlined />,
     },
     {
       label: (
@@ -44,7 +44,7 @@ const LayoutOwner = () => {
         </Link>
       ),
       key: "/owner/user",
-      icon: <UserOutlined />
+      icon: <UserOutlined />,
     },
     {
       label: (
@@ -53,7 +53,7 @@ const LayoutOwner = () => {
         </Link>
       ),
       key: "/owner/venues",
-      icon: <ExceptionOutlined />
+      icon: <ExceptionOutlined />,
     },
     {
       label: (
@@ -62,7 +62,7 @@ const LayoutOwner = () => {
         </Link>
       ),
       key: "/owner/courts",
-      icon: <ExceptionOutlined />
+      icon: <ExceptionOutlined />,
     },
     {
       label: (
@@ -71,16 +71,23 @@ const LayoutOwner = () => {
         </Link>
       ),
       key: "/owner/bookings",
-      icon: <DollarCircleOutlined />
-    }
+      icon: <DollarCircleOutlined />,
+    },
   ];
+
+  // Hide Manage Users for role 'owner'
+  const menuItems: MenuItem[] =
+    user?.role === "owner"
+      ? (items as any[]).filter((it) => (it?.key as string) !== "/owner/user")
+      : items;
 
   useEffect(() => {
     const active: any =
-      items.find((item) => location.pathname === (item!.key as any)) ??
-      "/owner";
+      (menuItems as any[]).find(
+        (item) => location.pathname === (item!.key as any)
+      ) ?? "/owner";
     setActiveMenu(active.key);
-  }, [location]);
+  }, [location, menuItems]);
 
   const handleLogout = async () => {
     console.log("Logout button clicked");
@@ -117,7 +124,7 @@ const LayoutOwner = () => {
           Trang chủ
         </Link>
       ),
-      key: "home"
+      key: "home",
     },
     {
       label: (
@@ -125,13 +132,13 @@ const LayoutOwner = () => {
           Đăng xuất
         </label>
       ),
-      key: "logout"
-    }
+      key: "logout",
+    },
   ];
 
-  const urlAvatar = `${import.meta.env.VITE_BACKEND_URL}/images/avatar/${
-    user?.avatar
-  }`;
+  const urlAvatar = user?.avatar?.startsWith("http")
+    ? user.avatar
+    : `${import.meta.env.VITE_BACKEND_URL}/images/avatar/${user?.avatar}`;
 
   if (isAuthenticated === false) {
     return <Outlet />;
@@ -161,7 +168,7 @@ const LayoutOwner = () => {
             // defaultSelectedKeys={[activeMenu]}
             selectedKeys={[activeMenu]}
             mode="inline"
-            items={items}
+            items={menuItems}
             onClick={(e) => setActiveMenu(e.key)}
           />
         </Sider>
@@ -174,7 +181,7 @@ const LayoutOwner = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              padding: "0 15px"
+              padding: "0 15px",
             }}
           >
             <span>
@@ -182,7 +189,7 @@ const LayoutOwner = () => {
                 collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
                 {
                   className: "trigger",
-                  onClick: () => setCollapsed(!collapsed)
+                  onClick: () => setCollapsed(!collapsed),
                 }
               )}
             </span>

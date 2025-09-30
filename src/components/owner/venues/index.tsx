@@ -322,6 +322,13 @@ const ManageVenues = () => {
       city: venue.address.city,
       phone: venue.contactInfo.phone,
       email: venue.contactInfo.email,
+      amenities: Array.isArray(venue.amenities)
+        ? venue.amenities.map((a: any) => ({
+            name: a?.name || "",
+            icon: a?.icon || "",
+            description: a?.description || "",
+          }))
+        : [],
     });
     setIsVenueModalVisible(true);
   };
@@ -416,6 +423,14 @@ const ManageVenues = () => {
         }
       }
 
+      const amenities = (values.amenities || [])
+        .filter((a: any) => a && (a.name || a.description || a.icon))
+        .map((a: any) => ({
+          name: a.name || "",
+          icon: a.icon || "",
+          description: a.description || "",
+        }));
+
       const venueData = {
         name: values.name,
         description: values.description,
@@ -433,6 +448,7 @@ const ManageVenues = () => {
           phone: values.phone,
           email: values.email,
         },
+        amenities,
         isActive: values.isActive ?? true,
       };
 
@@ -700,6 +716,74 @@ const ManageVenues = () => {
               </Form.Item>
             </Col>
           </Row>
+
+          {/* Amenities Section */}
+          <Card size="small" style={{ marginBottom: 16 }}>
+            <Title level={5} style={{ marginBottom: 12 }}>
+              Tiện ích (Amenities)
+            </Title>
+            <Form.List name="amenities">
+              {(fields, { add, remove }) => (
+                <div>
+                  {fields.map(({ key, name, ...restField }) => (
+                    <Row
+                      key={key}
+                      gutter={12}
+                      align="middle"
+                      style={{ marginBottom: 8 }}
+                    >
+                      <Col xs={24} md={6}>
+                        <Form.Item
+                          {...restField}
+                          name={[name, "name"]}
+                          label="Tên tiện ích"
+                          rules={[
+                            { required: true, message: "Nhập tên tiện ích" },
+                          ]}
+                        >
+                          <Input placeholder="Wifi miễn phí" />
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24} md={6}>
+                        <Form.Item
+                          {...restField}
+                          name={[name, "icon"]}
+                          label="Icon"
+                        >
+                          <Input placeholder="fa-wifi hoặc URL icon" />
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24} md={10}>
+                        <Form.Item
+                          {...restField}
+                          name={[name, "description"]}
+                          label="Mô tả"
+                        >
+                          <Input placeholder="Mạng wifi tốc độ cao miễn phí" />
+                        </Form.Item>
+                      </Col>
+                      <Col
+                        xs={24}
+                        md={2}
+                        style={{ display: "flex", alignItems: "end" }}
+                      >
+                        <Button danger onClick={() => remove(name)}>
+                          Xóa
+                        </Button>
+                      </Col>
+                    </Row>
+                  ))}
+                  <Button
+                    type="dashed"
+                    onClick={() => add()}
+                    icon={<PlusOutlined />}
+                  >
+                    Thêm tiện ích
+                  </Button>
+                </div>
+              )}
+            </Form.List>
+          </Card>
 
           <Row gutter={16}>
             <Col xs={24} md={12}>
@@ -1014,6 +1098,7 @@ const ManageVenues = () => {
                 <Switch
                   checkedChildren="Đã xác minh"
                   unCheckedChildren="Chưa xác minh"
+                  disabled
                 />
               </Form.Item>
             </Col>

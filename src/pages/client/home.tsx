@@ -61,12 +61,13 @@ const HomePage = () => {
     setSearchLoading(true);
     try {
       const response = await searchVenuesAPI(params);
-      if (response.data) {
+      const payload = response?.data?.data || response?.data;
+      if (payload) {
         setSearchResults({
-          venues: response.data.venues,
-          total: response.data.total,
-          page: response.data.page,
-          totalPages: response.data.totalPages,
+          venues: payload.venues || [],
+          total: payload.total || 0,
+          page: payload.page || 1,
+          totalPages: payload.totalPages || 1,
         });
       }
       setShowResults(true);
@@ -411,14 +412,22 @@ const HomePage = () => {
 
                           {/* Venue Features */}
                           <div className="tech-features">
-                            {venue.amenities
-                              .slice(0, 3)
-                              .map((amenity, index) => (
-                                <div key={index} className="tech-feature">
-                                  <FaWifi />
-                                  <span>{amenity.name}</span>
-                                </div>
-                              ))}
+                            {Array.isArray(venue.amenities) &&
+                            venue.amenities.length > 0 ? (
+                              venue.amenities
+                                .slice(0, 3)
+                                .map((amenity, index) => (
+                                  <div key={index} className="tech-feature">
+                                    <FaWifi />
+                                    <span>{amenity.name}</span>
+                                  </div>
+                                ))
+                            ) : (
+                              <div className="tech-feature">
+                                <FaWifi />
+                                <span>Tiện ích hiện chưa cập nhật</span>
+                              </div>
+                            )}
                           </div>
 
                           <div className="court-pricing">
