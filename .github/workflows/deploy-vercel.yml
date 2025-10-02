@@ -1,99 +1,87 @@
-# Tên của workflow, sẽ hiển thị trong tab "Actions" trên GitHub
-name: Deploy Vic Sports Frontend to Vercel
+name: Build and deploy Node.js app to Azure Web App - vic-sports-api
 
-# Điều kiện để kích hoạt workflow: chạy khi có push lên nhánh develop hoặc main
 on:
   push:
     branches:
       - main
+      - develop  # Thêm develop branch vì bạn đang work trên branch này
+  workflow_dispatch:
 
 jobs:
-  build_and_deploy:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
     steps:
-      # Bước 1: Lấy mã nguồn về máy ảo
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Bước 2: Setup Node.js environment
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: '20.x'  # Sử dụng Node 20.x để tương thích tốt hơn
 
-      # Bước 3: Install dependencies
-      - name: Install dependencies
+      - name: Validate package.json
+        run: |
+          cat package.json
+          node -e "require('./package.json')"
+
+      - name: npm install and test
         run: |
           npm install
-          npm audit fix --force
+          npm run test --if-present
 
-      # Bước 4: Build project
-      - name: Build project
-        run: npm run build
+      - name: Create deployment package
+        run: |
+          # Copy necessary files for deployment
+          mkdir deploy-package
+          cp -r src deploy-package/
+          cp package.json deploy-package/
+          cp package-lock.json deploy-package/ || echo "No package-lock.json found"
+          
+          # Create zip file
+          cd deploy-package
+          zip -r ../release.zip . -x "*.git*" -x "*.github*" -x "logs/*"
 
-      # Bước 5: Đồng bộ các biến môi trường từ GitHub Secrets sang Vercel (nếu cần)
-      - name: Sync Environment Variables to Vercel
-        if: ${{ vars.SYNC_ENV_VARS == 'true' }}
-        uses: dkershner6/vercel-set-env-action@v1
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
         with:
-          # Token để xác thực với Vercel
-          token: ${{ secrets.VERCEL_TOKEN }}
+          name: node-app
+          path: release.zip
 
-          # !!! QUAN TRỌNG: Thay thế bằng tên dự án chính xác của bạn trên Vercel
-          projectName: "vic-sports-frontend" # Tên project Vic Sports
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment: production  # Thêm environment để quản lý secrets tốt hơn
+    permissions:
+      id-token: write
+      contents: read
 
-          # Liệt kê các environment variables cho Vic Sports project
-          envVariableKeys: VITE_BACKEND_URL,VITE_GOOGLE_MAPS_API_KEY,VITE_GOOGLE_CLIENT_ID,CLIENT_EMAIL,PRIVATE_KEY,SPREADSHEET_ID
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: node-app
+
+      - name: Unzip artifact for deployment
+        run: unzip release.zip
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          slot-name: 'Production'
+          package: .
         env:
-          # --- Cấu hình cho Backend URL (API + Socket.IO) ---
-          VITE_BACKEND_URL: ${{ secrets.VITE_BACKEND_URL }}
-          TARGET_VITE_BACKEND_URL: production
-          TYPE_VITE_BACKEND_URL: encrypted
-
-          # --- Cấu hình cho Google Maps API Key ---
-          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
-          TARGET_VITE_GOOGLE_MAPS_API_KEY: production
-          TYPE_VITE_GOOGLE_MAPS_API_KEY: encrypted
-
-          # --- Cấu hình cho Google OAuth Client ID ---
-          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
-          TARGET_VITE_GOOGLE_CLIENT_ID: production
-          TYPE_VITE_GOOGLE_CLIENT_ID: encrypted
-
-          # --- Cấu hình cho Google Sheets Service Account ---
-          CLIENT_EMAIL: ${{ secrets.CLIENT_EMAIL }}
-          TARGET_CLIENT_EMAIL: production
-          TYPE_CLIENT_EMAIL: encrypted
-
-          # --- Cấu hình cho Google Sheets Private Key ---
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          TARGET_PRIVATE_KEY: production
-          TYPE_PRIVATE_KEY: encrypted
-
-          # --- Cấu hình cho Spreadsheet ID ---
-          SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
-          TARGET_SPREADSHEET_ID: production
-          TYPE_SPREADSHEET_ID: encrypted
-
-      # Bước 6: Deploy dự án lên Vercel
-      - name: Deploy Project to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          # Token Vercel để xác thực
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-
-          # Token GitHub để Vercel liên kết commit (có sẵn, không cần tạo)
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-          # Argument để báo cho Vercel đây là bản deploy production
-          vercel-args: "--prod"
-
-          # ID của tài khoản Vercel (cá nhân hoặc team)
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}
-
-          # ID của dự án trên Vercel
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}}
-
-          # Thư mục gốc vì project nằm ở root
-          working-directory: ./
+          # Environment variables cho ứng dụng
+          NODE_ENV: production
+          PORT: 8080
