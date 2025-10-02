@@ -55,6 +55,76 @@ const PayOSReturn: React.FC = () => {
 
       console.log("PayOS return parameters:", payosParams);
 
+      // HANDLE CANCEL EARLY: call backend to update booking status, then show cancelled UI
+      if (payosParams.cancel) {
+        console.log("🚫 User cancelled payment");
+
+        try {
+          // Clear localStorage immediately to prevent stale pending UI
+          localStorage.removeItem("currentBooking");
+
+          // If we have orderCode, call backend to update booking status
+          if (payosParams.orderCode) {
+            console.log(
+              "🔄 Calling backend cancel API for orderCode:",
+              payosParams.orderCode
+            );
+
+            // Try to get auth token (adjust path based on your auth implementation)
+            const token =
+              localStorage.getItem("token") ||
+              localStorage.getItem("authToken");
+            const headers: Record<string, string> = {
+              "Content-Type": "application/json",
+            };
+
+            if (token) {
+              headers["Authorization"] = `Bearer ${token}`;
+            }
+
+            const cancelResponse = await fetch(
+              `/api/v1/payments/payos/${encodeURIComponent(
+                payosParams.orderCode
+              )}/cancel`,
+              {
+                method: "POST",
+                headers,
+                body: JSON.stringify({
+                  reason: "Payment cancelled by user",
+                }),
+              }
+            );
+
+            if (cancelResponse.ok) {
+              const cancelResult = await cancelResponse.json();
+              console.log("✅ Backend cancel successful:", cancelResult);
+
+              // Update UI with cancelled booking data if available
+              if (cancelResult.data?.booking) {
+                setBookingData(cancelResult.data.booking);
+              }
+            } else {
+              console.warn(
+                "⚠️ Backend cancel failed, but continuing with UI update"
+              );
+            }
+          }
+        } catch (error) {
+          console.warn(
+            "⚠️ Failed to call backend cancel (non-blocking):",
+            error
+          );
+        }
+
+        // Always show cancelled UI regardless of backend call result
+        setSuppressRender(false);
+        setLoading(false);
+        setPaymentStatus("failed");
+        setErrorMessage("Thanh toán đã bị hủy bởi người dùng");
+        message.error("Thanh toán đã bị hủy bởi người dùng");
+        return;
+      }
+
       if (!payosParams.orderCode) {
         throw new Error("Missing PayOS orderCode");
       }
@@ -160,6 +230,14 @@ const PayOSReturn: React.FC = () => {
             });
             return;
           } else {
+            // Check if user cancelled payment first (highest priority)
+            if (payosParams.cancel) {
+              setPaymentStatus("failed");
+              setErrorMessage("Thanh toán đã bị hủy bởi người dùng");
+              message.error("Thanh toán đã bị hủy bởi người dùng");
+              return;
+            }
+
             // If BE already classifies as FAILED/CANCELLED → fail immediately
             if (
               normalizedStatus === "FAILED" ||
@@ -170,12 +248,15 @@ const PayOSReturn: React.FC = () => {
               message.error("Thanh toán thất bại hoặc đã hủy");
               return;
             }
+
             // If not paid, try redirecting to checkout if available (PENDING/INIT)
+            // But only if user didn't cancel
             const redirectUrl =
               paymentInfo.checkoutUrl || paymentInfo.paymentUrl;
             if (
               (normalizedStatus === "PENDING" || normalizedStatus === "INIT") &&
-              redirectUrl
+              redirectUrl &&
+              !payosParams.cancel
             ) {
               window.location.href = redirectUrl;
               return;
@@ -269,6 +350,15 @@ const PayOSReturn: React.FC = () => {
             }
           }
         } else {
+          // Check if user cancelled payment first (before any polling)
+          if (payosParams.cancel) {
+            setSuppressRender(false);
+            setPaymentStatus("failed");
+            setErrorMessage("Thanh toán đã bị hủy bởi người dùng");
+            message.error("Thanh toán đã bị hủy bởi người dùng");
+            return;
+          }
+
           // Treat 202 or explicit pending/unknown statuses as processing → start polling
           const statusCode = backendResponse.status;
           const topLevelStatus = backendResult?.status;

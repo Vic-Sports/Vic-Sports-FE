@@ -38,6 +38,37 @@ import "./booking.scss";
 
 const { Title, Text } = Typography;
 
+// Function to handle PayOS return redirect
+const checkAndRedirectPayOSReturn = (): boolean => {
+  const currentUrl = window.location.href;
+  const currentPath = window.location.pathname;
+  const currentSearch = window.location.search;
+
+  // Check if we're on /booking with PayOS return parameters
+  if (currentPath === "/booking" && currentSearch) {
+    const searchParams = new URLSearchParams(currentSearch);
+    const hasPayOSParams =
+      searchParams.has("code") &&
+      searchParams.has("orderCode") &&
+      (searchParams.has("id") || searchParams.has("status"));
+
+    if (hasPayOSParams) {
+      console.log("🔧 Detected PayOS return on wrong URL:", currentUrl);
+      console.log("🔄 Redirecting to correct PayOS return URL...");
+
+      // Build correct URL
+      const correctUrl = `/booking/payos-return${currentSearch}`;
+
+      // Use replace to avoid back button issues and redirect immediately
+      window.location.replace(correctUrl);
+
+      return true; // Indicates redirect happened
+    }
+  }
+
+  return false; // No redirect needed
+};
+
 interface BookingData {
   courtIds: string[]; // Đổi từ courtId sang courtIds array
   courtNames: string; // Đổi từ courtName sang courtNames (có thể là string nối)
@@ -104,9 +135,15 @@ const BookingPage: React.FC = () => {
   ];
 
   useEffect(() => {
+    // Check current URL for PayOS return params (no debug log)
+
+    // First check if this is a PayOS return redirected to wrong URL
+    if (checkAndRedirectPayOSReturn()) {
+      return; // Redirect will happen, no need to continue
+    }
+
     const data = location.state?.bookingData as BookingData;
-    console.log("Raw location.state:", location.state);
-    console.log("Extracted bookingData:", data);
+    // location.state processed (debug logs removed)
 
     if (data) {
       // Validate courtIds array
@@ -200,15 +237,7 @@ const BookingPage: React.FC = () => {
       const userInfo = form.getFieldsValue(true);
       console.log("[DEBUG] userInfo after getFieldsValue:", userInfo);
 
-      console.log("=== BOOKING PAYMENT STARTED ===");
-      console.log("Payment method:", paymentMethod);
-      console.log("User info:", userInfo);
-      console.log("Booking data:", bookingData);
-      console.log("🔍 Debug booking data structure:");
-      console.log("- venueId:", bookingData.venue);
-      console.log("- courtIds:", bookingData.courtIds);
-      console.log("- courtIds length:", bookingData.courtIds?.length);
-      console.log("- courtNames:", bookingData.courtNames);
+      // Minimal logging kept only for errors; removed verbose debug logs
 
       // Lấy thông tin khách hàng từ context nếu đã đăng nhập, ưu tiên user context
       let customerInfo;
@@ -269,15 +298,13 @@ const BookingPage: React.FC = () => {
       // Try real API to create booking
       let bookingResponse;
       try {
-        console.log("🔄 Attempting real API call to create booking...");
         bookingResponse = await createBookingAPI(bookingRequest);
-        console.log("✅ Real API call successful:", bookingResponse);
       } catch (realApiError: any) {
         console.error("❌ Real API failed:", realApiError.message);
         throw new Error("Không thể tạo booking: " + realApiError.message);
       }
 
-      console.log("Backend response:", bookingResponse);
+      // Backend response received (verbose log removed)
 
       if (!bookingResponse.data && !bookingResponse.booking) {
         console.error("Backend error details:", bookingResponse);
