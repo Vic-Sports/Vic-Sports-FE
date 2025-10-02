@@ -1,4 +1,8 @@
 import createInstanceAxios from "./axios.customize";
+import {
+  uploadMultipleVenueImages,
+  uploadMultipleCourtImages,
+} from "./uploadHelpers";
 
 // Base path for owner APIs
 const OWNER_API_BASE = "/api/v1/owner";
@@ -119,7 +123,22 @@ export const ownerVenueApi = {
     return axios.delete(`${OWNER_API_BASE}/venues/${venueId}`);
   },
 
-  // Upload venue images
+  // Upload venue images - NEW METHOD using unified API
+  uploadVenueImages: async (
+    venueId: string,
+    files: File[]
+  ): Promise<ApiResponse<string[]>> => {
+    const uploadResults = await uploadMultipleVenueImages(files, venueId);
+    const imageUrls = uploadResults
+      .filter((res) => res && res.data)
+      .map((res) => res.data!.fileUploaded);
+    return {
+      success: true,
+      data: imageUrls,
+    };
+  },
+
+  // Upload venue images - LEGACY METHOD (for backward compatibility)
   uploadImages: (venueId: string, files: File[]): Promise<ApiResponse<any>> => {
     const formData = new FormData();
     files.forEach((file) => formData.append("images", file));
@@ -206,7 +225,27 @@ export const ownerCourtApi = {
     return axios.delete(`${OWNER_API_BASE}/courts/${courtId}`);
   },
 
-  // Upload court images
+  // Upload court images - NEW METHOD using unified API
+  uploadCourtImages: async (
+    venueId: string,
+    courtId: string,
+    files: File[]
+  ): Promise<ApiResponse<string[]>> => {
+    const uploadResults = await uploadMultipleCourtImages(
+      files,
+      venueId,
+      courtId
+    );
+    const imageUrls = uploadResults
+      .filter((res) => res && res.data)
+      .map((res) => res.data!.fileUploaded);
+    return {
+      success: true,
+      data: imageUrls,
+    };
+  },
+
+  // Upload court images - LEGACY METHOD (for backward compatibility)
   uploadImages: (courtId: string, files: File[]): Promise<ApiResponse<any>> => {
     const formData = new FormData();
     files.forEach((file) => formData.append("images", file));

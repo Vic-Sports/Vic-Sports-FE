@@ -24,6 +24,7 @@ import {
   Typography,
   Upload,
 } from "antd";
+import ImgCrop from "antd-img-crop";
 import type { UploadChangeParam } from "antd/es/upload";
 import dayjs from "dayjs";
 import type { UploadRequestOption as RcCustomRequestOptions } from "rc-upload/lib/interface";
@@ -52,12 +53,29 @@ const UserInfo = () => {
   const { user, setUser } = useCurrentApp();
 
   const [userAvatar, setUserAvatar] = useState(user?.avatar ?? "");
+  const [avatarKey, setAvatarKey] = useState(Date.now()); // Key để force refresh avatar
+  const [displayName, setDisplayName] = useState(
+    user?.fullName ?? "Người dùng"
+  );
   const [isSubmit, setIsSubmit] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const { message, notification } = App.useApp();
 
-  const urlAvatar = `${
-    import.meta.env.VITE_BACKEND_URL
-  }/images/avatar/${userAvatar}`;
+  // Kiểm tra xem userAvatar đã là URL đầy đủ hay chỉ là tên file
+  const urlAvatar = userAvatar
+    ? userAvatar.startsWith("http")
+      ? `${userAvatar}?t=${avatarKey}` // Đã là URL đầy đủ (Cloudinary) + timestamp
+      : `${
+          import.meta.env.VITE_BACKEND_URL
+        }/images/avatar/${userAvatar}?t=${avatarKey}` // Chỉ là tên file + timestamp
+    : null;
+
+  // Đồng bộ userAvatar khi user thay đổi
+  useEffect(() => {
+    if (user?.avatar && user.avatar !== userAvatar) {
+      setUserAvatar(user.avatar);
+    }
+  }, [user?.avatar, userAvatar]);
 
   useEffect(() => {
     // Luôn fetch lại user khi mở trang
@@ -68,6 +86,8 @@ const UserInfo = () => {
         );
         if (accountRes && accountRes.data && accountRes.data.user) {
           setUser(accountRes.data.user);
+          setUserAvatar(accountRes.data.user.avatar ?? "");
+          setDisplayName(accountRes.data.user.fullName ?? "Người dùng");
           sessionStorage.setItem("user", JSON.stringify(accountRes.data.user));
           form.setFieldsValue({
             _id: accountRes.data.user.id,
@@ -87,9 +107,13 @@ const UserInfo = () => {
           });
           return;
         }
-      } catch {}
+      } catch {
+        // ignore error when fetching user
+      }
       // fallback: dùng user từ context nếu có
       if (user) {
+        setUserAvatar(user.avatar ?? "");
+        setDisplayName(user.fullName ?? "Người dùng");
         form.setFieldsValue({
           _id: user.id,
           email: user.email,
@@ -107,20 +131,63 @@ const UserInfo = () => {
       }
     };
     fetchUser();
-  }, [form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleUploadFile = async (options: RcCustomRequestOptions) => {
     const { onSuccess } = options;
     const file = options.file as UploadFile;
-    const res = await uploadFileAPI(file, "avatar");
 
-    if (res && res.data) {
-      const newAvatar = res.data.fileUploaded;
-      setUserAvatar(newAvatar);
+    setIsUploadingAvatar(true);
 
-      if (onSuccess) onSuccess("ok");
-    } else {
-      message.error(res.message);
+    try {
+      const res = await uploadFileAPI(file, "avatar");
+
+      if (res && res.data) {
+        const newAvatar = res.data.fileUploaded;
+        setUserAvatar(newAvatar);
+        setAvatarKey(Date.now()); // Force refresh avatar
+
+        // Tự động cập nhật avatar vào database ngay lập tức
+        const formValues = form.getFieldsValue();
+        const updateRes = await updateUserInfoAPI(formValues._id, newAvatar, {
+          fullName: formValues.fullName,
+          phone: formValues.phone,
+          dateOfBirth: formValues.dateOfBirth
+            ? formValues.dateOfBirth.toISOString()
+            : null,
+          gender: formValues.gender,
+          address: formValues.address,
+        });
+
+        if (updateRes && updateRes.data) {
+          // Cập nhật user context với thông tin mới
+          const updatedUser = {
+            ...user!,
+            avatar: newAvatar,
+            fullName: formValues.fullName,
+            phone: formValues.phone,
+            dateOfBirth: formValues.dateOfBirth
+              ? formValues.dateOfBirth.toISOString()
+              : null,
+            gender: formValues.gender,
+            address: formValues.address,
+          };
+          setUser(updatedUser);
+          sessionStorage.setItem("user", JSON.stringify(updatedUser));
+          message.success("Cập nhật ảnh đại diện thành công!");
+        }
+
+        if (onSuccess) onSuccess("ok");
+      } else {
+        message.error(res.message);
+      }
+    } catch {
+      message.error(
+        "Upload ảnh thành công nhưng có lỗi khi cập nhật thông tin!"
+      );
+    } finally {
+      setIsUploadingAvatar(false);
     }
   };
 
@@ -128,15 +195,29 @@ const UserInfo = () => {
     maxCount: 1,
     multiple: false,
     showUploadList: false,
+    accept: "image/*",
     customRequest: handleUploadFile,
+    beforeUpload: (file: any) => {
+      const isImage = file.type.startsWith("image/");
+      if (!isImage) {
+        message.error("Chỉ có thể upload file ảnh!");
+        return false;
+      }
+      const isLt5M = file.size / 1024 / 1024 < 5;
+      if (!isLt5M) {
+        message.error("Kích thước ảnh phải nhỏ hơn 5MB!");
+        return false;
+      }
+      return true;
+    },
     onChange(info: UploadChangeParam) {
       if (info.file.status !== "uploading") {
         //do
       }
       if (info.file.status === "done") {
-        message.success(`Upload file thành công`);
+        message.success(`Upload ảnh đại diện thành công`);
       } else if (info.file.status === "error") {
-        message.error(`Upload file thất bại`);
+        message.error(`Upload ảnh đại diện thất bại`);
       }
     },
   };
@@ -163,9 +244,11 @@ const UserInfo = () => {
         );
         if (accountRes && accountRes.data && accountRes.data.user) {
           setUser(accountRes.data.user);
+          setUserAvatar(accountRes.data.user.avatar ?? "");
+          setDisplayName(accountRes.data.user.fullName ?? "Người dùng");
           sessionStorage.setItem("user", JSON.stringify(accountRes.data.user));
         }
-      } catch (err) {
+      } catch {
         // fallback: chỉ cập nhật các trường vừa sửa
         const updatedUser = {
           ...user!,
@@ -177,6 +260,7 @@ const UserInfo = () => {
           address,
         };
         setUser(updatedUser);
+        setDisplayName(fullName);
         sessionStorage.setItem("user", JSON.stringify(updatedUser));
       }
       message.success("Cập nhật thông tin user thành công");
@@ -200,24 +284,43 @@ const UserInfo = () => {
                 <Avatar
                   size={120}
                   icon={<AntDesignOutlined />}
-                  src={urlAvatar}
+                  src={urlAvatar || undefined}
                   shape="circle"
                 />
               </Col>
               <Col flex="1">
                 <Title level={4} style={{ margin: 0 }}>
-                  <UserOutlined /> {user?.fullName || "Người dùng"}
+                  <UserOutlined /> {displayName}
                 </Title>
                 <Text type="secondary">
                   Cập nhật thông tin cá nhân và ảnh đại diện
                 </Text>
               </Col>
               <Col>
-                <Upload {...propsUpload}>
-                  <Button icon={<UploadOutlined />} type="primary">
-                    Thay đổi ảnh
-                  </Button>
-                </Upload>
+                <ImgCrop
+                  rotationSlider
+                  aspectSlider
+                  showGrid
+                  aspect={1}
+                  quality={0.8}
+                  modalTitle="Chỉnh sửa ảnh đại diện"
+                  modalOk="Xác nhận"
+                  modalCancel="Hủy"
+                  cropShape="round"
+                  showReset
+                  resetText="Khôi phục"
+                >
+                  <Upload {...propsUpload}>
+                    <Button
+                      icon={<UploadOutlined />}
+                      type="primary"
+                      loading={isUploadingAvatar}
+                      disabled={isUploadingAvatar}
+                    >
+                      {isUploadingAvatar ? "Đang cập nhật..." : "Thay đổi ảnh"}
+                    </Button>
+                  </Upload>
+                </ImgCrop>
               </Col>
             </Row>
           </Card>
@@ -268,6 +371,9 @@ const UserInfo = () => {
                     <Input
                       prefix={<UserOutlined />}
                       placeholder="Nhập tên hiển thị"
+                      onChange={(e) =>
+                        setDisplayName(e.target.value || "Người dùng")
+                      }
                     />
                   </Form.Item>
                 </Col>
