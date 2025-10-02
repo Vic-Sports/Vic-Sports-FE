@@ -19,12 +19,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
           cache: "npm"
 
       # Bước 3: Install dependencies
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm install
+          npm audit fix --force
 
       # Bước 4: Build project
       - name: Build project
