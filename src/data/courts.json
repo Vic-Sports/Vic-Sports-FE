@@ -1,0 +1,296 @@
+[
+  {
+    "_id": {
+      "$oid": "68d1132e0a78e92307469eb5"
+    },
+    "venueId": {
+      "$oid": "65234be3f2e81e1c6f123001"
+    },
+    "name": "Sân Bóng Đá Mỹ An",
+    "sportType": "football",
+    "courtType": "ngoài trời",
+    "capacity": 14,
+    "dimensions": {
+      "length": 40,
+      "width": 20,
+      "unit": "meters"
+    },
+    "surface": "cỏ nhân tạo",
+    "equipment": ["khung thành", "lưới chắn", "đèn chiếu sáng"],
+    "pricing": [
+      {
+        "timeSlot": {
+          "start": "06:00",
+          "end": "18:00"
+        },
+        "pricePerHour": 300000,
+        "dayType": "weekday",
+        "isActive": true
+      },
+      {
+        "timeSlot": {
+          "start": "18:00",
+          "end": "22:00"
+        },
+        "pricePerHour": 400000,
+        "dayType": "weekend",
+        "isActive": true
+      }
+    ],
+    "defaultAvailability": [
+      {
+        "dayOfWeek": 1,
+        "timeSlots": [
+          {
+            "start": "06:00",
+            "end": "22:00",
+            "isAvailable": true
+          }
+        ]
+      },
+      {
+        "dayOfWeek": 6,
+        "timeSlots": [
+          {
+            "start": "06:00",
+            "end": "23:00",
+            "isAvailable": true
+          }
+        ]
+      }
+    ],
+    "isActive": true,
+    "images": ["myan1.jpg", "myan2.jpg"],
+    "ratings": {
+      "average": 4.2,
+      "count": 35
+    },
+    "totalBookings": 248,
+    "totalRevenue": 83000000
+  },
+  {
+    "_id": {
+      "$oid": "68d1132e0a78e92307469eb6"
+    },
+    "venueId": {
+      "$oid": "65234be3f2e81e1c6f123002"
+    },
+    "name": "Sân Cầu Lông Hải Châu",
+    "sportType": "badminton",
+    "courtType": "trong nhà",
+    "capacity": 8,
+    "dimensions": {
+      "length": 13.4,
+      "width": 6.1,
+      "unit": "meters"
+    },
+    "surface": "thảm PVC",
+    "equipment": ["cột lưới", "đèn LED"],
+    "pricing": [
+      {
+        "timeSlot": {
+          "start": "07:00",
+          "end": "17:00"
+        },
+        "pricePerHour": 120000,
+        "dayType": "weekday",
+        "isActive": true
+      },
+      {
+        "timeSlot": {
+          "start": "17:00",
+          "end": "22:00"
+        },
+        "pricePerHour": 180000,
+        "dayType": "weekday",
+        "isActive": true
+      },
+      {
+        "timeSlot": {
+          "start": "07:00",
+          "end": "22:00"
+        },
+        "pricePerHour": 200000,
+        "dayType": "weekend",
+        "isActive": true
+      }
+    ],
+    "defaultAvailability": [
+      {
+        "dayOfWeek": 2,
+        "timeSlots": [
+          {
+            "start": "07:00",
+            "end": "22:00",
+            "isAvailable": true
+          }
+        ]
+      },
+      {
+        "dayOfWeek": 4,
+        "timeSlots": [
+          {
+            "start": "07:00",
+            "end": "22:00",
+            "isAvailable": true
+          }
+        ]
+      }
+    ],
+    "isActive": true,
+    "images": ["caulong1.jpg"],
+    "ratings": {
+      "average": 4.5,
+      "count": 22
+    },
+    "totalBookings": 152,
+    "totalRevenue": 27000000
+  },
+  {
+    "_id": {
+      "$oid": "68d1132e0a78e92307469eb7"
+    },
+    "venueId": {
+      "$oid": "65234be3f2e81e1c6f123003"
+    },
+    "name": "Sân Tennis Sơn Trà",
+    "sportType": "tennis",
+    "courtType": "ngoài trời",
+    "capacity": 4,
+    "dimensions": {
+      "length": 23.77,
+      "width": 10.97,
+      "unit": "meters"
+    },
+    "surface": "cứng",
+    "equipment": ["lưới tennis", "đèn sân", "ghế trọng tài"],
+    "pricing": [
+      {
+        "timeSlot": {
+          "start": "06:00",
+          "end": "16:00"
+        },
+        "pricePerHour": 180000,
+        "dayType": "weekday",
+        "isActive": true
+      },
+      {
+        "timeSlot": {
+          "start": "16:00",
+          "end": "22:00"
+        },
+        "pricePerHour": 250000,
+        "dayType": "weekday",
+        "isActive": true
+      },
+      {
+        "timeSlot": {
+          "start": "06:00",
+          "end": "22:00"
+        },
+        "pricePerHour": 300000,
+        "dayType": "weekend",
+        "isActive": true
+      }
+    ],
+    "defaultAvailability": [
+      {
+        "dayOfWeek": 0,
+        "timeSlots": [
+          {
+            "start": "06:00",
+            "end": "22:00",
+            "isAvailable": true
+          }
+        ]
+      },
+      {
+        "dayOfWeek": 5,
+        "timeSlots": [
+          {
+            "start": "06:00",
+            "end": "22:00",
+            "isAvailable": true
+          }
+        ]
+      }
+    ],
+    "isActive": true,
+    "images": ["tennis_sontra.jpg"],
+    "ratings": {
+      "average": 4,
+      "count": 17
+    },
+    "totalBookings": 97,
+    "totalRevenue": 19000000
+  },
+  {
+    "_id": {
+      "$oid": "68d1132e0a78e92307469eb8"
+    },
+    "venueId": {
+      "$oid": "65234be3f2e81e1c6f123004"
+    },
+    "name": "Sân Bóng Rổ Thanh Khê",
+    "sportType": "basketball",
+    "courtType": "ngoài trời",
+    "capacity": 10,
+    "dimensions": {
+      "length": 28,
+      "width": 15,
+      "unit": "meters"
+    },
+    "surface": "xi măng",
+    "equipment": ["rổ bóng", "đèn sân"],
+    "pricing": [
+      {
+        "timeSlot": {
+          "start": "16:00",
+          "end": "22:00"
+        },
+        "pricePerHour": 250000,
+        "dayType": "weekday",
+        "isActive": true
+      },
+      {
+        "timeSlot": {
+          "start": "06:00",
+          "end": "22:00"
+        },
+        "pricePerHour": 320000,
+        "dayType": "weekend",
+        "isActive": true
+      }
+    ],
+    "defaultAvailability": [
+      {
+        "dayOfWeek": 3,
+        "timeSlots": [
+          {
+            "start": "16:00",
+            "end": "22:00",
+            "isAvailable": true
+          }
+        ]
+      },
+      {
+        "dayOfWeek": 6,
+        "timeSlots": [
+          {
+            "start": "06:00",
+            "end": "22:00",
+            "isAvailable": true
+          }
+        ]
+      }
+    ],
+    "isActive": true,
+    "images": ["basketball_thanhkhe.jpg"],
+    "ratings": {
+      "average": 3.9,
+      "count": 10
+    },
+    "totalBookings": 66,
+    "totalRevenue": 9500000
+  }
+]

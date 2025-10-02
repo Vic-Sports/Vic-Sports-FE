@@ -1,0 +1,102 @@
+[
+  {
+    "_id": {
+      "$oid": "65234be3f2e81e1c6f123001"
+    },
+    "ownerId": {
+      "$oid": "65234cf8f2e81e1c6f130123"
+    },
+    "name": "Khu Liên Hợp Thể Thao Mỹ An",
+    "description": "Khu liên hợp thể thao hiện đại bậc nhất khu vực Ngũ Hành Sơn...",
+    "address": {
+      "street": "23 Hồ Xuân Hương",
+      "ward": "Mỹ An",
+      "district": "Ngũ Hành Sơn",
+      "city": "Đà Nẵng",
+      "coordinates": {
+        "type": "Point",
+        "coordinates": [108.241649, 16.041519]
+      }
+    },
+    "contactInfo": {
+      "phone": "0912345678",
+      "email": "lienhe@myan-sports.vn"
+    },
+    "images": ["venue_myan_1.jpg", "venue_myan_2.jpg"],
+    "amenities": [
+      {
+        "name": "Wifi miễn phí",
+        "icon": "wifi",
+        "description": "Wifi tốc độ cao phủ sóng toàn khu vực"
+      },
+      {
+        "name": "Phòng thay đồ",
+        "icon": "changing-room",
+        "description": "Phòng thay đồ rộng rãi, sạch sẽ"
+      },
+      {
+        "name": "Khu vực gửi xe",
+        "icon": "parking",
+        "description": "Chỗ để xe máy, xe ô tô rộng rãi, an ninh"
+      }
+    ],
+    "operatingHours": [
+      {
+        "dayOfWeek": 1,
+        "openTime": "06:00",
+        "closeTime": "22:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 2,
+        "openTime": "06:00",
+        "closeTime": "22:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 3,
+        "openTime": "06:00",
+        "closeTime": "22:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 4,
+        "openTime": "06:00",
+        "closeTime": "22:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 5,
+        "openTime": "06:00",
+        "closeTime": "23:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 6,
+        "openTime": "06:00",
+        "closeTime": "23:00",
+        "isOpen": true
+      },
+      {
+        "dayOfWeek": 0,
+        "openTime": "06:00",
+        "closeTime": "22:00",
+        "isOpen": true
+      }
+    ],
+    "parking": {
+      "available": true,
+      "capacity": 100,
+      "fee": 5000
+    },
+    "ratings": {
+      "average": 4.3,
+      "count": 108
+    },
+    "totalBookings": 563,
+    "totalRevenue": 178000000,
+    "isActive": true,
+    "isVerified": true,
+    "verifiedAt": "2024-05-11T10:30:00.000Z"
+  }
+]

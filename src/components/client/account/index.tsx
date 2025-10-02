@@ -76,7 +76,7 @@ const ManageAccount = (props: IProps) => {
       maskClosable={false}
       width={"80vw"}
       style={{ top: 20 }}
-      bodyStyle={{ padding: "24px" }}
+      styles={{ body: { padding: "24px" } }}
     >
       <Tabs
         defaultActiveKey="overview"

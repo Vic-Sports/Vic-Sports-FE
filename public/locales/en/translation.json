@@ -2,11 +2,13 @@
   "appHeader": {
     "home": "HOME",
     "courts": "COURTS",
+    "venues": "VENUES",
     "coaches": "COACHES",
     "community": "COMMUNITY",
     "menu": "Menu",
     "login": "LOGIN",
     "dashboard": "Dashboard",
+    "ownerDashboard": "Owner Dashboard",
     "profile": "Profile",
     "history": "History",
     "logout": "Logout"
@@ -301,6 +303,35 @@
     "go_to_login": "Go to Login",
     "no_token": "Invalid reset link",
     "error": "An error occurred"
+  },
+  "search": {
+    "result_title": "SEARCH RESULTS FOR SPORTS VENUES",
+    "result_found": "Found {count} sports venues matching your criteria",
+    "result_found_single": "Found 1 sports venue matching your criteria",
+    "result_found_multiple": "Found {count} sports venues matching your criteria",
+    "no_results": "No sports venues found matching your criteria",
+    "search_again": "Try searching with different keywords",
+    "pagination": "Page {current} / {total}",
+    "filter": {
+      "mode_text": "FIND SPORTS VENUES",
+      "description": "Search for sports venues by city and area",
+      "sport_placeholder": "🎯 Choose sport type",
+      "city_placeholder": "🏙️ Choose city",
+      "district_placeholder": "📍 Choose district",
+      "search_button": "FIND SPORTS VENUES",
+      "tip_api": "Using official Vietnam API v2 (updated after merger 07/2025)",
+      "tip_districts": "Districts optimized for 6 major cities: HCM, HN, DN, HP, CT, NT",
+      "error_load_cities": "Unable to load city list. Please try again.",
+      "error_load_districts": "Unable to load district list. Please try again.",
+      "sports": {
+        "football": "⚽ Football",
+        "tennis": "🎾 Tennis",
+        "badminton": "🏸 Badminton",
+        "basketball": "🏀 Basketball",
+        "volleyball": "🏐 Volleyball",
+        "pickleball": "🏓 Pickleball"
+      }
+    }
   },
   "profile": {
     "title": "PROFILE",

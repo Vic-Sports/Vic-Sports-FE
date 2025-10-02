@@ -1,0 +1,149 @@
+[
+  {
+    "_id": "507f1f77bcf86cd799439024",
+    "userId": "507f1f77bcf86cd799439013",
+    "specializedSports": ["football", "tennis"],
+    "experience": 8,
+    "certifications": [
+      {
+        "name": "FIFA Coaching License",
+        "issuedBy": "FIFA",
+        "issuedDate": "2020-01-15",
+        "expiryDate": "2025-01-15",
+        "certificateUrl": "https://example.com/cert1.pdf"
+      },
+      {
+        "name": "Tennis Coach Certificate",
+        "issuedBy": "Vietnam Tennis Federation",
+        "issuedDate": "2019-06-20",
+        "certificateUrl": "https://example.com/cert2.pdf"
+      }
+    ],
+    "bio": "Huấn luyện viên chuyên nghiệp với 8 năm kinh nghiệm trong việc đào tạo bóng đá và tennis.",
+    "achievements": [
+      "Vô địch giải bóng đá sinh viên 2018",
+      "Huy chương vàng tennis cấp tỉnh 2019",
+      "Chứng chỉ huấn luyện viên FIFA"
+    ],
+    "hourlyRate": 200000,
+    "availability": [
+      {
+        "dayOfWeek": 0,
+        "startTime": "08:00",
+        "endTime": "20:00"
+      },
+      {
+        "dayOfWeek": 1,
+        "startTime": "08:00",
+        "endTime": "20:00"
+      },
+      {
+        "dayOfWeek": 2,
+        "startTime": "08:00",
+        "endTime": "20:00"
+      },
+      {
+        "dayOfWeek": 3,
+        "startTime": "08:00",
+        "endTime": "20:00"
+      },
+      {
+        "dayOfWeek": 4,
+        "startTime": "08:00",
+        "endTime": "20:00"
+      },
+      {
+        "dayOfWeek": 5,
+        "startTime": "08:00",
+        "endTime": "20:00"
+      },
+      {
+        "dayOfWeek": 6,
+        "startTime": "08:00",
+        "endTime": "20:00"
+      }
+    ],
+    "ratings": {
+      "average": 4.8,
+      "count": 45
+    },
+    "totalSessions": 120,
+    "isVerified": true,
+    "isActive": true,
+    "createdAt": "2022-11-20T10:00:00Z",
+    "updatedAt": "2024-01-15T11:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439025",
+    "userId": "507f1f77bcf86cd799439014",
+    "specializedSports": ["badminton", "tennis"],
+    "experience": 5,
+    "certifications": [
+      {
+        "name": "Badminton Coach Certificate",
+        "issuedBy": "Vietnam Badminton Federation",
+        "issuedDate": "2021-03-15",
+        "certificateUrl": "https://example.com/cert3.pdf"
+      },
+      {
+        "name": "Tennis Instructor License",
+        "issuedBy": "Vietnam Tennis Association",
+        "issuedDate": "2020-08-20",
+        "certificateUrl": "https://example.com/cert4.pdf"
+      }
+    ],
+    "bio": "Huấn luyện viên cầu lông và tennis với 5 năm kinh nghiệm, chuyên về kỹ thuật cơ bản và nâng cao.",
+    "achievements": [
+      "Huy chương bạc cầu lông cấp thành phố 2020",
+      "Giải ba tennis giải mở rộng 2021",
+      "Chứng chỉ huấn luyện viên cấp 2"
+    ],
+    "hourlyRate": 150000,
+    "availability": [
+      {
+        "dayOfWeek": 0,
+        "startTime": "09:00",
+        "endTime": "21:00"
+      },
+      {
+        "dayOfWeek": 1,
+        "startTime": "09:00",
+        "endTime": "21:00"
+      },
+      {
+        "dayOfWeek": 2,
+        "startTime": "09:00",
+        "endTime": "21:00"
+      },
+      {
+        "dayOfWeek": 3,
+        "startTime": "09:00",
+        "endTime": "21:00"
+      },
+      {
+        "dayOfWeek": 4,
+        "startTime": "09:00",
+        "endTime": "21:00"
+      },
+      {
+        "dayOfWeek": 5,
+        "startTime": "09:00",
+        "endTime": "21:00"
+      },
+      {
+        "dayOfWeek": 6,
+        "startTime": "09:00",
+        "endTime": "21:00"
+      }
+    ],
+    "ratings": {
+      "average": 4.6,
+      "count": 32
+    },
+    "totalSessions": 85,
+    "isVerified": true,
+    "isActive": true,
+    "createdAt": "2023-02-15T09:00:00Z",
+    "updatedAt": "2024-01-15T10:30:00Z"
+  }
+]

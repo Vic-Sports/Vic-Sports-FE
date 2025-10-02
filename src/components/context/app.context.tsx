@@ -1,8 +1,8 @@
 import { fetchAccountAPI } from "@/services/api";
-import { createContext, useContext, useEffect, useState } from "react";
 import { ConfigProvider } from "antd";
-import RingLoader from "react-spinners/RingLoader";
 import enUS from "antd/locale/en_US";
+import { createContext, useContext, useEffect, useState } from "react";
+import RingLoader from "react-spinners/RingLoader";
 
 interface IAppContext {
   isAuthenticated: boolean;
@@ -27,10 +27,27 @@ export const AppProvider = (props: TProps) => {
   useEffect(() => {
     const fetchAccount = async () => {
       try {
+        // Kiểm tra session storage trước
+        const sessionUser = sessionStorage.getItem("user");
+        const sessionToken = sessionStorage.getItem("access_token");
+        
+        if (sessionUser && sessionToken) {
+          // Khôi phục trạng thái từ session storage
+          setUser(JSON.parse(sessionUser));
+          setIsAuthenticated(true);
+          setIsAppLoading(false);
+          return;
+        }
+
+        // Nếu không có session, gọi API để kiểm tra
         const res = await fetchAccountAPI();
         if (res.data) {
           setUser(res.data.user);
           setIsAuthenticated(true);
+          // Lưu vào session storage
+          sessionStorage.setItem("user", JSON.stringify(res.data.user));
+          sessionStorage.setItem("access_token", localStorage.getItem("access_token") || "");
+          sessionStorage.setItem("refresh_token", localStorage.getItem("refresh_token") || "");
         }
       } catch (error: any) {
         // 401 Unauthorized là bình thường khi user chưa login
@@ -42,6 +59,10 @@ export const AppProvider = (props: TProps) => {
         // Nếu API call thất bại, đảm bảo user không được authenticate
         setIsAuthenticated(false);
         setUser(null);
+        // Xóa session storage nếu có lỗi
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("access_token");
+        sessionStorage.removeItem("refresh_token");
       } finally {
         // Đảm bảo luôn set loading = false dù API thành công hay thất bại
         setIsAppLoading(false);

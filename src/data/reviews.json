@@ -1,0 +1,78 @@
+[
+  {
+    "_id": "507f1f77bcf86cd799439026",
+    "bookingId": "507f1f77bcf86cd799439020",
+    "customerId": "507f1f77bcf86cd799439011",
+    "venueId": "507f1f77bcf86cd799439013",
+    "courtId": "507f1f77bcf86cd799439016",
+    "overallRating": 5,
+    "detailRatings": {
+      "facilities": 5,
+      "service": 4,
+      "cleanliness": 5,
+      "value": 4
+    },
+    "comment": "Sân tennis rất đẹp và chất lượng tốt. Nhân viên phục vụ nhiệt tình.",
+    "images": [
+      "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/tennis-court.jpg"
+    ],
+    "coachId": "507f1f77bcf86cd799439013",
+    "coachRating": 5,
+    "coachComment": "Huấn luyện viên rất chuyên nghiệp và nhiệt tình.",
+    "pointsAwarded": 10,
+    "isApproved": true,
+    "isFeatured": false,
+    "helpfulVotes": 3,
+    "notHelpfulVotes": 0,
+    "createdAt": "2024-01-19T10:00:00Z",
+    "updatedAt": "2024-01-19T10:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439027",
+    "bookingId": "507f1f77bcf86cd799439022",
+    "customerId": "507f1f77bcf86cd799439011",
+    "venueId": "507f1f77bcf86cd799439012",
+    "courtId": "507f1f77bcf86cd799439018",
+    "overallRating": 4,
+    "detailRatings": {
+      "facilities": 4,
+      "service": 4,
+      "cleanliness": 4,
+      "value": 4
+    },
+    "comment": "Sân bóng đá 5v5 rất phù hợp cho nhóm nhỏ. Giá cả hợp lý.",
+    "images": [],
+    "pointsAwarded": 8,
+    "isApproved": true,
+    "isFeatured": false,
+    "helpfulVotes": 1,
+    "notHelpfulVotes": 0,
+    "createdAt": "2024-01-26T15:00:00Z",
+    "updatedAt": "2024-01-26T15:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439028",
+    "bookingId": "507f1f77bcf86cd799439021",
+    "customerId": "507f1f77bcf86cd799439014",
+    "venueId": "507f1f77bcf86cd799439014",
+    "courtId": "507f1f77bcf86cd799439017",
+    "overallRating": 5,
+    "detailRatings": {
+      "facilities": 5,
+      "service": 5,
+      "cleanliness": 5,
+      "value": 5
+    },
+    "comment": "Sân cầu lông trong nhà rất mát mẻ và thoải mái. Hệ thống điều hòa hoạt động tốt.",
+    "images": [
+      "https://res.cloudinary.com/demo/image/upload/v1/samples/sports/badminton-court.jpg"
+    ],
+    "pointsAwarded": 10,
+    "isApproved": true,
+    "isFeatured": true,
+    "helpfulVotes": 5,
+    "notHelpfulVotes": 0,
+    "createdAt": "2024-01-23T20:00:00Z",
+    "updatedAt": "2024-01-23T20:00:00Z"
+  }
+]

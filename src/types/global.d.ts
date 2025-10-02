@@ -20,6 +20,7 @@ declare global {
 
   interface ILogin {
     access_token: string;
+    refreshToken: string;
     user: {
       email: string;
       phone: string;
@@ -87,6 +88,7 @@ declare global {
     totalSpent?: number;
     rank?: string;
     isVerified?: boolean;
+    isEmailVerified?: boolean;
   }
 
   interface IFetchAccount {
@@ -98,6 +100,9 @@ declare global {
     fullName: string;
     email: string;
     phone: string;
+    gender: string;
+    status: string;
+    rewardPoints: number;
     role: string;
     avatar: string;
     isActive: boolean;
@@ -149,6 +154,4 @@ declare global {
     paymentStatus: string;
     paymentRef: string;
   }
-
-  interface IOrderTable extends IHistory {}
 }

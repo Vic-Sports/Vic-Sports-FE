@@ -1,22 +1,23 @@
-import { App, Button, Form, Input, Checkbox, Modal } from "antd";
-import { Link, useNavigate } from "react-router-dom";
-import "./login.scss";
-import { useState, useEffect } from "react";
-import type { FormProps } from "antd";
+import loginAnimation from "@/assets/lottie/login-animation.json";
+import facebook from "@/assets/svg/images/facebook-logo.png";
+import google from "@/assets/svg/images/google-logo.png";
+import { useCurrentApp } from "@/components/context/app.context";
 import {
   loginAPI,
   loginWithGoogleAPI,
-  resendVerificationAPI
+  resendVerificationAPI,
 } from "@/services/api";
-import { useCurrentApp } from "@/components/context/app.context";
-import { useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
-import google from "@/assets/svg/images/google-logo.png";
-import facebook from "@/assets/svg/images/facebook-logo.png";
-import { useTranslation } from "react-i18next";
-import loginAnimation from "@/assets/lottie/login-animation.json";
 import AnimationLottie from "@/share/animation-lottie";
-import { FaLock, FaEnvelope } from "react-icons/fa";
+import { useGoogleLogin } from "@react-oauth/google";
+import type { FormProps } from "antd";
+import { App, Button, Checkbox, Form, Input, Modal } from "antd";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { FaEnvelope, FaLock } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import "./login.scss";
+import { stringify } from "@ant-design/pro-components";
 
 type FieldType = {
   email: string;
@@ -76,6 +77,10 @@ const LoginPage = () => {
         setIsAuthenticated(true);
         setUser(res.data.user);
         localStorage.setItem("access_token", res.data.access_token);
+        localStorage.setItem("refresh_token", res.data.refreshToken);
+        sessionStorage.setItem("access_token", res.data.access_token);
+        sessionStorage.setItem("refresh_token", res.data.refreshToken);
+        sessionStorage.setItem("user", JSON.stringify(res.data.user));
         message.success(t("login.login_success"));
         navigate("/");
       } else {
@@ -105,7 +110,7 @@ const LoginPage = () => {
           // Invalid credentials
           notification.error({
             message: t("login.error_invalid_credentials"),
-            duration: 5
+            duration: 5,
           });
         } else if (
           errorMessage?.toLowerCase().includes("locked") ||
@@ -116,7 +121,7 @@ const LoginPage = () => {
           // Account locked
           notification.error({
             message: t("login.error_account_locked"),
-            duration: 8
+            duration: 8,
           });
         } else if (
           errorMessage?.toLowerCase().includes("too many") ||
@@ -126,13 +131,13 @@ const LoginPage = () => {
           // Too many attempts
           notification.warning({
             message: t("login.error_too_many_attempts"),
-            duration: 8
+            duration: 8,
           });
         } else {
           // Generic error
           notification.error({
             message: errorMessage || t("login.error_unknown"),
-            duration: 5
+            duration: 5,
           });
         }
       }
@@ -146,27 +151,27 @@ const LoginPage = () => {
       ) {
         notification.error({
           message: t("login.error_network"),
-          duration: 8
+          duration: 8,
         });
       } else if (err.response?.status >= 500) {
         notification.error({
           message: t("login.error_server"),
-          duration: 8
+          duration: 8,
         });
       } else if (err.response?.status === 401) {
         notification.error({
           message: t("login.error_invalid_credentials"),
-          duration: 5
+          duration: 5,
         });
       } else if (err.response?.status === 403) {
         notification.error({
           message: t("login.error_account_locked"),
-          duration: 8
+          duration: 8,
         });
       } else {
         notification.error({
           message: err.message || t("login.error_unknown"),
-          duration: 5
+          duration: 5,
         });
       }
     }
@@ -178,29 +183,41 @@ const LoginPage = () => {
         "https://www.googleapis.com/oauth2/v3/userinfo",
         {
           headers: {
-            Authorization: `Bearer ${tokenResponse?.access_token}`
-          }
+            Authorization: `Bearer ${tokenResponse?.access_token}`,
+          },
         }
       );
-      if (data && data.email) {
-        const res = await loginWithGoogleAPI("GOOGLE", data.email);
-        if (res?.data) {
-          setIsAuthenticated(true);
-          setUser(res.data.user);
-          localStorage.setItem("access_token", res.data.access_token);
-          message.success(t("login.login_success"));
-          navigate("/");
-        } else {
-          notification.error({
-            message:
-              res.error && Array.isArray(res.error)
-                ? res.error[0]
-                : res.error || res.message,
-            duration: 5
-          });
-        }
+      console.log("Google user info:", data); // Thêm dòng này để kiểm tra
+
+      const payload = {
+        email: data.email,
+        name:
+          data.name ||
+          [data.given_name, data.family_name].filter(Boolean).join(" "),
+        picture: data.picture,
+      };
+      const res = await loginWithGoogleAPI("GOOGLE", payload);
+      console.log("PAYLOADDDDD", payload);
+      if (res?.data) {
+        setIsAuthenticated(true);
+        setUser(res.data.user);
+        localStorage.setItem("access_token", res.data.access_token);
+        localStorage.setItem("refresh_token", res.data.refreshToken);
+        sessionStorage.setItem("access_token", res.data.access_token);
+        sessionStorage.setItem("refresh_token", res.data.refreshToken);
+        sessionStorage.setItem("user", JSON.stringify(res.data.user));
+        message.success(t("login.login_success"));
+        navigate("/");
+      } else {
+        notification.error({
+          message:
+            res.error && Array.isArray(res.error)
+              ? res.error[0]
+              : res.error || res.message,
+          duration: 5,
+        });
       }
-    }
+    },
   });
 
   return (
@@ -249,7 +266,7 @@ const LoginPage = () => {
                   name="email"
                   rules={[
                     { required: true, message: t("login.message_email1") },
-                    { type: "email", message: t("login.message_email2") }
+                    { type: "email", message: t("login.message_email2") },
                   ]}
                 >
                   <Input
@@ -271,7 +288,7 @@ const LoginPage = () => {
                   }
                   name="password"
                   rules={[
-                    { required: true, message: t("login.message_password") }
+                    { required: true, message: t("login.message_password") },
                   ]}
                 >
                   <Input.Password
@@ -374,20 +391,20 @@ const LoginPage = () => {
             size="large"
           >
             {t("auth.resend") || "Resend Verification Email"}
-          </Button>
+          </Button>,
         ]}
         styles={{
           header: {
             borderBottom: "1px solid #f0f0f0",
-            paddingBottom: "16px"
+            paddingBottom: "16px",
           },
           body: {
-            padding: "24px"
+            padding: "24px",
           },
           footer: {
             borderTop: "1px solid #f0f0f0",
-            paddingTop: "16px"
-          }
+            paddingTop: "16px",
+          },
         }}
       >
         <div style={{ textAlign: "center" }}>
@@ -397,7 +414,7 @@ const LoginPage = () => {
               color: "#faad14",
               marginBottom: "16px",
               display: "flex",
-              justifyContent: "center"
+              justifyContent: "center",
             }}
           >
             ⚠️
@@ -407,7 +424,7 @@ const LoginPage = () => {
               fontSize: "16px",
               color: "#666",
               marginBottom: "20px",
-              lineHeight: "1.6"
+              lineHeight: "1.6",
             }}
           >
             {t("login.error_account_not_verified")}
@@ -418,7 +435,7 @@ const LoginPage = () => {
               padding: "16px",
               borderRadius: "8px",
               marginBottom: "20px",
-              border: "1px solid #e1e4e8"
+              border: "1px solid #e1e4e8",
             }}
           >
             <p style={{ margin: "0", fontSize: "14px", color: "#586069" }}>
@@ -429,7 +446,7 @@ const LoginPage = () => {
             style={{
               fontSize: "14px",
               color: "#666",
-              lineHeight: "1.5"
+              lineHeight: "1.5",
             }}
           >
             {t("login.resend_instruction") ||

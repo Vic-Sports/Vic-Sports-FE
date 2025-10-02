@@ -1,14 +1,14 @@
-import { useState, useMemo } from "react";
-import { Divider, Drawer, Avatar, Dropdown, Button } from "antd";
-import { NavLink, useNavigate, Link } from "react-router-dom";
+import { Avatar, Button, Divider, Drawer, Dropdown } from "antd";
 import { useCurrentApp } from "components/context/app.context";
-import { logoutAPI } from "services/api";
-import ManageAccount from "../client/account";
+import { useMemo, useState } from "react";
 import { Container } from "react-bootstrap";
-import viFlag from "../../assets/svg/language/vi.svg";
-import enFlag from "../../assets/svg/language/en.svg";
 import { useTranslation } from "react-i18next";
 import { FaBolt } from "react-icons/fa";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { logoutAPI } from "services/api";
+import enFlag from "../../assets/svg/language/en.svg";
+import viFlag from "../../assets/svg/language/vi.svg";
+import ManageAccount from "../client/account";
 
 const Header = () => {
   const { isAuthenticated, user, setUser, setIsAuthenticated } =
@@ -22,23 +22,40 @@ const Header = () => {
 
   const backendURL = import.meta.env.VITE_BACKEND_URL || "";
   const urlAvatar = useMemo(() => {
-    return user?.avatar
-      ? `${backendURL}/images/avatar/${user.avatar}`
-      : undefined;
+    if (!user?.avatar) return undefined;
+    // Nếu là link Google hoặc link cloud thì dùng trực tiếp
+    if (user.avatar.startsWith("http")) return user.avatar;
+    // Nếu là tên file thì dùng backendURL
+    return `${backendURL}/images/avatar/${user.avatar}`;
   }, [user?.avatar, backendURL]);
 
+  // Không dùng trạng thái loading cho logout
+
   const handleLogout = async () => {
+    console.log("Logout button clicked");
     try {
       const res = await logoutAPI();
-      if (res?.data) {
-        setUser(null);
-        setIsAuthenticated(false);
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        localStorage.removeItem("carts");
-      }
+      setUser(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("carts");
+      sessionStorage.removeItem("access_token");
+      sessionStorage.removeItem("refresh_token");
+      sessionStorage.removeItem("user");
     } catch (error) {
+      setUser(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("carts");
+      sessionStorage.removeItem("access_token");
+      sessionStorage.removeItem("refresh_token");
+      sessionStorage.removeItem("user");
+      window?.alert?.("Có lỗi khi đăng xuất! Dữ liệu đã được xóa cục bộ.");
       console.error("Logout error:", error);
+    } finally {
+      navigate("/");
     }
   };
 
@@ -53,51 +70,108 @@ const Header = () => {
   };
 
   const menuItems = [
-    ...(user?.role === "admin"
-      ? [
-          {
-            label: (
-              <Link
-                to="/admin"
-                style={{ color: "#ffffff", textDecoration: "none" }}
-              >
-                {t("appHeader.dashboard")}
-              </Link>
-            ),
-            key: "admin"
-          }
-        ]
-      : []),
     {
       label: (
-        <span
-          style={{ cursor: "pointer", color: "#ffffff" }}
+        <div
+          style={{
+            cursor: "pointer",
+            color: "#1a1a1a",
+            padding: "8px 12px",
+            borderRadius: "8px",
+            fontWeight: 600,
+            fontSize: "16px",
+            transition: "all 0.3s ease"
+          }}
           onClick={() => setOpenManageAccount(true)}
         >
           {t("appHeader.profile")}
-        </span>
+        </div>
       ),
       key: "account"
     },
     {
       label: (
-        <Link
-          to="/history"
-          style={{ color: "#ffffff", textDecoration: "none" }}
+        <div
+          style={{
+            cursor: "pointer",
+            color: "#1a1a1a",
+            padding: "8px 12px",
+            borderRadius: "8px",
+            fontWeight: 600,
+            fontSize: "16px",
+            transition: "all 0.3s ease"
+          }}
+          onClick={() => navigate("/history")}
         >
           {t("appHeader.history")}
-        </Link>
+        </div>
       ),
       key: "history"
     },
+    // Thêm dashboard cho admin
+    ...(user?.role === "admin"
+      ? [
+          {
+            label: (
+              <div
+                style={{
+                  cursor: "pointer",
+                  color: "#1a1a1a",
+                  padding: "8px 12px",
+                  borderRadius: "8px",
+                  fontWeight: 600,
+                  fontSize: "16px",
+                  transition: "all 0.3s ease"
+                }}
+                onClick={() => navigate("/admin")}
+              >
+                Dashboard Admin
+              </div>
+            ),
+            key: "admin-dashboard"
+          }
+        ]
+      : []),
+    // Thêm dashboard cho owner
+    ...(user?.role === "owner"
+      ? [
+          {
+            label: (
+              <div
+                style={{
+                  cursor: "pointer",
+                  color: "#1a1a1a",
+                  padding: "8px 12px",
+                  borderRadius: "8px",
+                  fontWeight: 600,
+                  fontSize: "16px",
+                  transition: "all 0.3s ease"
+                }}
+                onClick={() => navigate("/owner")}
+              >
+                Dashboard Owner
+              </div>
+            ),
+            key: "owner-dashboard"
+          }
+        ]
+      : []),
     {
       label: (
-        <span
-          style={{ cursor: "pointer", color: "#ffffff" }}
+        <div
+          style={{
+            cursor: "pointer",
+            color: "#1a1a1a",
+            padding: "8px 12px",
+            borderRadius: "8px",
+            fontWeight: 600,
+            fontSize: "16px",
+            transition: "all 0.3s ease"
+          }}
           onClick={handleLogout}
         >
           {t("appHeader.logout")}
-        </span>
+        </div>
       ),
       key: "logout"
     }
@@ -110,7 +184,7 @@ const Header = () => {
         <div
           className="d-flex gap-2 align-items-center"
           onClick={() => i18n.changeLanguage("en")}
-          style={{ color: "#ffffff" }}
+          style={{ color: "#1a1a1a" }}
         >
           <img src={enFlag} style={{ width: 20, height: 20 }} alt="English" />
           <span>English</span>
@@ -123,7 +197,7 @@ const Header = () => {
         <div
           className="d-flex gap-2 align-items-center"
           onClick={() => i18n.changeLanguage("vi")}
-          style={{ color: "#ffffff" }}
+          style={{ color: "#1a1a1a" }}
         >
           <img
             src={viFlag}
@@ -138,14 +212,18 @@ const Header = () => {
 
   return (
     <>
-      {/* Simple Header like image 2 */}
+      {/* Modern Sports Header */}
       <header
+        className="header-navbar"
         style={{
-          backgroundColor: "#000000",
-          padding: "16px 0",
+          backgroundColor: "#FFFFFF",
+          padding: "12px 0",
           position: "sticky",
           top: 0,
-          zIndex: 1000
+          zIndex: 1000,
+          boxShadow: "0 2px 20px rgba(0,0,0,0.08)",
+          backdropFilter: "blur(10px)",
+          borderBottom: "1px solid rgba(0,0,0,0.05)"
         }}
       >
         <Container>
@@ -153,48 +231,51 @@ const Header = () => {
             {/* Logo */}
             <Link
               to="/"
-              className="d-flex align-items-center text-decoration-none"
+              className="d-flex align-items-center text-decoration-none navbar-brand"
               style={{ color: "inherit" }}
             >
               <div
                 style={{
-                  width: "40px",
-                  height: "40px",
-                  background: "linear-gradient(45deg, #0ea5e9, #d946ef)",
-                  borderRadius: "12px",
+                  width: "45px",
+                  height: "45px",
+                  background:
+                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  borderRadius: "15px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  marginRight: "12px"
+                  marginRight: "15px",
+                  boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
+                  transition: "all 0.3s ease"
                 }}
               >
-                <FaBolt style={{ color: "white", fontSize: "20px" }} />
+                <FaBolt style={{ color: "white", fontSize: "22px" }} />
               </div>
               <div>
                 <div
                   style={{
-                    fontSize: "24px",
-                    fontWeight: "700",
+                    fontSize: "26px",
+                    fontWeight: "800",
                     background:
-                      "linear-gradient(45deg, #0ea5e9, #d946ef, #0ea5e9)",
-                    backgroundSize: "200% 200%",
+                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                     backgroundClip: "text",
                     margin: 0,
-                    lineHeight: 1,
-                    animation: "gradient 3s ease infinite"
+                    lineHeight: 1.1,
+                    letterSpacing: "-0.5px"
                   }}
                 >
                   VIC SPORTS
                 </div>
                 <div
                   style={{
-                    fontSize: "11px",
-                    color: "rgba(255, 255, 255, 0.6)",
-                    fontWeight: "500",
-                    letterSpacing: "1.5px",
-                    margin: 0
+                    fontSize: "12px",
+                    color: "rgba(26, 26, 26, 0.7)",
+                    fontWeight: "600",
+                    letterSpacing: "2px",
+                    margin: 0,
+                    textTransform: "uppercase"
                   }}
                 >
                   FUTURE OF SPORTS
@@ -204,24 +285,56 @@ const Header = () => {
 
             {/* Navigation */}
             <nav className="d-none d-lg-flex">
-              <div className="d-flex gap-1">
+              <div className="d-flex gap-2">
                 <NavLink to="/" className="nav-button-wrapper">
                   {({ isActive }) => (
                     <Button
                       type="text"
-                      className={`nav-button ${isActive ? "active" : ""}`}
+                      className={`header-nav-link ${isActive ? "active" : ""}`}
+                      style={{
+                        padding: "10px 20px",
+                        borderRadius: "25px",
+                        fontWeight: "600",
+                        fontSize: "15px",
+                        height: "auto",
+                        border: "none",
+                        background: isActive
+                          ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                          : "transparent",
+                        color: isActive ? "white" : "#1a1a1a",
+                        transition: "all 0.3s ease",
+                        boxShadow: isActive
+                          ? "0 4px 15px rgba(102, 126, 234, 0.3)"
+                          : "none"
+                      }}
                     >
                       {t("appHeader.home")}
                     </Button>
                   )}
                 </NavLink>
-                <NavLink to="/courts" className="nav-button-wrapper">
+                <NavLink to="/venues" className="nav-button-wrapper">
                   {({ isActive }) => (
                     <Button
                       type="text"
-                      className={`nav-button ${isActive ? "active" : ""}`}
+                      className={`header-nav-link ${isActive ? "active" : ""}`}
+                      style={{
+                        padding: "10px 20px",
+                        borderRadius: "25px",
+                        fontWeight: "600",
+                        fontSize: "15px",
+                        height: "auto",
+                        border: "none",
+                        background: isActive
+                          ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                          : "transparent",
+                        color: isActive ? "white" : "#1a1a1a",
+                        transition: "all 0.3s ease",
+                        boxShadow: isActive
+                          ? "0 4px 15px rgba(102, 126, 234, 0.3)"
+                          : "none"
+                      }}
                     >
-                      {t("appHeader.courts")}
+                      {t("appHeader.venues")}
                     </Button>
                   )}
                 </NavLink>
@@ -229,7 +342,23 @@ const Header = () => {
                   {({ isActive }) => (
                     <Button
                       type="text"
-                      className={`nav-button ${isActive ? "active" : ""}`}
+                      className={`header-nav-link ${isActive ? "active" : ""}`}
+                      style={{
+                        padding: "10px 20px",
+                        borderRadius: "25px",
+                        fontWeight: "600",
+                        fontSize: "15px",
+                        height: "auto",
+                        border: "none",
+                        background: isActive
+                          ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                          : "transparent",
+                        color: isActive ? "white" : "#1a1a1a",
+                        transition: "all 0.3s ease",
+                        boxShadow: isActive
+                          ? "0 4px 15px rgba(102, 126, 234, 0.3)"
+                          : "none"
+                      }}
                     >
                       {t("appHeader.coaches")}
                     </Button>
@@ -239,9 +368,51 @@ const Header = () => {
                   {({ isActive }) => (
                     <Button
                       type="text"
-                      className={`nav-button ${isActive ? "active" : ""}`}
+                      className={`header-nav-link ${isActive ? "active" : ""}`}
+                      style={{
+                        padding: "10px 20px",
+                        borderRadius: "25px",
+                        fontWeight: "600",
+                        fontSize: "15px",
+                        height: "auto",
+                        border: "none",
+                        background: isActive
+                          ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                          : "transparent",
+                        color: isActive ? "white" : "#1a1a1a",
+                        transition: "all 0.3s ease",
+                        boxShadow: isActive
+                          ? "0 4px 15px rgba(102, 126, 234, 0.3)"
+                          : "none"
+                      }}
                     >
                       {t("appHeader.community")}
+                    </Button>
+                  )}
+                </NavLink>
+                <NavLink to="/chat" className="nav-button-wrapper">
+                  {({ isActive }) => (
+                    <Button
+                      type="text"
+                      className={`header-nav-link ${isActive ? "active" : ""}`}
+                      style={{
+                        padding: "10px 20px",
+                        borderRadius: "25px",
+                        fontWeight: "600",
+                        fontSize: "15px",
+                        height: "auto",
+                        border: "none",
+                        background: isActive
+                          ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                          : "transparent",
+                        color: isActive ? "white" : "#1a1a1a",
+                        transition: "all 0.3s ease",
+                        boxShadow: isActive
+                          ? "0 4px 15px rgba(102, 126, 234, 0.3)"
+                          : "none"
+                      }}
+                    >
+                      CHAT
                     </Button>
                   )}
                 </NavLink>
@@ -250,13 +421,17 @@ const Header = () => {
 
             {/* Mobile Menu Button */}
             <Button
-              className="d-lg-none"
+              className="d-lg-none navbar-toggler"
               type="text"
               onClick={() => setOpenDrawer(true)}
               style={{
-                color: "white",
-                fontSize: "18px",
-                padding: "8px 12px"
+                color: "#1a1a1a",
+                fontSize: "20px",
+                padding: "12px 16px",
+                borderRadius: "12px",
+                border: "none",
+                background: "rgba(102, 126, 234, 0.1)",
+                transition: "all 0.3s ease"
               }}
             >
               ☰
@@ -268,25 +443,29 @@ const Header = () => {
               <Dropdown
                 menu={{
                   items: languageMenuItems,
+                  className: "language-dropdown",
                   style: {
-                    backgroundColor: "#000",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    color: "#ffffff"
+                    backgroundColor: "#FFFFFF",
+                    border: "1px solid rgba(0,0,0,0.1)",
+                    borderRadius: "15px",
+                    boxShadow: "0 8px 30px rgba(0,0,0,0.15)",
+                    padding: "8px"
                   }
                 }}
                 trigger={["click"]}
                 placement="bottomRight"
               >
                 <Button
-                  className="language-button"
+                  className="language-toggle"
                   style={{
-                    backgroundColor: "#000000",
+                    backgroundColor: "rgba(102, 126, 234, 0.1)",
                     border: "none",
-                    borderRadius: "20px",
-                    padding: "8px 12px",
+                    borderRadius: "12px",
+                    padding: "10px 14px",
                     display: "flex",
                     alignItems: "center",
                     gap: "8px",
+                    transition: "all 0.3s ease",
                     boxShadow: "none"
                   }}
                 >
@@ -298,12 +477,18 @@ const Header = () => {
               {!isAuthenticated || !user ? (
                 <Button
                   type="primary"
+                  className="login-btn"
                   style={{
-                    background: "linear-gradient(45deg, #0ea5e9, #d946ef)",
+                    background:
+                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                     border: "none",
-                    borderRadius: "20px",
-                    padding: "8px 20px",
-                    fontWeight: "600"
+                    borderRadius: "25px",
+                    padding: "12px 24px",
+                    fontWeight: "700",
+                    fontSize: "15px",
+                    height: "auto",
+                    boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
+                    transition: "all 0.3s ease"
                   }}
                   onClick={() => navigate("/login")}
                 >
@@ -313,30 +498,48 @@ const Header = () => {
                 <Dropdown
                   menu={{
                     items: menuItems,
+                    className: "sports-dropdown-menu",
                     style: {
-                      backgroundColor: "#000",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      color: "#ffffff"
+                      backgroundColor: "#FFFFFF",
+                      border: "1px solid rgba(0,0,0,0.1)",
+                      borderRadius: "15px",
+                      boxShadow: "0 8px 30px rgba(0,0,0,0.15)",
+                      padding: "8px"
                     }
                   }}
                   trigger={["click"]}
                   placement="bottomRight"
                 >
                   <div
-                    className="d-flex align-items-center gap-2"
-                    style={{ cursor: "pointer" }}
+                    className="d-flex align-items-center gap-3 user-menu"
+                    style={{
+                      cursor: "pointer",
+                      padding: "8px 12px",
+                      borderRadius: "15px",
+                      background: "rgba(102, 126, 234, 0.05)",
+                      transition: "all 0.3s ease",
+                      border: "1px solid rgba(102, 126, 234, 0.1)"
+                    }}
                   >
-                    <Avatar src={urlAvatar} size={32}>
+                    <Avatar
+                      src={urlAvatar}
+                      size={36}
+                      style={{
+                        border: "2px solid rgba(102, 126, 234, 0.2)",
+                        boxShadow: "0 2px 8px rgba(102, 126, 234, 0.2)"
+                      }}
+                    >
                       {user.fullName?.[0] || "U"}
                     </Avatar>
                     <div className="d-none d-md-block">
                       <div
+                        className="user-name"
                         style={{
-                          fontSize: "14px",
-                          fontWeight: "600",
-                          color: "white",
+                          fontSize: "15px",
+                          fontWeight: "700",
+                          color: "#1a1a1a",
                           margin: 0,
-                          lineHeight: 1
+                          lineHeight: 1.2
                         }}
                       >
                         {user.fullName || "User Pro"}
@@ -344,11 +547,12 @@ const Header = () => {
                       <div
                         style={{
                           fontSize: "12px",
-                          color: "rgba(255, 255, 255, 0.6)",
-                          margin: 0
+                          color: "rgba(26, 26, 26, 0.7)",
+                          margin: 0,
+                          fontWeight: "500"
                         }}
                       >
-                        Level 15
+                        {user.rewardPoints || 0} VIC token
                       </div>
                     </div>
                   </div>
@@ -360,58 +564,212 @@ const Header = () => {
       </header>
 
       <Drawer
-        title={t("appHeader.menu")}
+        title={
+          <div className="d-flex align-items-center gap-3">
+            <div
+              style={{
+                width: "35px",
+                height: "35px",
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+            >
+              <FaBolt style={{ color: "white", fontSize: "18px" }} />
+            </div>
+            <span style={{ fontWeight: "700", fontSize: "18px" }}>
+              {t("appHeader.menu")}
+            </span>
+          </div>
+        }
         placement="left"
         onClose={() => setOpenDrawer(false)}
         open={openDrawer}
         styles={{
-          body: { backgroundColor: "#000", color: "#fff" },
+          body: {
+            backgroundColor: "#FFFFFF",
+            color: "#1a1a1a",
+            padding: "24px"
+          },
           header: {
-            backgroundColor: "#000",
-            color: "#fff",
-            borderBottom: "1px solid rgba(255,255,255,0.1)"
+            backgroundColor: "#FFFFFF",
+            color: "#1a1a1a",
+            borderBottom: "1px solid rgba(0,0,0,0.1)",
+            padding: "20px 24px"
           }
         }}
       >
-        <div className="d-flex flex-column gap-3">
+        <div className="d-flex flex-column gap-2">
           <NavLink
             to="/"
-            className="text-decoration-none"
-            style={{ color: "white" }}
+            className="text-decoration-none mobile-nav-item"
+            style={{
+              color: "#1a1a1a",
+              padding: "16px 20px",
+              borderRadius: "12px",
+              fontWeight: "600",
+              fontSize: "16px",
+              transition: "all 0.3s ease",
+              background: "transparent"
+            }}
             onClick={() => setOpenDrawer(false)}
           >
             {t("appHeader.home")}
           </NavLink>
           <NavLink
-            to="/courts"
-            className="text-decoration-none"
-            style={{ color: "white" }}
+            to="/venues"
+            className="text-decoration-none mobile-nav-item"
+            style={{
+              color: "#1a1a1a",
+              padding: "16px 20px",
+              borderRadius: "12px",
+              fontWeight: "600",
+              fontSize: "16px",
+              transition: "all 0.3s ease",
+              background: "transparent"
+            }}
             onClick={() => setOpenDrawer(false)}
           >
-            {t("appHeader.courts")}
+            {t("appHeader.venues")}
           </NavLink>
           <NavLink
             to="/coaches"
-            className="text-decoration-none"
-            style={{ color: "white" }}
+            className="text-decoration-none mobile-nav-item"
+            style={{
+              color: "#1a1a1a",
+              padding: "16px 20px",
+              borderRadius: "12px",
+              fontWeight: "600",
+              fontSize: "16px",
+              transition: "all 0.3s ease",
+              background: "transparent"
+            }}
             onClick={() => setOpenDrawer(false)}
           >
             {t("appHeader.coaches")}
           </NavLink>
           <NavLink
             to="/community"
-            className="text-decoration-none"
-            style={{ color: "white" }}
+            className="text-decoration-none mobile-nav-item"
+            style={{
+              color: "#1a1a1a",
+              padding: "16px 20px",
+              borderRadius: "12px",
+              fontWeight: "600",
+              fontSize: "16px",
+              transition: "all 0.3s ease",
+              background: "transparent"
+            }}
             onClick={() => setOpenDrawer(false)}
           >
             {t("appHeader.community")}
           </NavLink>
-          <Divider style={{ borderColor: "rgba(255,255,255,0.2)" }} />
-          <p onClick={() => setOpenManageAccount(true)}>
+          <NavLink
+            to="/chat"
+            className="text-decoration-none mobile-nav-item"
+            style={{
+              color: "#1a1a1a",
+              padding: "16px 20px",
+              borderRadius: "12px",
+              fontWeight: "600",
+              fontSize: "16px",
+              transition: "all 0.3s ease",
+              background: "transparent"
+            }}
+            onClick={() => setOpenDrawer(false)}
+          >
+            Chat
+          </NavLink>
+          <Divider
+            style={{ borderColor: "rgba(0,0,0,0.1)", margin: "20px 0" }}
+          />
+          <div
+            className="mobile-nav-item"
+            style={{
+              color: "#1a1a1a",
+              padding: "16px 20px",
+              borderRadius: "12px",
+              fontWeight: "600",
+              fontSize: "16px",
+              transition: "all 0.3s ease",
+              background: "transparent",
+              cursor: "pointer"
+            }}
+            onClick={() => {
+              setOpenManageAccount(true);
+              setOpenDrawer(false);
+            }}
+          >
             {t("appHeader.profile")}
-          </p>
-          <Divider style={{ borderColor: "rgba(255,255,255,0.2)" }} />
-          <p onClick={handleLogout}>{t("appHeader.logout")}</p>
+          </div>
+          {/* Thêm dashboard cho admin trong mobile menu */}
+          {user?.role === "admin" && (
+            <div
+              className="mobile-nav-item"
+              style={{
+                color: "#1a1a1a",
+                padding: "16px 20px",
+                borderRadius: "12px",
+                fontWeight: "600",
+                fontSize: "16px",
+                transition: "all 0.3s ease",
+                background: "transparent",
+                cursor: "pointer"
+              }}
+              onClick={() => {
+                navigate("/admin");
+                setOpenDrawer(false);
+              }}
+            >
+              Dashboard Admin
+            </div>
+          )}
+          {/* Thêm dashboard cho owner trong mobile menu */}
+          {user?.role === "owner" && (
+            <div
+              className="mobile-nav-item"
+              style={{
+                color: "#1a1a1a",
+                padding: "16px 20px",
+                borderRadius: "12px",
+                fontWeight: "600",
+                fontSize: "16px",
+                transition: "all 0.3s ease",
+                background: "transparent",
+                cursor: "pointer"
+              }}
+              onClick={() => {
+                navigate("/owner");
+                setOpenDrawer(false);
+              }}
+            >
+              Dashboard Owner
+            </div>
+          )}
+          <Divider
+            style={{ borderColor: "rgba(0,0,0,0.1)", margin: "20px 0" }}
+          />
+          <div
+            className="mobile-nav-item"
+            style={{
+              color: "#e74c3c",
+              padding: "16px 20px",
+              borderRadius: "12px",
+              fontWeight: "600",
+              fontSize: "16px",
+              transition: "all 0.3s ease",
+              background: "transparent",
+              cursor: "pointer"
+            }}
+            onClick={() => {
+              setOpenDrawer(false);
+              handleLogout();
+            }}
+          >
+            {t("appHeader.logout")}
+          </div>
         </div>
       </Drawer>
 

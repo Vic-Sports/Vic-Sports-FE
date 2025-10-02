@@ -1,14 +1,14 @@
 import { Outlet } from "react-router-dom";
-import Header from "./components/layout/header";
 import Footer from "./components/layout/footer";
+import Header from "./components/layout/header";
 
 function Layout() {
   return (
     <div
       style={{
-        backgroundColor: "#000000",
+        backgroundColor: "#FFFFFF",
         minHeight: "100vh",
-        color: "#ffffff"
+        color: "#1a1a1a"
       }}
     >
       <Header />

@@ -9,7 +9,7 @@ import {
 } from "@ant-design/icons";
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { ProTable } from "@ant-design/pro-components";
-import { App, Button, Popconfirm } from "antd";
+import { App, Button, Popconfirm, Tag } from "antd";
 import { useRef, useState } from "react";
 import DetailUser from "./detail.user";
 import CreateUser from "./create.user";
@@ -20,6 +20,11 @@ import { CSVLink } from "react-csv";
 type TSearch = {
   fullName: string;
   email: string;
+  phone: string;
+  gender: string;
+  status: string;
+  rewardPoints: number;
+  role: string;
   createdAt: string;
   createdAtRange: string;
 };
@@ -94,6 +99,51 @@ const TableUser = () => {
       title: "Email",
       dataIndex: "email",
       copyable: true
+    },
+    {
+      title: "Phone",
+      dataIndex: "phone"
+    },
+    {
+      title: "Gender",
+      dataIndex: "gender",
+      render: (_, entity) =>
+        entity.gender ? String(entity.gender).toUpperCase() : "-"
+    },
+    {
+      title: "Role",
+      dataIndex: "role",
+      render: (_, entity) => {
+        const role = entity.role ? String(entity.role).toUpperCase() : "-";
+        const color =
+          role === "ADMIN"
+            ? "red"
+            : role === "OWNER"
+            ? "geekblue"
+            : role === "COACH"
+            ? "green"
+            : "default";
+        return <Tag color={color}>{role}</Tag>;
+      }
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      render: (_, entity) => {
+        const status = entity.status as string;
+        const color =
+          status === "ACTIVE"
+            ? "green"
+            : status === "INACTIVE"
+            ? "gold"
+            : "red";
+        return <Tag color={color}>{status}</Tag>;
+      }
+    },
+
+    {
+      title: "Reward Points",
+      dataIndex: "rewardPoints"
     },
     {
       title: "Created At",

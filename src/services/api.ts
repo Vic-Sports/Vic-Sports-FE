@@ -2,23 +2,7 @@ import createInstanceAxios from "services/axios.customize";
 
 const axios = createInstanceAxios(import.meta.env.VITE_BACKEND_URL);
 
-const axiosPayment = createInstanceAxios(
-  import.meta.env.VITE_BACKEND_PAYMENT_URL
-);
-
-export const getVNPayUrlAPI = (
-  amount: number,
-  locale: string,
-  paymentRef: string
-) => {
-  const urlBackend = "/vnpay/payment-url";
-  return axiosPayment.post<IBackendRes<{ url: string }>>(urlBackend, {
-    amount,
-    locale,
-    paymentRef
-  });
-};
-
+// =================== PAYMENT APIs ===================
 export const updatePaymentOrderAPI = (
   paymentStatus: string,
   paymentRef: string
@@ -26,7 +10,7 @@ export const updatePaymentOrderAPI = (
   const urlBackend = "/api/v1/order/update-payment-status";
   return axios.post<IBackendRes<any>>(urlBackend, {
     paymentStatus,
-    paymentRef
+    paymentRef,
   });
 };
 
@@ -39,14 +23,16 @@ export const registerAPI = (
   fullName: string,
   email: string,
   password: string,
-  phone: string
+  phone: string,
+  role: string
 ) => {
   const urlBackend = "/api/v1/auth/register";
   return axios.post<IBackendRes<IRegister>>(urlBackend, {
     fullName,
     email,
     password,
-    phone
+    phone,
+    role,
   });
 };
 
@@ -80,9 +66,42 @@ export const resetPasswordAPI = (token: string, newPassword: string) => {
   return axios.post<IBackendRes<any>>(urlBackend, { token, newPassword });
 };
 
+// Đổi mật khẩu (PUT /api/v1/auth/change-password)
+export const changePasswordAPI = (
+  currentPassword: string,
+  newPassword: string,
+  token: string
+) => {
+  const urlBackend = "/api/v1/auth/change-password";
+  return axios.put<IBackendRes<any>>(
+    urlBackend,
+    { currentPassword, newPassword },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
 export const getUsersAPI = (query: string) => {
-  const urlBackend = `/api/v1/user?${query}`;
+  const urlBackend = `/api/v1/admin/users?${query}`;
   return axios.get<IBackendRes<IModelPaginate<IUserTable>>>(urlBackend);
+};
+
+export const getUserDetailsAPI = (userId: string) => {
+  const urlBackend = `/api/v1/admin/users/${userId}`;
+  return axios.get<IBackendRes<any>>(urlBackend);
+};
+
+export const banUserAPI = (userId: string) => {
+  const urlBackend = `/api/v1/admin/users/${userId}/ban`;
+  return axios.put<IBackendRes<any>>(urlBackend, {});
+};
+
+export const unbanUserAPI = (userId: string) => {
+  const urlBackend = `/api/v1/admin/users/${userId}/unban`;
+  return axios.put<IBackendRes<any>>(urlBackend, {});
 };
 
 export const createUserAPI = (
@@ -96,7 +115,7 @@ export const createUserAPI = (
     fullName,
     email,
     password,
-    phone
+    phone,
   });
 };
 
@@ -112,13 +131,9 @@ export const bulkCreateUserAPI = (
   return axios.post<IBackendRes<IResponseImport>>(urlBackend, hoidanit);
 };
 
-export const updateUserAPI = (_id: string, fullName: string, phone: string) => {
-  const urlBackend = "/api/v1/user";
-  return axios.put<IBackendRes<IRegister>>(urlBackend, {
-    _id,
-    fullName,
-    phone
-  });
+export const updateUserAPI = (_id: string, payload: any) => {
+  const urlBackend = `/api/v1/admin/users/${_id}`;
+  return axios.put<IBackendRes<any>>(urlBackend, payload);
 };
 
 export const deleteUserAPI = (_id: string) => {
@@ -136,21 +151,38 @@ export const getCategoryAPI = () => {
   return axios.get<IBackendRes<string[]>>(urlBackend);
 };
 
-export const uploadFileAPI = (fileImg: any, folder: string) => {
+export const uploadFileAPI = (
+  fileImg: any,
+  uploadType: string,
+  additionalHeaders?: Record<string, string>
+) => {
   const bodyFormData = new FormData();
   bodyFormData.append("fileImg", fileImg);
+
+  const headers = {
+    "Content-Type": "multipart/form-data",
+    "upload-type": uploadType,
+    ...additionalHeaders,
+  };
+
   return axios<
     IBackendRes<{
       fileUploaded: string;
+      publicId: string;
+      folderPath: string;
+      uploadType: string;
+      venueId?: string;
+      courtId?: string;
+      width: number;
+      height: number;
+      format: string;
+      bytes: number;
     }>
   >({
     method: "post",
     url: "/api/v1/file/upload",
     data: bodyFormData,
-    headers: {
-      "Content-Type": "multipart/form-data",
-      "upload-type": folder
-    }
+    headers,
   });
 };
 
@@ -171,31 +203,11 @@ export const createBookAPI = (
     quantity,
     category,
     thumbnail,
-    slider
+    slider,
   });
 };
 
-export const updateBookAPI = (
-  _id: string,
-  mainText: string,
-  author: string,
-  price: number,
-  quantity: number,
-  category: string,
-  thumbnail: string,
-  slider: string[]
-) => {
-  const urlBackend = `/api/v1/book/${_id}`;
-  return axios.put<IBackendRes<IRegister>>(urlBackend, {
-    mainText,
-    author,
-    price,
-    quantity,
-    category,
-    thumbnail,
-    slider
-  });
-};
+// ...existing code...
 
 export const deleteBookAPI = (_id: string) => {
   const urlBackend = `/api/v1/book/${_id}`;
@@ -224,7 +236,7 @@ export const createOrderAPI = (
     totalPrice,
     type,
     detail,
-    paymentRef
+    paymentRef,
   });
 };
 
@@ -249,24 +261,11 @@ export const updateUserInfoAPI = (
     };
   }
 ) => {
-  const urlBackend = "/api/v1/user";
+  const urlBackend = "/api/v1/users/profile";
   return axios.put<IBackendRes<IRegister>>(urlBackend, {
     ...userData,
     avatar,
-    _id
-  });
-};
-
-export const updateUserPasswordAPI = (
-  email: string,
-  oldpass: string,
-  newpass: string
-) => {
-  const urlBackend = "/api/v1/user/change-password";
-  return axios.post<IBackendRes<IRegister>>(urlBackend, {
-    email,
-    oldpass,
-    newpass
+    _id,
   });
 };
 
@@ -295,7 +294,7 @@ export const updateUserPreferencesAPI = (
   const urlBackend = "/api/v1/user/preferences";
   return axios.put<IBackendRes<IRegister>>(urlBackend, {
     _id,
-    ...preferences
+    ...preferences,
   });
 };
 
@@ -315,7 +314,13 @@ export const getDashboardAPI = () => {
   >(urlBackend);
 };
 
-export const loginWithGoogleAPI = (type: string, email: string) => {
-  const urlBackend = "/api/v1/auth/social-media";
-  return axios.post<IBackendRes<ILogin>>(urlBackend, { type, email });
+export const loginWithGoogleAPI = (
+  type: string,
+  payload: { email: string; name: string; picture: string }
+) => {
+  const urlBackend = "/api/v1/auth/social-login";
+  return axios.post<IBackendRes<ILogin>>(urlBackend, { type, ...payload });
 };
+
+// Export axios instance as api
+export const api = axios;

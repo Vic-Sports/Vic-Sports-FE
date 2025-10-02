@@ -59,7 +59,31 @@ const ProtectedRoute = (props: IProps) => {
   const isAdminRoute = location.pathname.includes("admin");
   if (isAuthenticated === true && isAdminRoute === true) {
     const role = user?.role;
-    if (role === "customer") {
+    if (role !== "admin") {
+      return (
+        <div className="auth-error-container">
+          <div className="orb-3"></div>
+          <Result
+            status="403"
+            title={t("auth.forbidden_title")}
+            subTitle={t("auth.forbidden_subtitle")}
+            extra={[
+              <Button type="primary" key="home" size="large">
+                <Link to="/">
+                  <FaHome /> {t("auth.home_button")}
+                </Link>
+              </Button>
+            ]}
+          />
+        </div>
+      );
+    }
+  }
+
+  const isOwnerRoute = location.pathname.includes("owner");
+  if (isAuthenticated === true && isOwnerRoute === true) {
+    const role = user?.role;
+    if (role !== "owner") {
       return (
         <div className="auth-error-container">
           <div className="orb-3"></div>

@@ -7,13 +7,13 @@ import {
   Typography,
   Tag,
   Progress,
-  Statistic
+  Statistic,
 } from "antd";
 import {
   TrophyOutlined,
   CalendarOutlined,
   DollarOutlined,
-  UserOutlined
+  UserOutlined,
 } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
@@ -81,8 +81,8 @@ const UserStats = () => {
                     ? "Chủ sân"
                     : "Admin"}
                 </Tag>
-                <Tag color={user?.isVerified ? "green" : "orange"}>
-                  {user?.isVerified ? "Đã xác thực" : "Chưa xác thực"}
+                <Tag color={user?.isEmailVerified ? "green" : "orange"}>
+                  {user?.isEmailVerified ? "Đã xác thực" : "Chưa xác thực"}
                 </Tag>
               </Col>
               <Col>

@@ -18,20 +18,17 @@ import {
   FaMapMarkerAlt,
   FaThermometerHalf,
   FaWind,
-  FaTimes
+  FaTimes,
 } from "react-icons/fa";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Select, Input, DatePicker, TimePicker, Button, App } from "antd";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useCurrentApp } from "@/components/context/app.context";
 import { fetchAccountAPI } from "@/services/api";
-import {
-  SearchOutlined,
-  EnvironmentOutlined,
-  CalendarOutlined,
-  ClockCircleOutlined
-} from "@ant-design/icons";
+import { searchVenuesAPI } from "@/services/venueApi";
+import type { IVenueFilterParams, IVenue } from "@/types/venue";
+import SearchFilter from "@/components/client/search/SearchFilter";
+import { App, Pagination } from "antd";
 import "./home.scss";
 
 const HomePage = () => {
@@ -41,6 +38,62 @@ const HomePage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { message } = App.useApp();
   const { setIsAuthenticated, setUser } = useCurrentApp();
+  const navigate = useNavigate();
+
+  // Search states
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState<{
+    venues: IVenue[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }>({
+    venues: [],
+    total: 0,
+    page: 1,
+    totalPages: 1,
+  });
+  const [showResults, setShowResults] = useState(false);
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  // Handle search function - only for venues now
+  const handleSearch = async (params: IVenueFilterParams) => {
+    setSearchLoading(true);
+    try {
+      const response = await searchVenuesAPI(params);
+      const payload = response?.data?.data || response?.data;
+      if (payload) {
+        setSearchResults({
+          venues: payload.venues || [],
+          total: payload.total || 0,
+          page: payload.page || 1,
+          totalPages: payload.totalPages || 1,
+        });
+      }
+      setShowResults(true);
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } catch (error) {
+      console.error("Search error:", error);
+      message.error("Không thể tìm kiếm. Vui lòng thử lại.");
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  // Handle pagination
+  const handlePageChange = (page: number) => {
+    // Re-search with new page
+    // For demo, we'll just update the page state
+    setSearchResults((prev) => ({ ...prev, page }));
+  };
+
+  // Xóa hàm handleFindVenues vì scroll đã tích hợp vào handleSearch
+  // Handle venue actions
+  const handleViewCourts = (venueId: string) => {
+    navigate(`/venue/${venueId}`);
+  };
 
   useEffect(() => {
     setIsVisible(true);
@@ -84,22 +137,22 @@ const HomePage = () => {
       title: t("home.features.aiCoach.title"),
       description: t("home.features.aiCoach.description"),
       tags: ["MACHINE LEARNING", "REAL-TIME"],
-      gradient: "from-neon-500 to-electric-500"
+      gradient: "from-neon-500 to-electric-500",
     },
     {
       icon: <FaEye />,
       title: t("home.features.vrTraining.title"),
       description: t("home.features.vrTraining.description"),
       tags: ["VIRTUAL REALITY", "IMMERSIVE"],
-      gradient: "from-electric-500 to-neon-500"
+      gradient: "from-electric-500 to-neon-500",
     },
     {
       icon: <FaBitcoin />,
       title: t("home.features.cryptoRewards.title"),
       description: t("home.features.cryptoRewards.description"),
       tags: ["BLOCKCHAIN", "NFT"],
-      gradient: "from-neon-500 to-electric-500"
-    }
+      gradient: "from-neon-500 to-electric-500",
+    },
   ];
 
   const smartCourts = [
@@ -115,15 +168,18 @@ const HomePage = () => {
         { icon: <FaEye />, name: t("home.courts.features.motionTracking") },
         {
           icon: <FaChartLine />,
-          name: t("home.courts.features.performanceAnalytics")
+          name: t("home.courts.features.performanceAnalytics"),
         },
         { icon: <FaWifi />, name: t("home.courts.features.5gConnected") },
-        { icon: <FaShieldAlt />, name: t("home.courts.features.smartSecurity") }
+        {
+          icon: <FaShieldAlt />,
+          name: t("home.courts.features.smartSecurity"),
+        },
       ],
       bgGradient: "from-green-900 via-green-800 to-green-900",
       techBadge: "⚡ SMART FIELD",
       players: "16 players online",
-      temperature: "25°C"
+      temperature: "25°C",
     },
     {
       id: 2,
@@ -137,16 +193,16 @@ const HomePage = () => {
         { icon: <FaBullseye />, name: t("home.courts.features.shotAnalysis") },
         {
           icon: <FaTachometerAlt />,
-          name: t("home.courts.features.speedDetection")
+          name: t("home.courts.features.speedDetection"),
         },
         { icon: <FaVideo />, name: t("home.courts.features.matchRecording") },
-        { icon: <FaRobot />, name: t("home.courts.features.aiReferee") }
+        { icon: <FaRobot />, name: t("home.courts.features.aiReferee") },
       ],
       bgGradient: "from-orange-900 via-orange-800 to-red-900",
       techBadge: "🎾 SMART TENNIS",
       players: "4 players active",
-      temperature: "5 km/h"
-    }
+      temperature: "5 km/h",
+    },
   ];
 
   const livePlayers = [
@@ -156,7 +212,7 @@ const HomePage = () => {
       sport: "⚽ Looking for football match",
       level: 23,
       tags: ["PRO PLAYER", "VR READY"],
-      gradient: "from-neon-500 to-electric-500"
+      gradient: "from-neon-500 to-electric-500",
     },
     {
       name: "Maria Santos",
@@ -164,7 +220,7 @@ const HomePage = () => {
       sport: "🎾 Tennis doubles partner needed",
       level: 18,
       tags: ["COACH", "AI TRAINED"],
-      gradient: "from-electric-500 to-neon-500"
+      gradient: "from-electric-500 to-neon-500",
     },
     {
       name: "Kevin Park",
@@ -172,8 +228,8 @@ const HomePage = () => {
       sport: "🏓 Pickleball tournament prep",
       level: 31,
       tags: ["CHAMPION", "NFT HOLDER"],
-      gradient: "from-neon-500 to-electric-500"
-    }
+      gradient: "from-neon-500 to-electric-500",
+    },
   ];
 
   const tournaments = [
@@ -182,20 +238,20 @@ const HomePage = () => {
       description: "Global Football Championship",
       prizePool: "1,000,000",
       status: "LIVE",
-      isLive: true
+      isLive: true,
     },
     {
       name: "AI Tennis Masters",
       description: "Human vs AI Championship",
       prizePool: "500,000",
-      startsIn: "2 days"
+      startsIn: "2 days",
     },
     {
       name: "Metaverse Olympics",
       description: "VR Multi-Sport Event",
       prizePool: "2,000,000",
-      startsIn: "1 week"
-    }
+      startsIn: "1 week",
+    },
   ];
 
   return (
@@ -225,88 +281,8 @@ const HomePage = () => {
               {t("home.hero.futuristicDescription")}
             </p>
 
-            {/* Futuristic Search with Ant Design */}
-            <div className="futuristic-search">
-              <div className="search-container">
-                <div className="search-grid">
-                  <div className="search-field">
-                    <Select
-                      style={{
-                        width: "100%",
-                        height: "50px"
-                      }}
-                      size="large"
-                      placeholder="🎯 SPORT TYPE"
-                      options={[
-                        { value: "football", label: "⚽ Football" },
-                        { value: "tennis", label: "🎾 Tennis" },
-                        { value: "pickleball", label: "🏓 Pickleball" },
-                        { value: "badminton", label: "🏸 Badminton" },
-                        { value: "basketball", label: "🏀 Basketball" }
-                      ]}
-                    />
-                  </div>
-
-                  <div className="search-field">
-                    <Input
-                      size="large"
-                      placeholder="📍 LOCATION"
-                      prefix={
-                        <EnvironmentOutlined style={{ color: "#0ea5e9" }} />
-                      }
-                      style={{ height: "50px" }}
-                    />
-                  </div>
-
-                  <div className="search-field">
-                    <DatePicker
-                      size="large"
-                      placeholder="SELECT DATE"
-                      style={{
-                        width: "100%",
-                        height: "50px"
-                      }}
-                      suffixIcon={
-                        <CalendarOutlined style={{ color: "#0ea5e9" }} />
-                      }
-                    />
-                  </div>
-
-                  <div className="search-field">
-                    <TimePicker
-                      size="large"
-                      placeholder="SELECT TIME"
-                      format="HH:mm"
-                      style={{
-                        width: "100%",
-                        height: "50px"
-                      }}
-                      suffixIcon={
-                        <ClockCircleOutlined style={{ color: "#0ea5e9" }} />
-                      }
-                    />
-                  </div>
-
-                  <Button
-                    type="primary"
-                    size="large"
-                    icon={<SearchOutlined />}
-                    style={{
-                      height: "50px",
-                      background: "linear-gradient(45deg, #0ea5e9, #d946ef)",
-                      border: "none",
-                      borderRadius: "25px",
-                      fontWeight: "600",
-                      fontSize: "16px",
-                      minWidth: "120px"
-                    }}
-                  >
-                    SEARCH
-                  </Button>
-                </div>
-              </div>
-            </div>
-
+            {/* New Search Filter */}
+            <SearchFilter onSearch={handleSearch} loading={searchLoading} />
             {/* Stats */}
             <div className="hero-stats">
               <div className="stat-item">
@@ -325,6 +301,234 @@ const HomePage = () => {
           </div>
         </Container>
       </section>
+
+      {/* Search Results Section */}
+      {showResults && (
+        <section
+          className="smart-courts-section search-results"
+          ref={resultsRef}
+        >
+          <Container>
+            <Row className="align-items-center mb-5">
+              <Col lg={8}>
+                <h2 className="section-title text-start">
+                  <span className="gradient-text">
+                    {t("search.result_title")}
+                  </span>
+                </h2>
+                <p className="section-subtitle text-start">
+                  {searchResults.total === 1
+                    ? t("search.result_found_single")
+                    : t("search.result_found_multiple", {
+                        count: searchResults.total,
+                      })}
+                </p>
+              </Col>
+              <Col lg={4} className="text-end">
+                {searchResults.totalPages > 1 && (
+                  <div className="pagination-info">
+                    {t("search.pagination", {
+                      current: searchResults.page,
+                      total: searchResults.totalPages,
+                    })}
+                  </div>
+                )}
+              </Col>
+            </Row>
+
+            {searchResults.total > 0 ? (
+              <>
+                <Row className="g-4">
+                  {/* Display venues in smart court card style */}
+                  {searchResults.venues.map((venue) => (
+                    <Col lg={4} key={venue._id}>
+                      <div className="smart-court-card">
+                        <div className="court-glow"></div>
+
+                        {/* Venue Visual */}
+                        <div className="court-visual bg-gradient-to-br from-green-900 via-green-800 to-green-900">
+                          <div className="court-overlay"></div>
+
+                          {/* Venue Image or Icon */}
+                          <div className="field-lines">
+                            <div className="venue-display">
+                              {venue.images.length > 0 ? (
+                                <img
+                                  src={venue.images[0]}
+                                  alt={venue.name}
+                                  className="venue-bg-image"
+                                  onError={(e) => {
+                                    (
+                                      e.target as HTMLImageElement
+                                    ).style.display = "none";
+                                  }}
+                                />
+                              ) : (
+                                <div className="venue-icon">🏟️</div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Tech Overlays */}
+                          <div className="tech-overlays">
+                            <div className="tech-badge-left">
+                              <div className="status-dot"></div>
+                              <span>
+                                {venue.isVerified
+                                  ? "ĐÃ XÁC THỰC"
+                                  : "CHƯA XÁC THỰC"}
+                              </span>
+                            </div>
+                            <div className="tech-badge-right">
+                              <span>🏢 KHU THỂ THAO</span>
+                            </div>
+                            <div className="court-info">
+                              <div className="info-left">
+                                <FaMapMarkerAlt className="me-2" />
+                                <span>{venue.address.district}</span>
+                              </div>
+                              <div className="info-right">
+                                <FaStar className="me-2" />
+                                <span>{venue.ratings.average}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Venue Details */}
+                        <div className="court-details">
+                          <div className="court-header">
+                            <h3 className="court-name">{venue.name}</h3>
+                            <div className="court-rating">
+                              <FaStar className="text-warning" />
+                              <span>{venue.ratings.average}</span>
+                            </div>
+                          </div>
+
+                          <p className="court-location">
+                            <FaMapMarkerAlt className="me-2" />
+                            {venue.address.ward}, {venue.address.district}
+                          </p>
+
+                          {/* Venue Features */}
+                          <div className="tech-features">
+                            {Array.isArray(venue.amenities) &&
+                            venue.amenities.length > 0 ? (
+                              venue.amenities
+                                .slice(0, 3)
+                                .map((amenity, index) => (
+                                  <div key={index} className="tech-feature">
+                                    <FaWifi />
+                                    <span>{amenity.name}</span>
+                                  </div>
+                                ))
+                            ) : (
+                              <div className="tech-feature">
+                                <FaWifi />
+                                <span>Tiện ích hiện chưa cập nhật</span>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="court-pricing">
+                            <div className="price-info">
+                              <span className="price">
+                                {venue.totalBookings}
+                              </span>
+                              <span className="price-unit">lượt đặt</span>
+                            </div>
+                            <div className="earn-info">
+                              <div className="earn-label">Phí gửi xe</div>
+                              <div className="earn-amount">
+                                {venue.parking.available
+                                  ? new Intl.NumberFormat("vi-VN").format(
+                                      venue.parking.fee
+                                    ) + " VNĐ"
+                                  : "Miễn phí"}
+                              </div>
+                            </div>
+                          </div>
+
+                          <button
+                            className="book-court-btn"
+                            onClick={() => handleViewCourts(venue._id)}
+                          >
+                            <FaRobot className="me-2" />
+                            XEM DANH SÁCH SÂN
+                          </button>
+                        </div>
+                      </div>
+                    </Col>
+                  ))}
+                </Row>
+
+                {/* Smart Pagination */}
+                {searchResults.totalPages > 1 && (
+                  <div className="smart-pagination">
+                    <Pagination
+                      current={searchResults.page}
+                      total={searchResults.total}
+                      pageSize={10}
+                      onChange={handlePageChange}
+                      showSizeChanger={false}
+                      showQuickJumper={false}
+                      showTotal={(total, range) =>
+                        `${range[0]}-${range[1]} của ${total} kết quả`
+                      }
+                      className="futuristic-pagination"
+                    />
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="no-results-smart">
+                <div className="no-results-card">
+                  <div
+                    className="no-results-icon"
+                    style={{ color: "#0099ff", fontSize: 48 }}
+                  >
+                    �️
+                  </div>
+                  <h3 style={{ color: "#0099ff", fontWeight: 700 }}>
+                    Không tìm thấy kết quả
+                  </h3>
+                  <p style={{ color: "#333", fontWeight: 500 }}>
+                    Không có khu thể thao nào phù hợp với tiêu chí tìm kiếm của
+                    bạn
+                  </p>
+                  <div
+                    style={{
+                      color: "#0099ff",
+                      fontWeight: 600,
+                      margin: "12px 0 4px 0",
+                      fontSize: 16,
+                    }}
+                  >
+                    Using official Vietnam API v2 (updated after merger 07/2025)
+                  </div>
+                  <div
+                    style={{
+                      color: "#333",
+                      fontWeight: 500,
+                      marginBottom: 8,
+                      fontSize: 15,
+                    }}
+                  >
+                    🎯 Districts optimized for 6 major cities: HCM, HN, DN, HP,
+                    CT
+                  </div>
+                  <button
+                    className="view-all-btn"
+                    onClick={() => setShowResults(false)}
+                  >
+                    Tìm kiếm lại
+                  </button>
+                </div>
+              </div>
+            )}
+          </Container>
+        </section>
+      )}
 
       {/* Features Section */}
       <section className="future-features-section">

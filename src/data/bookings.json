@@ -1,0 +1,193 @@
+[
+  {
+    "_id": "507f1f77bcf86cd799439019",
+    "customerId": "507f1f77bcf86cd799439011",
+    "courtId": "507f1f77bcf86cd799439015",
+    "venueId": "507f1f77bcf86cd799439012",
+    "bookingDate": "2024-01-20T00:00:00Z",
+    "timeSlot": {
+      "start": "18:00",
+      "end": "20:00"
+    },
+    "duration": 2,
+    "pricePerHour": 250000,
+    "totalPrice": 500000,
+    "discountApplied": {
+      "type": "loyalty",
+      "percentage": 5
+    },
+    "finalPrice": 475000,
+    "paymentMethod": {
+      "type": "card",
+      "status": "paid",
+      "paymentId": "PAY123456",
+      "paidAt": "2024-01-15T10:30:00Z"
+    },
+    "paymentStatus": "paid",
+    "paymentId": "PAY123456",
+    "paidAt": "2024-01-15T10:30:00Z",
+    "coachId": "507f1f77bcf86cd799439013",
+    "coachFee": 100000,
+    "status": "confirmed",
+    "checkedIn": false,
+    "checkedOut": false,
+    "customerNotes": "Nhóm bạn đá bóng",
+    "contactPhone": "0901234567",
+    "contactEmail": "nguyenvanan@gmail.com",
+    "pointsEarned": 47,
+    "pointsUsed": 0,
+    "weatherImpacted": false,
+    "isTournamentMatch": false,
+    "createdAt": "2024-01-15T10:00:00Z",
+    "updatedAt": "2024-01-15T10:30:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439020",
+    "customerId": "507f1f77bcf86cd799439011",
+    "courtId": "507f1f77bcf86cd799439016",
+    "venueId": "507f1f77bcf86cd799439013",
+    "bookingDate": "2024-01-18T00:00:00Z",
+    "timeSlot": {
+      "start": "19:00",
+      "end": "21:00"
+    },
+    "duration": 2,
+    "pricePerHour": 200000,
+    "totalPrice": 400000,
+    "finalPrice": 400000,
+    "paymentMethod": {
+      "type": "transfer",
+      "status": "paid",
+      "paymentId": "PAY123457",
+      "paidAt": "2024-01-15T09:00:00Z"
+    },
+    "paymentStatus": "paid",
+    "paymentId": "PAY123457",
+    "paidAt": "2024-01-15T09:00:00Z",
+    "status": "completed",
+    "checkedIn": true,
+    "checkedInAt": "2024-01-18T19:00:00Z",
+    "checkedOut": true,
+    "checkedOutAt": "2024-01-18T21:00:00Z",
+    "customerNotes": "Tập tennis với bạn",
+    "contactPhone": "0901234567",
+    "contactEmail": "nguyenvanan@gmail.com",
+    "pointsEarned": 40,
+    "pointsUsed": 0,
+    "weatherImpacted": false,
+    "isTournamentMatch": false,
+    "createdAt": "2024-01-15T08:00:00Z",
+    "updatedAt": "2024-01-18T21:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439021",
+    "customerId": "507f1f77bcf86cd799439014",
+    "courtId": "507f1f77bcf86cd799439017",
+    "venueId": "507f1f77bcf86cd799439014",
+    "bookingDate": "2024-01-22T00:00:00Z",
+    "timeSlot": {
+      "start": "20:00",
+      "end": "22:00"
+    },
+    "duration": 2,
+    "pricePerHour": 120000,
+    "totalPrice": 240000,
+    "finalPrice": 240000,
+    "paymentMethod": {
+      "type": "cash",
+      "status": "pending"
+    },
+    "paymentStatus": "pending",
+    "status": "pending",
+    "checkedIn": false,
+    "checkedOut": false,
+    "customerNotes": "Tập cầu lông buổi tối",
+    "contactPhone": "0901234570",
+    "contactEmail": "phamthidung@gmail.com",
+    "pointsEarned": 0,
+    "pointsUsed": 0,
+    "weatherImpacted": false,
+    "isTournamentMatch": false,
+    "createdAt": "2024-01-16T14:00:00Z",
+    "updatedAt": "2024-01-16T14:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439022",
+    "customerId": "507f1f77bcf86cd799439011",
+    "courtId": "507f1f77bcf86cd799439018",
+    "venueId": "507f1f77bcf86cd799439012",
+    "bookingDate": "2024-01-25T00:00:00Z",
+    "timeSlot": {
+      "start": "16:00",
+      "end": "18:00"
+    },
+    "duration": 2,
+    "pricePerHour": 200000,
+    "totalPrice": 400000,
+    "discountApplied": {
+      "type": "promotion",
+      "percentage": 10
+    },
+    "finalPrice": 360000,
+    "paymentMethod": {
+      "type": "wallet",
+      "status": "paid",
+      "paymentId": "PAY123458",
+      "paidAt": "2024-01-16T11:00:00Z"
+    },
+    "paymentStatus": "paid",
+    "paymentId": "PAY123458",
+    "paidAt": "2024-01-16T11:00:00Z",
+    "status": "confirmed",
+    "checkedIn": false,
+    "checkedOut": false,
+    "customerNotes": "Đá bóng với đồng nghiệp",
+    "contactPhone": "0901234567",
+    "contactEmail": "nguyenvanan@gmail.com",
+    "pointsEarned": 36,
+    "pointsUsed": 0,
+    "weatherImpacted": false,
+    "isTournamentMatch": false,
+    "createdAt": "2024-01-16T10:30:00Z",
+    "updatedAt": "2024-01-16T11:00:00Z"
+  },
+  {
+    "_id": "507f1f77bcf86cd799439023",
+    "customerId": "507f1f77bcf86cd799439014",
+    "courtId": "507f1f77bcf86cd799439016",
+    "venueId": "507f1f77bcf86cd799439013",
+    "bookingDate": "2024-01-19T00:00:00Z",
+    "timeSlot": {
+      "start": "14:00",
+      "end": "16:00"
+    },
+    "duration": 2,
+    "pricePerHour": 150000,
+    "totalPrice": 300000,
+    "finalPrice": 300000,
+    "paymentMethod": {
+      "type": "card",
+      "status": "paid",
+      "paymentId": "PAY123459",
+      "paidAt": "2024-01-17T09:00:00Z"
+    },
+    "paymentStatus": "paid",
+    "paymentId": "PAY123459",
+    "paidAt": "2024-01-17T09:00:00Z",
+    "status": "cancelled",
+    "cancellationReason": "Thời tiết xấu",
+    "cancelledBy": "507f1f77bcf86cd799439014",
+    "cancelledAt": "2024-01-19T13:00:00Z",
+    "checkedIn": false,
+    "checkedOut": false,
+    "customerNotes": "Tập tennis buổi chiều",
+    "contactPhone": "0901234570",
+    "contactEmail": "phamthidung@gmail.com",
+    "pointsEarned": 0,
+    "pointsUsed": 0,
+    "weatherImpacted": true,
+    "isTournamentMatch": false,
+    "createdAt": "2024-01-17T08:00:00Z",
+    "updatedAt": "2024-01-19T13:00:00Z"
+  }
+]

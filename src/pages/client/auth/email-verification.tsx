@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Spin, Card, Typography, App } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
+import { verifyEmailAPI } from "@/services/api";
 
 const { Title, Text } = Typography;
 
@@ -18,29 +19,36 @@ const EmailVerification = () => {
         if (!token) {
           throw new Error("Verification token is missing");
         }
-
-        // The backend will handle the verification and redirect
-        // We just need to show loading state briefly
-        setTimeout(() => {
+        const res = await verifyEmailAPI(token);
+        console.log("[Email Verification] API response:", res);
+        if (res?.success && res.user?.isVerified) {
           setIsVerifying(false);
-          // If we're still on this page after timeout, something went wrong
+          navigate("/email-verified", {
+            state: {
+              email: res.user.email || "",
+              isVerified: true,
+            },
+          });
+        } else {
+          setIsVerifying(false);
+          console.error("[Email Verification] Fail reason:", res?.message);
           navigate("/email-verification-failed", {
             state: {
-              error: "Verification timeout or failed"
-            }
+              error: res?.message || "Verification failed",
+            },
           });
-        }, 3000);
+        }
       } catch (error: any) {
+        setIsVerifying(false);
         console.error("Verification error:", error);
         message.error(error.message || "Email verification failed");
         navigate("/email-verification-failed", {
           state: {
-            error: error.message || "Verification failed"
-          }
+            error: error.message || "Verification failed",
+          },
         });
       }
     };
-
     verifyEmail();
   }, [searchParams, navigate, message]);
 
