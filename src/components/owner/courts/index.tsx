@@ -162,7 +162,14 @@ const getSportTypeDisplay = (sportType: string): string => {
 // Get base price for display
 const getCourtBasePrice = (pricing: Court["pricing"]): number => {
   if (!pricing || pricing.length === 0) return 0;
-  return Math.min(...pricing.map((p) => p.pricePerHour));
+
+  // Only consider active pricing
+  const activePricing = pricing.filter(
+    (p) => p.isActive !== false && p.pricePerHour > 0
+  );
+  if (activePricing.length === 0) return 0;
+
+  return Math.min(...activePricing.map((p) => p.pricePerHour));
 };
 
 const ManageCourts = () => {
