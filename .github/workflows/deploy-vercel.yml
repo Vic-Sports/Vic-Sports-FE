@@ -30,7 +30,7 @@ jobs:
 
       # Bước 4: Build project
       - name: Build project
-        run: vite build
+        run: npx vite build
         env:
           NODE_ENV: production
 
