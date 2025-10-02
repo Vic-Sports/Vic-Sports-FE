@@ -10,7 +10,7 @@ export const updatePaymentOrderAPI = (
   const urlBackend = "/api/v1/order/update-payment-status";
   return axios.post<IBackendRes<any>>(urlBackend, {
     paymentStatus,
-    paymentRef
+    paymentRef,
   });
 };
 
@@ -32,7 +32,7 @@ export const registerAPI = (
     email,
     password,
     phone,
-    role
+    role,
   });
 };
 
@@ -78,8 +78,8 @@ export const changePasswordAPI = (
     { currentPassword, newPassword },
     {
       headers: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     }
   );
 };
@@ -115,7 +115,7 @@ export const createUserAPI = (
     fullName,
     email,
     password,
-    phone
+    phone,
   });
 };
 
@@ -151,21 +151,38 @@ export const getCategoryAPI = () => {
   return axios.get<IBackendRes<string[]>>(urlBackend);
 };
 
-export const uploadFileAPI = (fileImg: any, folder: string) => {
+export const uploadFileAPI = (
+  fileImg: any,
+  uploadType: string,
+  additionalHeaders?: Record<string, string>
+) => {
   const bodyFormData = new FormData();
   bodyFormData.append("fileImg", fileImg);
+
+  const headers = {
+    "Content-Type": "multipart/form-data",
+    "upload-type": uploadType,
+    ...additionalHeaders,
+  };
+
   return axios<
     IBackendRes<{
       fileUploaded: string;
+      publicId: string;
+      folderPath: string;
+      uploadType: string;
+      venueId?: string;
+      courtId?: string;
+      width: number;
+      height: number;
+      format: string;
+      bytes: number;
     }>
   >({
     method: "post",
     url: "/api/v1/file/upload",
     data: bodyFormData,
-    headers: {
-      "Content-Type": "multipart/form-data",
-      "upload-type": folder
-    }
+    headers,
   });
 };
 
@@ -186,7 +203,7 @@ export const createBookAPI = (
     quantity,
     category,
     thumbnail,
-    slider
+    slider,
   });
 };
 
@@ -219,7 +236,7 @@ export const createOrderAPI = (
     totalPrice,
     type,
     detail,
-    paymentRef
+    paymentRef,
   });
 };
 
@@ -248,7 +265,7 @@ export const updateUserInfoAPI = (
   return axios.put<IBackendRes<IRegister>>(urlBackend, {
     ...userData,
     avatar,
-    _id
+    _id,
   });
 };
 
@@ -277,7 +294,7 @@ export const updateUserPreferencesAPI = (
   const urlBackend = "/api/v1/user/preferences";
   return axios.put<IBackendRes<IRegister>>(urlBackend, {
     _id,
-    ...preferences
+    ...preferences,
   });
 };
 

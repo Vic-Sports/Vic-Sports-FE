@@ -22,13 +22,15 @@ import {
   Checkbox,
   Divider,
   Tabs,
+  Image,
+  Spin,
+  Progress,
 } from "antd";
 import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
   EyeOutlined,
-  UploadOutlined,
   ExclamationCircleOutlined,
   FieldTimeOutlined,
   TeamOutlined,
@@ -37,12 +39,14 @@ import {
 } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import type { ColumnsType } from "antd/es/table";
+import type { UploadFile } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import {
   ownerCourtApi,
   ownerVenueApi,
   handleApiError,
 } from "@/services/ownerApi";
+import { uploadFileAPI } from "@/services/api";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -184,6 +188,13 @@ const ManageCourts = () => {
   const [venueFilter, setVenueFilter] = useState<string>("all");
   const [courtTypeFilter, setCourtTypeFilter] = useState<string>("all");
   const [searchText, setSearchText] = useState<string>("");
+
+  // Image management state
+  const [courtImages, setCourtImages] = useState<string[]>([]);
+  const [uploadingCourts, setUploadingCourts] = useState<Set<string>>(
+    new Set()
+  );
+  const [courtFileList, setCourtFileList] = useState<UploadFile[]>([]);
 
   // Load data
   useEffect(() => {
@@ -424,6 +435,8 @@ const ManageCourts = () => {
   // Handlers
   const handleAddCourt = () => {
     setEditingCourt(null);
+    setCourtImages([]); // Reset images
+    setCourtFileList([]); // Reset fileList
     form.resetFields();
     // Initialize default schedule and pricing
     setPricingSlots(initializePricingSlots());
@@ -473,6 +486,19 @@ const ManageCourts = () => {
         formAvailability.some((d) => d.isEnabled)
           ? formAvailability
           : initializeDayAvailability()
+      );
+
+      // Set existing images
+      setCourtImages(court.images || []);
+
+      // Set fileList for Upload component
+      setCourtFileList(
+        (court.images || []).map((url, index) => ({
+          uid: `existing-${index}`,
+          name: `image-${index + 1}`,
+          status: "done" as const,
+          url: url,
+        }))
       );
 
       setIsCourtModalVisible(true);
@@ -665,6 +691,7 @@ const ManageCourts = () => {
           ? values.equipment.split(",").map((item: string) => item.trim())
           : [],
         description: values.description || "",
+        images: courtImages, // Include images in the save data
         basePrice: autoBasePrice,
         dimensions: {
           length: values.length || 0,
@@ -1608,9 +1635,306 @@ const ManageCourts = () => {
               </Form.Item>
 
               <Form.Item label="Hình ảnh">
-                <Upload>
-                  <Button icon={<UploadOutlined />}>Tải lên hình ảnh</Button>
-                </Upload>
+                <Image.PreviewGroup>
+                  <Upload
+                    multiple
+                    listType="picture-card"
+                    fileList={courtFileList}
+                    showUploadList={{ showPreviewIcon: false }}
+                    onChange={({ fileList: newFileList, file }) => {
+                      setCourtFileList(newFileList);
+
+                      // Show notifications based on upload status
+                      if (file && file.status === "done") {
+                        notification.success({
+                          message: "Upload thành công",
+                          description: `${file.name} đã được tải lên.`,
+                        });
+                      } else if (file && file.status === "error") {
+                        notification.error({
+                          message: "Upload thất bại",
+                          description: `${file.name} upload thất bại.`,
+                        });
+                      }
+                    }}
+                    onDrop={(e) => {
+                      console.log("Files dropped:", e.dataTransfer.files);
+                    }}
+                    beforeUpload={(file) => {
+                      console.log("beforeUpload called:", file);
+                      return true; // Allow upload
+                    }}
+                    customRequest={async ({
+                      file,
+                      onSuccess,
+                      onError,
+                      onProgress,
+                    }) => {
+                      const fileObj = file as any;
+                      const fileId = fileObj.uid || `upload-${Date.now()}`;
+
+                      try {
+                        console.log("Starting upload for court:", file);
+
+                        // Add to uploading set
+                        setUploadingCourts((prev) => new Set(prev).add(fileId));
+
+                        // Simulate progress for better UX
+                        onProgress?.({ percent: 20 });
+
+                        // Get current form values to extract venueId
+                        const formValues = form.getFieldsValue();
+                        const venueId = formValues.venueId;
+                        console.log("VenueId:", venueId);
+
+                        if (!venueId) {
+                          onError?.(new Error("Vui lòng chọn cơ sở trước!"));
+                          return;
+                        }
+
+                        onProgress?.({ percent: 40 });
+
+                        // For new court, use uploadVenueImage temporarily
+                        // After court is created, use uploadCourtImage
+                        const response = await uploadFileAPI(
+                          file as File,
+                          "court",
+                          {
+                            "venue-id": venueId,
+                            ...(editingCourt && {
+                              "court-id": editingCourt._id,
+                            }),
+                          }
+                        );
+
+                        onProgress?.({ percent: 80 });
+
+                        console.log("Upload response:", response);
+                        if (response?.data?.fileUploaded) {
+                          // Add new image to the list
+                          setCourtImages((prev) => [
+                            ...prev,
+                            response.data!.fileUploaded,
+                          ]);
+
+                          onProgress?.({ percent: 100 });
+                          onSuccess?.(response.data);
+                        } else {
+                          onError?.(new Error("Upload failed"));
+                        }
+                      } catch (error) {
+                        console.error("Upload error:", error);
+                        onError?.(error as Error);
+                      } finally {
+                        // Remove from uploading set
+                        setUploadingCourts((prev) => {
+                          const newSet = new Set(prev);
+                          newSet.delete(fileId);
+                          return newSet;
+                        });
+                      }
+                    }}
+                    onRemove={(file) => {
+                      console.log("onRemove called with file:", file);
+                      // Remove image from list
+                      if (file.uid.startsWith("existing-")) {
+                        console.log(
+                          "Removing existing image at index:",
+                          file.uid
+                        );
+                        const index = parseInt(
+                          file.uid.replace("existing-", "")
+                        );
+                        // Update courtImages state
+                        setCourtImages((prev) => {
+                          const newImages = prev.filter((_, i) => i !== index);
+                          console.log("Updated courtImages:", newImages);
+                          return newImages;
+                        });
+                        // Also update courtFileList to reflect the change in UI
+                        setCourtFileList((prev) => {
+                          const newFileList = prev.filter(
+                            (item) => item.uid !== file.uid
+                          );
+                          console.log("Updated courtFileList:", newFileList);
+                          return newFileList;
+                        });
+                      } else {
+                        console.log("Removing new uploaded file:", file.uid);
+                        // For newly uploaded files, just remove from courtFileList
+                        setCourtFileList((prev) => {
+                          const newFileList = prev.filter(
+                            (item) => item.uid !== file.uid
+                          );
+                          console.log("Updated courtFileList:", newFileList);
+                          return newFileList;
+                        });
+                      }
+                      return true;
+                    }}
+                    itemRender={(originNode, file) => {
+                      // Check if this file is currently uploading
+                      const isUploading = file.status === "uploading";
+
+                      // For uploaded images (both existing and newly uploaded)
+                      if (
+                        file.status === "done" &&
+                        (file.url || file.response?.fileUploaded)
+                      ) {
+                        const imageUrl =
+                          file.url || file.response?.fileUploaded;
+                        return (
+                          <div style={{ position: "relative" }}>
+                            <Image
+                              src={imageUrl}
+                              width={104}
+                              height={104}
+                              style={{
+                                objectFit: "cover",
+                                borderRadius: "8px",
+                              }}
+                              preview={{
+                                mask: (
+                                  <div
+                                    style={{
+                                      fontSize: "14px",
+                                      color: "white",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <div>🔍 Xem ảnh</div>
+                                  </div>
+                                ),
+                                destroyOnClose: true,
+                                maskClassName: "custom-preview-mask",
+                              }}
+                            />
+                            {/* Remove button */}
+                            <Button
+                              type="text"
+                              danger
+                              size="small"
+                              style={{
+                                position: "absolute",
+                                top: "4px",
+                                right: "4px",
+                                backgroundColor: "rgba(0,0,0,0.5)",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "50%",
+                                width: "20px",
+                                height: "20px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontSize: "12px",
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                console.log(
+                                  "Remove button clicked for file:",
+                                  file
+                                );
+                                if (file.uid.startsWith("existing-")) {
+                                  const index = parseInt(
+                                    file.uid.replace("existing-", "")
+                                  );
+                                  // Update courtImages state
+                                  setCourtImages((prev) => {
+                                    const newImages = prev.filter(
+                                      (_, i) => i !== index
+                                    );
+                                    console.log(
+                                      "Updated courtImages:",
+                                      newImages
+                                    );
+                                    return newImages;
+                                  });
+                                  // Also update courtFileList
+                                  setCourtFileList((prev) => {
+                                    const newFileList = prev.filter(
+                                      (item) => item.uid !== file.uid
+                                    );
+                                    console.log(
+                                      "Updated courtFileList:",
+                                      newFileList
+                                    );
+                                    return newFileList;
+                                  });
+                                } else {
+                                  // For newly uploaded files
+                                  setCourtFileList((prev) => {
+                                    const newFileList = prev.filter(
+                                      (item) => item.uid !== file.uid
+                                    );
+                                    console.log(
+                                      "Updated courtFileList:",
+                                      newFileList
+                                    );
+                                    return newFileList;
+                                  });
+                                }
+                              }}
+                            >
+                              ×
+                            </Button>
+                          </div>
+                        );
+                      }
+
+                      // For uploading files - show loading state
+                      if (isUploading) {
+                        return (
+                          <div
+                            style={{
+                              position: "relative",
+                              width: 104,
+                              height: 104,
+                              backgroundColor: "#f5f5f5",
+                              borderRadius: "8px",
+                              border: "1px dashed #d9d9d9",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              flexDirection: "column",
+                            }}
+                          >
+                            <Spin size="large" />
+                            <div
+                              style={{
+                                marginTop: 8,
+                                fontSize: "12px",
+                                color: "#666",
+                                textAlign: "center",
+                              }}
+                            >
+                              Đang tải lên...
+                            </div>
+                            {file.percent !== undefined && (
+                              <Progress
+                                percent={Math.round(file.percent)}
+                                size="small"
+                                style={{
+                                  width: "80px",
+                                  marginTop: 4,
+                                }}
+                                strokeWidth={2}
+                              />
+                            )}
+                          </div>
+                        );
+                      }
+
+                      // For error state or other statuses, use original node
+                      return originNode;
+                    }}
+                  >
+                    <div>
+                      <PlusOutlined />
+                      <div style={{ marginTop: 8 }}>Tải lên</div>
+                    </div>
+                  </Upload>
+                </Image.PreviewGroup>
               </Form.Item>
             </TabPane>
 
@@ -1835,40 +2159,40 @@ const ManageCourts = () => {
             {selectedCourt.images && selectedCourt.images.length > 0 && (
               <Row gutter={[16, 16]}>
                 <Col span={24}>
-                  <Title level={5}>Hình ảnh</Title>
-                  <Space wrap>
-                    {selectedCourt.images.slice(0, 4).map((image, index) => (
-                      <img
-                        key={index}
-                        src={image}
-                        alt={`${selectedCourt.name} ${index + 1}`}
-                        style={{
-                          width: "100px",
-                          height: "100px",
-                          objectFit: "cover",
-                          borderRadius: "8px",
-                          border: "1px solid #d9d9d9",
-                        }}
-                      />
-                    ))}
-                    {selectedCourt.images.length > 4 && (
-                      <div
-                        style={{
-                          width: "100px",
-                          height: "100px",
-                          backgroundColor: "#f5f5f5",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          borderRadius: "8px",
-                          border: "1px dashed #d9d9d9",
-                          color: "#8c8c8c",
-                        }}
-                      >
-                        +{selectedCourt.images.length - 4}
-                      </div>
-                    )}
-                  </Space>
+                  <Title level={5}>
+                    Hình ảnh ({selectedCourt.images.length} ảnh)
+                  </Title>
+                  <Image.PreviewGroup>
+                    <Space wrap>
+                      {selectedCourt.images.map((image, index) => (
+                        <Image
+                          key={index}
+                          src={image}
+                          alt={`${selectedCourt.name} ${index + 1}`}
+                          width={100}
+                          height={100}
+                          style={{
+                            objectFit: "cover",
+                            borderRadius: "8px",
+                            border: "1px solid #d9d9d9",
+                          }}
+                          preview={{
+                            mask: (
+                              <div
+                                style={{
+                                  fontSize: "12px",
+                                  color: "white",
+                                  textAlign: "center",
+                                }}
+                              >
+                                🔍 Xem
+                              </div>
+                            ),
+                          }}
+                        />
+                      ))}
+                    </Space>
+                  </Image.PreviewGroup>
                 </Col>
               </Row>
             )}
