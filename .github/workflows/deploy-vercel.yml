@@ -30,7 +30,9 @@ jobs:
 
       # Bước 4: Build project
       - name: Build project
-        run: npm run build
+        run: vite build
+        env:
+          NODE_ENV: production
 
       # Bước 5: Đồng bộ các biến môi trường từ GitHub Secrets sang Vercel (nếu cần)
       - name: Sync Environment Variables to Vercel
