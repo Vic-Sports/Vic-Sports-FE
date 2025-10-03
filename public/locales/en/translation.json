@@ -8,6 +8,7 @@
     "menu": "Menu",
     "login": "LOGIN",
     "dashboard": "Dashboard",
+    "ownerDashboard": "Owner Dashboard",
     "profile": "Profile",
     "history": "History",
     "logout": "Logout"

@@ -18,7 +18,7 @@ import {
   HistoryOutlined,
 } from "@ant-design/icons";
 import type { IPayOSReturnParams } from "@/types/payment";
-import { verifyPayOSReturn } from "@/services/payOSApi";
+import { getPayOSPaymentStatus } from "@/services/payOSApi";
 
 const { Text } = Typography;
 
@@ -27,6 +27,7 @@ const PayOSReturn: React.FC = () => {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
+  const [suppressRender, setSuppressRender] = useState(true);
   const [paymentStatus, setPaymentStatus] = useState<
     "success" | "failed" | "processing"
   >("processing");
@@ -54,6 +55,76 @@ const PayOSReturn: React.FC = () => {
 
       console.log("PayOS return parameters:", payosParams);
 
+      // HANDLE CANCEL EARLY: call backend to update booking status, then show cancelled UI
+      if (payosParams.cancel) {
+        console.log("🚫 User cancelled payment");
+
+        try {
+          // Clear localStorage immediately to prevent stale pending UI
+          localStorage.removeItem("currentBooking");
+
+          // If we have orderCode, call backend to update booking status
+          if (payosParams.orderCode) {
+            console.log(
+              "🔄 Calling backend cancel API for orderCode:",
+              payosParams.orderCode
+            );
+
+            // Try to get auth token (adjust path based on your auth implementation)
+            const token =
+              localStorage.getItem("token") ||
+              localStorage.getItem("authToken");
+            const headers: Record<string, string> = {
+              "Content-Type": "application/json",
+            };
+
+            if (token) {
+              headers["Authorization"] = `Bearer ${token}`;
+            }
+
+            const cancelResponse = await fetch(
+              `/api/v1/payments/payos/${encodeURIComponent(
+                payosParams.orderCode
+              )}/cancel`,
+              {
+                method: "POST",
+                headers,
+                body: JSON.stringify({
+                  reason: "Payment cancelled by user",
+                }),
+              }
+            );
+
+            if (cancelResponse.ok) {
+              const cancelResult = await cancelResponse.json();
+              console.log("✅ Backend cancel successful:", cancelResult);
+
+              // Update UI with cancelled booking data if available
+              if (cancelResult.data?.booking) {
+                setBookingData(cancelResult.data.booking);
+              }
+            } else {
+              console.warn(
+                "⚠️ Backend cancel failed, but continuing with UI update"
+              );
+            }
+          }
+        } catch (error) {
+          console.warn(
+            "⚠️ Failed to call backend cancel (non-blocking):",
+            error
+          );
+        }
+
+        // Always show cancelled UI regardless of backend call result
+        setSuppressRender(false);
+        setLoading(false);
+        setPaymentStatus("failed");
+        setErrorMessage("Thanh toán đã bị hủy bởi người dùng");
+        message.error("Thanh toán đã bị hủy bởi người dùng");
+        return;
+      }
+
       if (!payosParams.orderCode) {
         throw new Error("Missing PayOS orderCode");
       }
@@ -61,22 +132,22 @@ const PayOSReturn: React.FC = () => {
       // Step 1: Call Backend API to verify payment
       try {
         console.log("🔄 Calling Backend PayOS verification API...");
-        
+
         const verifyPayload = {
           orderCode: parseInt(payosParams.orderCode),
-          amount: 0, // Will be validated by Backend  
+          amount: 0, // Will be validated by Backend
           description: `Payment verification for order ${payosParams.orderCode}`,
           accountNumber: "", // Optional
           reference: payosParams.id,
           transactionDateTime: new Date().toISOString(),
-          currency: "VND"
+          currency: "VND",
         };
 
-        // Call Backend verification endpoint  
-        const backendResponse = await fetch('/api/v1/payments/payos/verify', {
-          method: 'POST',
+        // Call Backend verification endpoint
+        const backendResponse = await fetch("/api/v1/payments/payos/verify", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(verifyPayload),
         });
@@ -86,120 +157,291 @@ const PayOSReturn: React.FC = () => {
 
         if (backendResult.success && backendResult.data) {
           const { booking: verifiedBooking, paymentInfo } = backendResult.data;
-          
+
           // Update local state with verified data
           setBookingData(verifiedBooking);
+          const inferredStatus =
+            paymentInfo?.status ||
+            (verifiedBooking?.paymentStatus === "paid"
+              ? "PAID"
+              : verifiedBooking?.status === "confirmed"
+              ? "PAID"
+              : undefined);
+          const normalizedStatus = String(inferredStatus || "")
+            .trim()
+            .toUpperCase();
           setPaymentData({
-            paymentRef: paymentInfo.orderCode,
-            amount: paymentInfo.amount,
-            status: paymentInfo.status === "PAID" ? "success" : "failed",
+            paymentRef:
+              paymentInfo.orderCode ||
+              paymentInfo.paymentRef ||
+              payosParams.orderCode ||
+              verifiedBooking?.payosOrderCode,
+            amount:
+              Number(paymentInfo.amount) ||
+              Number(verifiedBooking?.totalPrice) ||
+              0,
+            status:
+              normalizedStatus === "PAID" ||
+              normalizedStatus === "SUCCESS" ||
+              normalizedStatus === "SUCCEEDED"
+                ? "success"
+                : "failed",
             method: "PayOS",
             transactionId: payosParams.id,
           });
 
-          if (paymentInfo.status === "PAID") {
-            setPaymentStatus("success");
-            message.success("Thanh toán thành công!");
-            
-            // Clear localStorage
-            localStorage.removeItem("currentBooking");
-            
-            // Navigate to success page
-            setTimeout(() => {
-              navigate("/booking/success", {
-                state: {
-                  booking: verifiedBooking,
-                  paymentMethod: "payos",
-                  paymentData: paymentInfo,
-                },
-              });
-            }, 2000);
-          } else {
-            throw new Error("Payment was not successful");
-          }
-        } else {
-          throw new Error(backendResult.message || "Backend verification failed");
-        }
-      } catch (backendError: any) {
-        console.error("❌ Backend verification failed:", backendError.message);
-        
-        // Fallback: Use local verification and localStorage
-        console.log("⚠️ Falling back to local verification...");
-        
-        const isValid = verifyPayOSReturn(payosParams);
-        console.log("PayOS local verification result:", isValid);
-
-        if (!isValid && !payosParams.cancel) {
-          throw new Error("PayOS payment verification failed");
-        }
-
-        // Check payment status
-        if (
-          payosParams.code === "00" &&
-          payosParams.status === "PAID" &&
-          !payosParams.cancel
-        ) {
-          setPaymentStatus("success");
-          message.success("Thanh toán thành công!");
-
-          // Get booking data from localStorage
-          const savedBooking = localStorage.getItem("currentBooking");
-          if (savedBooking) {
+          if (
+            normalizedStatus === "PAID" ||
+            normalizedStatus === "SUCCESS" ||
+            normalizedStatus === "SUCCEEDED"
+          ) {
+            // Merge booking data with any previously stored info (court names, customer info)
+            let stored: any = null;
             try {
-              const booking = JSON.parse(savedBooking);
-              console.log("Retrieved booking data:", booking);
-              setBookingData(booking);
+              const raw = localStorage.getItem("currentBooking");
+              stored = raw ? JSON.parse(raw) : null;
+            } catch {
+              // ignore JSON parse error
+            }
 
-              // Clear localStorage after successful use
-              localStorage.removeItem("currentBooking");
+            const mergedBooking = {
+              ...stored,
+              ...verifiedBooking,
+              courtIds: stored?.courtIds || verifiedBooking?.courtIds || [],
+              courtNames:
+                stored?.courtNames ||
+                verifiedBooking?.courtNames ||
+                verifiedBooking?.court?.name,
+              customerInfo:
+                stored?.customerInfo || bookingData?.customerInfo || undefined,
+              bookingRef:
+                verifiedBooking?.bookingCode || stored?.bookingRef || undefined,
+              paymentStatus: "paid",
+            };
 
-              // Set payment data for display
-              setPaymentData({
-                paymentRef: payosParams.orderCode,
-                amount: booking.totalPrice || 0,
-                status: "success",
-                method: "PayOS",
-                transactionId: payosParams.id,
-              });
+            // Clear localStorage and navigate immediately to success page
+            localStorage.removeItem("currentBooking");
+            navigate("/booking/success", {
+              state: {
+                booking: mergedBooking,
+                paymentMethod: "payos",
+                paymentData: paymentInfo,
+              },
+            });
+            return;
+          } else {
+            // Check if user cancelled payment first (highest priority)
+            if (payosParams.cancel) {
+              setPaymentStatus("failed");
+              setErrorMessage("Thanh toán đã bị hủy bởi người dùng");
+              message.error("Thanh toán đã bị hủy bởi người dùng");
+              return;
+            }
 
-              // Navigate to success page after a delay
-              setTimeout(() => {
-                navigate("/booking/success", {
-                  state: {
-                    booking: booking,
-                    paymentMethod: "payos",
-                    paymentData: {
-                      paymentRef: payosParams.orderCode,
-                      amount: booking.totalPrice || 0,
-                      status: "success",
-                      method: "PayOS",
-                      transactionId: payosParams.id,
-                    },
-                  },
-                });
+            // If BE already classifies as FAILED/CANCELLED → fail immediately
+            if (
+              normalizedStatus === "FAILED" ||
+              normalizedStatus === "CANCELLED"
+            ) {
+              setPaymentStatus("failed");
+              setErrorMessage("Thanh toán thất bại hoặc đã hủy");
+              message.error("Thanh toán thất bại hoặc đã hủy");
+              return;
+            }
+
+            // If not paid, try redirecting to checkout if available (PENDING/INIT)
+            // But only if user didn't cancel
+            const redirectUrl =
+              paymentInfo.checkoutUrl || paymentInfo.paymentUrl;
+            if (
+              (normalizedStatus === "PENDING" || normalizedStatus === "INIT") &&
+              redirectUrl &&
+              !payosParams.cancel
+            ) {
+              window.location.href = redirectUrl;
+              return;
+            }
+            // Otherwise poll status until PAID/FAILED
+            try {
+              const orderCode =
+                paymentInfo.orderCode ||
+                paymentInfo.paymentRef ||
+                payosParams.orderCode;
+              if (!orderCode)
+                throw new Error("Missing order code to poll status");
+
+              let attempts = 0;
+              const maxAttempts = 30; // ~60s at 2s interval
+              const poll = setInterval(async () => {
+                attempts++;
+                try {
+                  const statusRes = await getPayOSPaymentStatus(
+                    String(orderCode)
+                  );
+                  const status = statusRes?.data?.status || statusRes?.status;
+                  if (status === "PAID") {
+                    clearInterval(poll);
+                    // Merge booking data with stored info before navigating
+                    let stored: any = null;
+                    try {
+                      const raw = localStorage.getItem("currentBooking");
+                      stored = raw ? JSON.parse(raw) : null;
+                    } catch {
+                      // ignore JSON parse error
+                    }
+                    const mergedBooking = {
+                      ...stored,
+                      ...verifiedBooking,
+                      courtIds:
+                        stored?.courtIds || verifiedBooking?.courtIds || [],
+                      courtNames:
+                        stored?.courtNames ||
+                        verifiedBooking?.courtNames ||
+                        verifiedBooking?.court?.name,
+                      customerInfo:
+                        stored?.customerInfo ||
+                        bookingData?.customerInfo ||
+                        undefined,
+                      bookingRef:
+                        verifiedBooking?.bookingCode ||
+                        stored?.bookingRef ||
+                        undefined,
+                      paymentStatus: "paid",
+                    };
+                    localStorage.removeItem("currentBooking");
+                    navigate("/booking/success", {
+                      state: {
+                        booking: mergedBooking,
+                        paymentMethod: "payos",
+                        paymentData: { ...paymentInfo, status: "PAID" },
+                      },
+                      replace: true,
+                    });
+                    return;
+                  } else if (status === "FAILED" || status === "CANCELLED") {
+                    setSuppressRender(false);
+                    clearInterval(poll);
+                    setPaymentStatus("failed");
+                    setErrorMessage("Thanh toán thất bại hoặc đã hủy");
+                    message.error("Thanh toán thất bại hoặc đã hủy");
+                  } else if (attempts >= maxAttempts) {
+                    setSuppressRender(false);
+                    clearInterval(poll);
+                    setPaymentStatus("failed");
+                    setErrorMessage("Hết thời gian chờ thanh toán");
+                    message.error("Hết thời gian chờ thanh toán");
+                  }
+                } catch {
+                  setSuppressRender(false);
+                  clearInterval(poll);
+                  setPaymentStatus("failed");
+                  setErrorMessage("Không thể kiểm tra trạng thái thanh toán");
+                  message.error("Không thể kiểm tra trạng thái thanh toán");
+                }
               }, 2000);
-            } catch (error) {
-              console.error("Error parsing saved booking:", error);
-              // Continue without booking data
+              return;
+            } catch {
+              setSuppressRender(false);
+              throw new Error(
+                `Payment was not successful (status: ${
+                  normalizedStatus || "UNKNOWN"
+                })`
+              );
             }
           }
         } else {
-          // Payment failed or cancelled
-          setPaymentStatus("failed");
-          const errorMsg = payosParams.cancel
-            ? "Thanh toán đã bị hủy"
-            : `Thanh toán thất bại (Code: ${payosParams.code})`;
-          setErrorMessage(errorMsg);
-          message.error(errorMsg);
+          // Check if user cancelled payment first (before any polling)
+          if (payosParams.cancel) {
+            setSuppressRender(false);
+            setPaymentStatus("failed");
+            setErrorMessage("Thanh toán đã bị hủy bởi người dùng");
+            message.error("Thanh toán đã bị hủy bởi người dùng");
+            return;
+          }
+
+          // Treat 202 or explicit pending/unknown statuses as processing → start polling
+          const statusCode = backendResponse.status;
+          const topLevelStatus = backendResult?.status;
+          if (
+            statusCode === 202 ||
+            topLevelStatus === "PENDING" ||
+            topLevelStatus === "UNKNOWN"
+          ) {
+            setPaymentStatus("processing");
+
+            const orderCode = payosParams.orderCode;
+            if (!orderCode) {
+              throw new Error(
+                "Thiếu orderCode để kiểm tra trạng thái thanh toán"
+              );
+            }
+
+            let attempts = 0;
+            const maxAttempts = 30; // ~60s at 2s interval
+            const poll = setInterval(async () => {
+              attempts++;
+              try {
+                const statusRes = await getPayOSPaymentStatus(
+                  String(orderCode)
+                );
+                const status = statusRes?.data?.status || statusRes?.status;
+                if (status === "PAID") {
+                  clearInterval(poll);
+                  localStorage.removeItem("currentBooking");
+                  navigate("/booking/success", {
+                    state: {
+                      booking: bookingData,
+                      paymentMethod: "payos",
+                      paymentData: { paymentRef: orderCode, status: "PAID" },
+                    },
+                    replace: true,
+                  });
+                } else if (status === "FAILED" || status === "CANCELLED") {
+                  setSuppressRender(false);
+                  clearInterval(poll);
+                  setPaymentStatus("failed");
+                  setErrorMessage("Thanh toán thất bại hoặc đã hủy");
+                  message.error("Thanh toán thất bại hoặc đã hủy");
+                } else if (attempts >= maxAttempts) {
+                  setSuppressRender(false);
+                  clearInterval(poll);
+                  setPaymentStatus("failed");
+                  setErrorMessage("Hết thời gian chờ thanh toán");
+                  message.error("Hết thời gian chờ thanh toán");
+                }
+              } catch {
+                setSuppressRender(false);
+                clearInterval(poll);
+                setPaymentStatus("failed");
+                setErrorMessage("Không thể kiểm tra trạng thái thanh toán");
+                message.error("Không thể kiểm tra trạng thái thanh toán");
+              }
+            }, 2000);
+            return;
+          }
+
+          throw new Error(
+            backendResult.message || "Backend verification failed"
+          );
         }
+      } catch (backendError: any) {
+        console.error("❌ Backend verification failed:", backendError.message);
+        setSuppressRender(false);
+        setPaymentStatus("failed");
+        const errorMsg = payosParams.cancel
+          ? "Thanh toán đã bị hủy"
+          : backendError.message || "Xác thực thanh toán thất bại";
+        setErrorMessage(errorMsg);
+        message.error(errorMsg);
       }
     } catch (error: any) {
       console.error("PayOS return processing error:", error);
+      setSuppressRender(false);
       setPaymentStatus("failed");
       setErrorMessage(error.message || "Có lỗi xảy ra khi xử lý thanh toán");
       message.error(error.message || "Có lỗi xảy ra khi xử lý thanh toán");
     } finally {
-      setLoading(false);
+      if (!suppressRender) setLoading(false);
     }
   };
 
@@ -209,6 +451,8 @@ const PayOSReturn: React.FC = () => {
       currency: "VND",
     }).format(amount);
   };
+
+  if (suppressRender) return null;
 
   if (loading) {
     return (
@@ -287,7 +531,9 @@ const PayOSReturn: React.FC = () => {
               {bookingData && (
                 <>
                   <Descriptions.Item label="Mã booking">
-                    <Tag color="blue">{bookingData.bookingCode || bookingData._id}</Tag>
+                    <Tag color="blue">
+                      {bookingData.bookingCode || bookingData._id}
+                    </Tag>
                   </Descriptions.Item>
                   {bookingData.date && (
                     <Descriptions.Item label="Ngày đặt sân">

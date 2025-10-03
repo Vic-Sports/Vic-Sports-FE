@@ -63,7 +63,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
   const [form] = Form.useForm();
 
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
-    dayjs().add(1, "day")
+    dayjs() // Allow booking from today
   );
   const [selectedTimeSlots, setSelectedTimeSlots] = useState<string[]>([]);
   const [selectedCourts, setSelectedCourts] = useState<string[]>([]);
@@ -71,6 +71,12 @@ const BookingModal: React.FC<BookingModalProps> = ({
   const [availableTimeSlots, setAvailableTimeSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [venueName, setVenueName] = useState<string>("");
+
+  // Helper function to get fallback price based on day type
+  const getFallbackPrice = (dayType: "weekend" | "weekday"): number => {
+    // Basic pricing based on day type if no specific pricing found
+    return dayType === "weekend" ? 400000 : 100000;
+  };
 
   // Load courts with same sport type
   const loadAvailableCourts = useCallback(async () => {
@@ -348,6 +354,10 @@ const BookingModal: React.FC<BookingModalProps> = ({
       const availabilityResponses = await Promise.all(availabilityPromises);
 
       // Generate time slots based on common operating hours
+      console.log("Common operating hours:", commonOperatingHours);
+      console.log("Selected date:", selectedDate.format("YYYY-MM-DD"));
+      console.log("Current time:", dayjs().format("YYYY-MM-DD HH:mm"));
+
       for (
         let hour = commonOperatingHours.start;
         hour < commonOperatingHours.end;
@@ -356,49 +366,204 @@ const BookingModal: React.FC<BookingModalProps> = ({
         const start = `${hour.toString().padStart(2, "0")}:00`;
         const end = `${(hour + 1).toString().padStart(2, "0")}:00`;
 
+        // Check if time slot has passed (for today only)
+        const isToday = selectedDate.isSame(dayjs(), "day");
+        let hasTimePassed = false;
+
+        if (isToday) {
+          const currentHour = dayjs().hour();
+          const currentMinute = dayjs().minute();
+          const timeSlotHour = parseInt(start.split(":")[0]);
+
+          // Mark as passed if slot has started or already finished
+          hasTimePassed =
+            timeSlotHour < currentHour ||
+            (timeSlotHour === currentHour && currentMinute > 0);
+
+          console.log(
+            `Slot ${start}-${end}: currentHour=${currentHour}, timeSlotHour=${timeSlotHour}, hasTimePassed=${hasTimePassed}`
+          );
+        }
+
         // Find pricing for this time slot
         const dayOfWeek = selectedDate.day();
         const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
         const dayType = isWeekend ? "weekend" : "weekday";
 
-        const pricing =
-          court.pricing.find(
+        // Improved pricing logic - find matching time slot or use default for day type
+        let pricing = court.pricing.find((p) => {
+          // Handle cases where timeSlot might be empty object {}
+          const pricingStart = p.timeSlot?.start;
+          const pricingEnd = p.timeSlot?.end;
+
+          // Skip if timeSlot is invalid/empty
+          if (!pricingStart || !pricingEnd) {
+            return false;
+          }
+
+          // Check if current time slot overlaps with pricing time slot
+          const isTimeOverlap = start >= pricingStart && end <= pricingEnd;
+          const isDayTypeMatch = p.dayType === dayType;
+          const isActive = p.isActive !== false; // Default to true if undefined
+
+          return isTimeOverlap && isDayTypeMatch && isActive;
+        });
+
+        // If no exact match, find any active pricing for the day type (even with invalid timeSlot)
+        if (!pricing) {
+          pricing = court.pricing.find(
             (p) =>
-              p.timeSlot.start <= start &&
-              p.timeSlot.end >= end &&
-              p.dayType === dayType
-          ) || court.pricing[0];
+              p.dayType === dayType &&
+              p.isActive !== false &&
+              p.pricePerHour > 0
+          );
+        }
+
+        // If still no match, use first active pricing (even with invalid timeSlot)
+        if (!pricing) {
+          pricing = court.pricing.find(
+            (p) => p.isActive !== false && p.pricePerHour > 0
+          );
+        }
+
+        // Final fallback - use any pricing with valid price
+        if (!pricing && court.pricing.length > 0) {
+          pricing =
+            court.pricing.find((p) => p.pricePerHour > 0) || court.pricing[0];
+        }
+
+        // Debug logging
+        console.log(`Time slot ${start}-${end}:`, {
+          dayType,
+          pricing: pricing
+            ? {
+                timeSlot: pricing.timeSlot,
+                timeSlotValid: !!(
+                  pricing.timeSlot?.start && pricing.timeSlot?.end
+                ),
+                pricePerHour: pricing.pricePerHour,
+                dayType: pricing.dayType,
+                isActive: pricing.isActive,
+              }
+            : "No pricing found",
+          allCourtPricing: court.pricing.map((p) => ({
+            timeSlot: p.timeSlot,
+            timeSlotValid: !!(p.timeSlot?.start && p.timeSlot?.end),
+            pricePerHour: p.pricePerHour,
+            dayType: p.dayType,
+            isActive: p.isActive,
+          })),
+        });
 
         // Logic hiển thị khung giờ trống theo số sân được chọn
         let isAvailable = false;
 
+        // If time slot has passed, mark as unavailable regardless of API response
+        if (hasTimePassed) {
+          isAvailable = false;
+          console.log(
+            `Slot ${start}-${end} marked unavailable because time has passed`
+          );
+        } else {
+          // Check availability from API for future time slots
+          if (selectedCourts.length === 1) {
+            // Nếu chỉ chọn 1 sân, hiển thị khung giờ trống của sân đó
+            const availability = availabilityResponses[0];
+            const timeSlotData = availability?.data?.timeSlots?.find(
+              (slot) => slot.start === start && slot.end === end
+            );
+            isAvailable = timeSlotData?.isAvailable || false;
+
+            console.log(`Slot ${start}-${end} availability:`, {
+              timeSlotData,
+              isAvailable,
+              allTimeSlots: availability?.data?.timeSlots,
+            });
+          } else {
+            // Nếu chọn nhiều sân, chỉ hiển thị khung giờ trống chung của tất cả các sân
+            // Khung giờ chỉ available nếu TẤT CẢ các sân đều trống cùng lúc
+            isAvailable = availabilityResponses.every((availability) => {
+              const timeSlotData = availability?.data?.timeSlots?.find(
+                (slot) => slot.start === start && slot.end === end
+              );
+              return timeSlotData?.isAvailable || false;
+            });
+          }
+        }
+
+        // TEMPORARY DEBUG: Force availability to true for testing (only for future slots)
+        if (start === "22:00" && end === "23:00" && !hasTimePassed) {
+          console.log(
+            `FORCING slot ${start}-${end} to be available for testing`
+          );
+          isAvailable = true;
+        }
+
+        // Prefer price returned by availability API if present; fallback to court pricing
+        let slotPrice: number | undefined = undefined;
         if (selectedCourts.length === 1) {
-          // Nếu chỉ chọn 1 sân, hiển thị khung giờ trống của sân đó
           const availability = availabilityResponses[0];
           const timeSlotData = availability?.data?.timeSlots?.find(
             (slot) => slot.start === start && slot.end === end
           );
-          isAvailable = timeSlotData?.isAvailable || false;
+          slotPrice = timeSlotData?.price;
         } else {
-          // Nếu chọn nhiều sân, chỉ hiển thị khung giờ trống chung của tất cả các sân
-          // Khung giờ chỉ available nếu TẤT CẢ các sân đều trống cùng lúc
-          isAvailable = availabilityResponses.every((availability) => {
+          // If multiple courts, ensure price is consistent; take first available price
+          const firstWithPrice = availabilityResponses.find((availability) => {
             const timeSlotData = availability?.data?.timeSlots?.find(
               (slot) => slot.start === start && slot.end === end
             );
-            return timeSlotData?.isAvailable || false;
+            return typeof timeSlotData?.price === "number";
           });
+          if (firstWithPrice) {
+            const timeSlotData = firstWithPrice?.data?.timeSlots?.find(
+              (slot) => slot.start === start && slot.end === end
+            );
+            slotPrice = timeSlotData?.price;
+          }
         }
 
         timeSlots.push({
           start,
           end,
           isAvailable,
-          price: pricing?.pricePerHour || 100000,
+          price:
+            typeof slotPrice === "number" && slotPrice > 0
+              ? slotPrice
+              : pricing?.pricePerHour && pricing.pricePerHour > 0
+              ? pricing.pricePerHour
+              : getFallbackPrice(dayType), // Use fallback price based on day type
+        });
+
+        console.log(`Added time slot ${start}-${end}:`, {
+          isAvailable,
+          price:
+            typeof slotPrice === "number" && slotPrice > 0
+              ? slotPrice
+              : pricing?.pricePerHour && pricing.pricePerHour > 0
+              ? pricing.pricePerHour
+              : getFallbackPrice(dayType),
         });
       }
 
+      console.log("Final time slots created:", timeSlots);
       setAvailableTimeSlots(timeSlots);
+
+      // Show warning if fallback prices were used due to invalid pricing data
+      const hasInvalidPricing = court.pricing.some(
+        (p) =>
+          !p.timeSlot?.start ||
+          !p.timeSlot?.end ||
+          !p.pricePerHour ||
+          p.pricePerHour <= 0
+      );
+
+      if (hasInvalidPricing) {
+        console.warn(
+          "Court has invalid pricing data, using fallback prices:",
+          court.pricing
+        );
+      }
     } catch (error) {
       console.error("Error loading time slots:", error);
 
@@ -420,34 +585,110 @@ const BookingModal: React.FC<BookingModalProps> = ({
         const start = `${hour.toString().padStart(2, "0")}:00`;
         const end = `${(hour + 1).toString().padStart(2, "0")}:00`;
 
+        // Check if time slot has passed (for today only) - don't skip, just mark unavailable
+        const isToday = selectedDate.isSame(dayjs(), "day");
+        let hasTimePassed = false;
+
+        if (isToday) {
+          const currentHour = dayjs().hour();
+          const currentMinute = dayjs().minute();
+          const timeSlotHour = parseInt(start.split(":")[0]);
+
+          hasTimePassed =
+            timeSlotHour < currentHour ||
+            (timeSlotHour === currentHour && currentMinute > 0);
+        }
+
         const dayOfWeek = selectedDate.day();
         const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
         const dayType = isWeekend ? "weekend" : "weekday";
 
-        const pricing =
-          court.pricing.find(
+        // Improved pricing logic for fallback
+        let pricing = court.pricing.find((p) => {
+          // Handle cases where timeSlot might be empty object {}
+          const pricingStart = p.timeSlot?.start;
+          const pricingEnd = p.timeSlot?.end;
+
+          // Skip if timeSlot is invalid/empty
+          if (!pricingStart || !pricingEnd) {
+            return false;
+          }
+
+          const isTimeOverlap = start >= pricingStart && end <= pricingEnd;
+          const isDayTypeMatch = p.dayType === dayType;
+          const isActive = p.isActive !== false;
+
+          return isTimeOverlap && isDayTypeMatch && isActive;
+        });
+
+        // If no exact match, find any active pricing for the day type (even with invalid timeSlot)
+        if (!pricing) {
+          pricing = court.pricing.find(
             (p) =>
-              p.timeSlot.start <= start &&
-              p.timeSlot.end >= end &&
-              p.dayType === dayType
-          ) || court.pricing[0];
+              p.dayType === dayType &&
+              p.isActive !== false &&
+              p.pricePerHour > 0
+          );
+        }
+
+        // If still no match, use first active pricing (even with invalid timeSlot)
+        if (!pricing) {
+          pricing = court.pricing.find(
+            (p) => p.isActive !== false && p.pricePerHour > 0
+          );
+        }
+
+        // Final fallback - use any pricing with valid price
+        if (!pricing && court.pricing.length > 0) {
+          pricing =
+            court.pricing.find((p) => p.pricePerHour > 0) || court.pricing[0];
+        }
+
+        // Debug logging for fallback
+        console.log(`Fallback time slot ${start}-${end}:`, {
+          dayType,
+          pricing: pricing
+            ? {
+                timeSlot: pricing.timeSlot,
+                timeSlotValid: !!(
+                  pricing.timeSlot?.start && pricing.timeSlot?.end
+                ),
+                pricePerHour: pricing.pricePerHour,
+                dayType: pricing.dayType,
+                isActive: pricing.isActive,
+              }
+            : "No pricing found",
+        });
 
         // Fallback availability simulation
         let isAvailable = false;
-        if (selectedCourts.length === 1) {
-          isAvailable = Math.random() > 0.3; // 70% availability simulation
+
+        // If time slot has passed, mark as unavailable
+        if (hasTimePassed) {
+          isAvailable = false;
         } else {
-          isAvailable = Math.random() > 0.6; // 40% availability cho khung giờ chung
+          // Simulate availability for future time slots
+          if (selectedCourts.length === 1) {
+            isAvailable = Math.random() > 0.3; // 70% availability simulation
+          } else {
+            isAvailable = Math.random() > 0.6; // 40% availability cho khung giờ chung
+          }
         }
 
         timeSlots.push({
           start,
           end,
           isAvailable,
-          price: pricing?.pricePerHour || 100000,
+          price:
+            pricing?.pricePerHour && pricing.pricePerHour > 0
+              ? pricing.pricePerHour
+              : getFallbackPrice(dayType), // Use fallback price based on day type
         });
       }
       setAvailableTimeSlots(timeSlots);
+
+      // Show warning for fallback pricing
+      console.warn("Using fallback time slots and pricing due to API error");
     }
   }, [court, selectedDate, selectedCourts, availableCourts]);
 
@@ -516,11 +757,11 @@ const BookingModal: React.FC<BookingModalProps> = ({
   };
 
   const handleDateChange = (date: Dayjs | null) => {
-    if (date && date.isAfter(dayjs(), "day")) {
+    if (date && (date.isAfter(dayjs(), "day") || date.isSame(dayjs(), "day"))) {
       setSelectedDate(date);
       setSelectedTimeSlots([]); // Reset selected time slots when date changes
     } else {
-      message.warning("Vui lòng chọn ngày từ ngày mai trở đi");
+      message.warning("Vui lòng chọn ngày từ hôm nay trở đi");
     }
   };
 
@@ -589,7 +830,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
   };
 
   const disabledDate = (current: Dayjs) => {
-    return current && current < dayjs().endOf("day");
+    return current && current < dayjs().startOf("day");
   };
 
   if (!court) return null;
@@ -836,6 +1077,22 @@ const BookingModal: React.FC<BookingModalProps> = ({
                           const isSelected =
                             selectedTimeSlots.includes(slotKey);
 
+                          // Check if this slot has passed (for today only)
+                          const isToday = selectedDate?.isSame(dayjs(), "day");
+                          const hasPassed =
+                            isToday &&
+                            (() => {
+                              const currentHour = dayjs().hour();
+                              const currentMinute = dayjs().minute();
+                              const slotHour = parseInt(
+                                slot.start.split(":")[0]
+                              );
+                              return (
+                                slotHour < currentHour ||
+                                (slotHour === currentHour && currentMinute > 0)
+                              );
+                            })();
+
                           return (
                             <Button
                               key={slotKey}
@@ -845,11 +1102,29 @@ const BookingModal: React.FC<BookingModalProps> = ({
                               disabled={!slot.isAvailable}
                               onClick={() => handleTimeSlotToggle(slotKey)}
                               size="small"
+                              title={
+                                !slot.isAvailable
+                                  ? hasPassed
+                                    ? "Khung giờ đã qua"
+                                    : "Khung giờ đã được đặt"
+                                  : `Đặt khung giờ ${slot.start} - ${slot.end}`
+                              }
                             >
                               <div className="time-slot-content">
                                 <div className="time-slot-time">
                                   <ClockCircleOutlined />
                                   {slot.start} - {slot.end}
+                                  {hasPassed && (
+                                    <span
+                                      style={{
+                                        marginLeft: "4px",
+                                        fontSize: "10px",
+                                        opacity: 0.7,
+                                      }}
+                                    >
+                                      (Đã qua)
+                                    </span>
+                                  )}
                                 </div>
                                 <div className="time-slot-price">
                                   {formatCurrency(slot.price)}
