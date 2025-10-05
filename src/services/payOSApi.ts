@@ -34,6 +34,8 @@ export interface IPayOSReturnParams {
 
 // Generate PayOS payment URL theo docs chính thức
 // FE chỉ gửi dữ liệu booking/payment lên BE, nhận về paymentUrl, qrCode...
+import { api } from "./api";
+
 export const createPayOSPayment = async (
   paymentData: IPayOSCreateRequest
 ): Promise<IPayOSCreateResponse> => {
@@ -45,26 +47,24 @@ export const createPayOSPayment = async (
     throw new Error("PayOS: Missing booking ID");
   }
 
-  // Gửi request lên BE
-  const response = await fetch("/api/v1/payments/payos/create", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      ...paymentData,
-      returnUrl: PAYOS_FE_CONFIG.returnUrl,
-      cancelUrl: PAYOS_FE_CONFIG.cancelUrl,
-    }),
-  });
+  // Send request to backend using shared axios instance so auth/cookies are included
+  const payloadToSend = {
+    ...paymentData,
+    returnUrl: PAYOS_FE_CONFIG.returnUrl,
+    cancelUrl: PAYOS_FE_CONFIG.cancelUrl,
+  };
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "PayOS BE error");
-  }
-  const responseData = await response.json();
+  const response = await api
+    .post("/api/v1/payments/payos/create", payloadToSend)
+    .catch((err) => {
+      // normalize axios error shape
+      const msg = err?.message || "PayOS BE error";
+      throw new Error(msg);
+    });
 
-  // Normalize various backend response shapes to a unified interface
+  // axios instance in this project returns { data } already via interceptor in many files,
+  // but to be defensive, normalize various backend response shapes
+  const responseData = response?.data ?? response;
   const payload = responseData?.data ?? responseData;
 
   const paymentUrl =
@@ -133,27 +133,24 @@ export const getPayOSErrorMessage = (code: string): string => {
 
 // FE gọi BE để lấy thông tin thanh toán PayOS
 export const getPayOSPaymentInfo = async (orderCode: string) => {
-  const response = await fetch(`/api/v1/payments/payos/info/${orderCode}`);
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "PayOS BE error");
-  }
-  return await response.json();
+  const res = await api
+    .get(`/api/v1/payments/payos/info/${orderCode}`)
+    .catch((err) => {
+      throw new Error(err?.message || "PayOS BE error");
+    });
+  return res?.data ?? res;
 };
 
 // FE gọi BE để lấy trạng thái thanh toán PayOS (PENDING/PAID/FAILED...)
 export const getPayOSPaymentStatus = async (orderCode: string) => {
-  const response = await fetch(`/api/v1/payments/payos/status/${orderCode}`);
-  if (!response.ok) {
-    // 202 can be used to indicate pending; still return json for caller to interpret
-    try {
-      const data = await response.json();
-      return data;
-    } catch {
-      throw new Error("PayOS BE status error");
-    }
-  }
-  return await response.json();
+  const res = await api
+    .get(`/api/v1/payments/payos/status/${orderCode}`)
+    .catch((err) => {
+      // axios may return response-like object for non-2xx; try to normalize
+      if (err?.response) return err.response.data;
+      throw new Error(err?.message || "PayOS BE status error");
+    });
+  return res?.data ?? res;
 };
 
 // FE gọi BE để hủy thanh toán PayOS
@@ -161,18 +158,12 @@ export const cancelPayOSPayment = async (
   orderCode: string,
   reason?: string
 ) => {
-  const response = await fetch(`/api/v1/payments/payos/cancel/${orderCode}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ reason }),
-  });
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "PayOS BE error");
-  }
-  return await response.json();
+  const res = await api
+    .post(`/api/v1/payments/payos/cancel/${orderCode}`, { reason })
+    .catch((err) => {
+      throw new Error(err?.message || "PayOS BE error");
+    });
+  return res?.data ?? res;
 };
 
 // Test PayOS payment creation (FE gọi BE, dùng data thật)
