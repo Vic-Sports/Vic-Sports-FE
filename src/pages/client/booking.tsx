@@ -280,7 +280,7 @@ const BookingPage: React.FC = () => {
           | "banking",
         paymentInfo: {
           returnUrl: `${window.location.origin}/booking/payos-return`,
-          cancelUrl: `${window.location.origin}/booking`,
+          cancelUrl: `${window.location.origin}/booking/payos-return`,
         },
         customerInfo: {
           fullName: customerInfo.fullName,
