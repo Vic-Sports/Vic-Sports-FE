@@ -1,38 +1,38 @@
-import {
-  Card,
-  Row,
-  Col,
-  Statistic,
-  Typography,
-  Progress,
-  List,
-  Avatar,
-  Badge,
-  Space,
-  Button,
-  Tag,
-  Alert,
-  Spin,
-  message,
-} from "antd";
-import {
-  CalendarOutlined,
-  DollarOutlined,
-  BellOutlined,
-  FieldTimeOutlined,
-  UserOutlined,
-  HomeOutlined,
-  TrophyOutlined,
-  RiseOutlined,
-  ArrowRightOutlined,
-  CheckCircleOutlined,
-  ExclamationCircleOutlined,
-} from "@ant-design/icons";
-import { useState, useEffect } from "react";
-import { Line, Pie } from "@ant-design/plots";
-import { useNavigate } from "react-router-dom";
 import { useCurrentApp } from "@/components/context/app.context";
-import { ownerDashboardApi } from "@/services/ownerApi";
+import { ownerDashboardApi, ownerTournamentApi } from "@/services/ownerApi";
+import {
+    ArrowRightOutlined,
+    BellOutlined,
+    CalendarOutlined,
+    CheckCircleOutlined,
+    DollarOutlined,
+    ExclamationCircleOutlined,
+    FieldTimeOutlined,
+    HomeOutlined,
+    RiseOutlined,
+    TrophyOutlined,
+    UserOutlined,
+} from "@ant-design/icons";
+import { Line, Pie } from "@ant-design/plots";
+import {
+    Alert,
+    Avatar,
+    Badge,
+    Button,
+    Card,
+    Col,
+    List,
+    Progress,
+    Row,
+    Space,
+    Spin,
+    Statistic,
+    Tag,
+    Typography,
+    message,
+} from "antd";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
@@ -44,6 +44,11 @@ interface DashboardStats {
   monthlyBookings: number;
   totalVenues: number;
   totalCourts: number;
+  totalTournaments: number;
+  activeTournaments: number;
+  upcomingTournaments: number;
+  aboutToStartTournaments: number;
+  ongoingTournaments: number;
   activeBookings: number;
   pendingBookings: number;
   confirmedBookings?: number;
@@ -70,6 +75,9 @@ const OwnerDashboard = () => {
     monthlyBookings: 0,
     totalVenues: 0,
     totalCourts: 0,
+    totalTournaments: 0,
+    activeTournaments: 0,
+    upcomingTournaments: 0,
     activeBookings: 0,
     pendingBookings: 0,
   });
@@ -100,12 +108,13 @@ const OwnerDashboard = () => {
       setLoading(true);
 
       // Load all dashboard data in parallel
-      const [statsRes, revenueRes, bookingStatsRes, activitiesRes] =
+      const [statsRes, revenueRes, bookingStatsRes, activitiesRes, tournamentStatsRes] =
         await Promise.all([
           ownerDashboardApi.getStats(),
           ownerDashboardApi.getRevenueChart(),
           ownerDashboardApi.getBookingStats(),
           ownerDashboardApi.getRecentActivities(),
+          ownerTournamentApi.getTournamentStats(),
         ]);
 
       // Set stats
@@ -134,7 +143,27 @@ const OwnerDashboard = () => {
           // Store additional fields for reference
           confirmedBookings: apiData.confirmedBookings || 0,
           completedBookings: apiData.completedBookings || 0,
+
+          // Tournament stats
+          totalTournaments: 0,
+          activeTournaments: 0,
+          upcomingTournaments: 0,
+          aboutToStartTournaments: 0,
+          ongoingTournaments: 0,
         });
+      }
+
+      // Set tournament stats
+      if (tournamentStatsRes.success) {
+        const tournamentData = tournamentStatsRes.data;
+        setStats(prevStats => ({
+          ...prevStats,
+          totalTournaments: tournamentData.totalTournaments || 0,
+          activeTournaments: tournamentData.activeTournaments || 0,
+          upcomingTournaments: tournamentData.upcomingTournaments || 0,
+          aboutToStartTournaments: tournamentData.aboutToStartTournaments || 0,
+          ongoingTournaments: tournamentData.ongoingTournaments || 0,
+        }));
       }
 
       // Set revenue chart data
@@ -251,6 +280,11 @@ const OwnerDashboard = () => {
         monthlyBookings: 32,
         totalVenues: 3,
         totalCourts: 12,
+        totalTournaments: 8,
+        activeTournaments: 3,
+        upcomingTournaments: 2,
+        aboutToStartTournaments: 1,
+        ongoingTournaments: 2,
         activeBookings: 8,
         pendingBookings: 4,
       });
@@ -407,7 +441,7 @@ const OwnerDashboard = () => {
 
       {/* Key Statistics */}
       <Row gutter={[16, 16]} style={{ marginBottom: "24px" }}>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={4}>
           <Card hoverable onClick={() => navigate("/owner/venues")}>
             <Statistic
               title="Tổng doanh thu"
@@ -430,7 +464,7 @@ const OwnerDashboard = () => {
             </Text>
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={4}>
           <Card hoverable onClick={() => navigate("/owner/bookings")}>
             <Statistic
               title="Tổng lượt đặt"
@@ -450,7 +484,7 @@ const OwnerDashboard = () => {
             </Text>
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={4}>
           <Card hoverable onClick={() => navigate("/owner/courts")}>
             <Statistic
               title="Tổng số sân"
@@ -471,7 +505,26 @@ const OwnerDashboard = () => {
             </Text>
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} sm={12} lg={4}>
+          <Card hoverable onClick={() => navigate("/owner/tournaments")}>
+            <Statistic
+              title="Giải đấu"
+              value={stats.totalTournaments}
+              valueStyle={{ color: "#fa541c" }}
+              prefix={<TrophyOutlined />}
+            />
+            <Progress
+              percent={stats.totalTournaments > 0 ? Math.round((stats.activeTournaments / stats.totalTournaments) * 100) : 0}
+              showInfo={false}
+              strokeColor="#fa541c"
+              trailColor="#f0f0f0"
+            />
+            <Text type="secondary">
+              <TrophyOutlined style={{ color: "#fa541c" }} /> {stats.aboutToStartTournaments} sắp diễn ra, {stats.ongoingTournaments} đang diễn ra
+            </Text>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={4}>
           <Card hoverable onClick={() => navigate("/owner/bookings")}>
             <Statistic
               title="Chờ duyệt"
@@ -723,6 +776,21 @@ const OwnerDashboard = () => {
                   }}
                 >
                   Xem booking
+                </Button>
+              </Col>
+              <Col xs={24} sm={8} md={7} lg={7}>
+                <Button
+                  block
+                  icon={<TrophyOutlined />}
+                  onClick={() => navigate("/owner/tournaments")}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: 40,
+                  }}
+                >
+                  Quản lý giải đấu
                 </Button>
               </Col>
               {user?.role !== "owner" && (
