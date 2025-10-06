@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from "react";
-import {
-  AppstoreOutlined,
-  ExceptionOutlined,
-  UserOutlined,
-  DollarCircleOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-} from "@ant-design/icons";
-import { Layout, Menu, Dropdown, Space, Avatar } from "antd";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { useCurrentApp } from "../context/app.context";
-import type { MenuProps } from "antd";
 import { logoutAPI } from "@/services/api";
+import {
+    AppstoreOutlined,
+    DollarCircleOutlined,
+    ExceptionOutlined,
+    MenuFoldOutlined,
+    MenuUnfoldOutlined,
+    TrophyOutlined,
+    UserOutlined,
+} from "@ant-design/icons";
+import type { MenuProps } from "antd";
+import { Avatar, Dropdown, Layout, Menu, Space } from "antd";
+import React, { useEffect, useState } from "react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useCurrentApp } from "../context/app.context";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -72,6 +72,15 @@ const LayoutOwner = () => {
       ),
       key: "/owner/bookings",
       icon: <DollarCircleOutlined />,
+    },
+    {
+      label: (
+        <Link style={{ textDecoration: "none" }} to="/owner/tournaments">
+          Manage Tournaments
+        </Link>
+      ),
+      key: "/owner/tournaments",
+      icon: <TrophyOutlined />,
     },
   ];
 
