@@ -152,8 +152,53 @@ const PayOSReturn: React.FC = () => {
           body: JSON.stringify(verifyPayload),
         });
 
-        const backendResult = await backendResponse.json();
-        console.log("✅ Backend verification result:", backendResult);
+        // Safe JSON parsing: backend may return non-JSON on errors (405) or empty body
+        const safeParseJson = async (res: Response) => {
+          try {
+            const contentType = res.headers.get("content-type") || "";
+            if (!contentType.includes("application/json")) {
+              // Not JSON — return null but include text for logging
+              const txt = await res.text();
+              return { __rawText: txt } as any;
+            }
+            // Try parse JSON; if empty body this will throw and caught below
+            return await res.json();
+          } catch {
+            // Fall back to raw text for diagnostics
+            try {
+              const txt = await res.text();
+              return { __rawText: txt } as any;
+            } catch {
+              return null;
+            }
+          }
+        };
+
+        const backendResult = await safeParseJson(backendResponse);
+        console.log(
+          "✅ Backend verification response status:",
+          backendResponse.status,
+          backendResponse.statusText
+        );
+        if (backendResult && (backendResult as any).__rawText) {
+          console.warn(
+            "Backend returned non-JSON body:",
+            (backendResult as any).__rawText
+          );
+        } else {
+          console.log("✅ Backend verification result:", backendResult);
+        }
+
+        if (!backendResponse.ok) {
+          // Provide a helpful error with status and potential body for debugging
+          const bodyPreview =
+            backendResult && (backendResult as any).__rawText
+              ? (backendResult as any).__rawText
+              : JSON.stringify(backendResult);
+          throw new Error(
+            `Backend verify failed: HTTP ${backendResponse.status} ${backendResponse.statusText} - ${bodyPreview}`
+          );
+        }
 
         if (backendResult.success && backendResult.data) {
           const { booking: verifiedBooking, paymentInfo } = backendResult.data;
