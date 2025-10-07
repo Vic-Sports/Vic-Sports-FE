@@ -6,7 +6,6 @@ import {
   Card,
   Typography,
   Button,
-  Spin,
   Empty,
   Select,
   Divider,
@@ -33,6 +32,7 @@ import type { IVenue } from "@/types/venue";
 import { getVenueByIdAPI, getVenueCourtsAPI } from "@/services/venueApi";
 import BookingModal from "@/components/client/booking/BookingModal";
 import "./VenueCourts.scss";
+import FullscreenLoader from "@/components/shared/FullscreenLoader";
 
 import VenueImageCarousel from "./VenueImageCarousel";
 
@@ -81,7 +81,6 @@ const VenueCourts: React.FC = () => {
   // Load venue data
   const loadVenueData = useCallback(async () => {
     try {
-      setLoading(true);
       const response = await getVenueByIdAPI(venueId!);
 
       if (response.data) {
@@ -153,17 +152,29 @@ const VenueCourts: React.FC = () => {
       setCourts([]);
       setSportGroups([]);
       setFilteredSportGroups([]);
-    } finally {
-      setLoading(false);
     }
   }, [venueId, groupCourtsBySportType]);
 
-  // Load data on component mount
+  // Load data on component mount with centralized loading state
   useEffect(() => {
-    if (venueId) {
-      loadVenueData();
-      loadCourtsData();
-    }
+    let mounted = true;
+    const loadAll = async () => {
+      if (!venueId) return;
+      try {
+        setLoading(true);
+        await Promise.all([loadVenueData(), loadCourtsData()]);
+      } catch (err) {
+        console.error("Error loading venue or courts:", err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    loadAll();
+
+    return () => {
+      mounted = false;
+    };
   }, [venueId, loadVenueData, loadCourtsData]);
 
   // Apply filters on frontend
@@ -257,28 +268,30 @@ const VenueCourts: React.FC = () => {
   };
 
   if (loading) {
+    // Use portal-based fullscreen loader to ensure single loader visible
     return (
-      <div className="venue-courts-loading">
-        <Spin size="large" />
-        <Text>Đang tải dữ liệu...</Text>
-      </div>
+      <>
+        <FullscreenLoader message="Đang tải dữ liệu..." />
+      </>
     );
   }
 
   if (error || !venue) {
     return (
-      <div className="venue-courts-error">
-        <Empty
-          description={error || "Không tìm thấy venue"}
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-        />
-        <Button
-          type="primary"
-          icon={<ArrowLeftOutlined />}
-          onClick={() => window.history.back()}
-        >
-          Quay lại
-        </Button>
+      <div className="venue-courts-page">
+        <div className="venue-courts-error">
+          <Empty
+            description={error || "Không tìm thấy venue"}
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          />
+          <Button
+            type="primary"
+            icon={<ArrowLeftOutlined />}
+            onClick={() => window.history.back()}
+          >
+            Quay lại
+          </Button>
+        </div>
       </div>
     );
   }

@@ -24,13 +24,11 @@ import {
   CreditCardOutlined,
   CheckCircleOutlined,
   ArrowLeftOutlined,
-  BankOutlined,
-  MobileOutlined,
-  WalletOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useCurrentApp } from "@/components/context/app.context";
+import { fetchAccountAPI } from "@/services/api";
 import { createBookingAPI } from "@/services/bookingApi";
 import { createPayOSPayment } from "@/services/payOSApi";
 import type { ICreateBookingRequest } from "@/types/payment";
@@ -95,7 +93,7 @@ const BookingPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const { user, isAuthenticated } = useCurrentApp();
+  const { user, isAuthenticated, setUser } = useCurrentApp();
 
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
@@ -109,29 +107,28 @@ const BookingPage: React.FC = () => {
       name: "PayOS",
       icon: <CreditCardOutlined />,
       description: "Thanh toán qua PayOS (Visa, MasterCard, ATM, QR Code)",
-      fee: 0,
     },
-    {
-      id: "momo",
-      name: "MoMo",
-      icon: <MobileOutlined />,
-      description: "Ví điện tử MoMo",
-      fee: 0,
-    },
-    {
-      id: "zalopay",
-      name: "ZaloPay",
-      icon: <WalletOutlined />,
-      description: "Ví điện tử ZaloPay",
-      fee: 0,
-    },
-    {
-      id: "banking",
-      name: "Chuyển khoản ngân hàng",
-      icon: <BankOutlined />,
-      description: "Chuyển khoản trực tiếp qua ngân hàng",
-      fee: 0,
-    },
+    // {
+    //   id: "momo",
+    //   name: "MoMo",
+    //   icon: <MobileOutlined />,
+    //   description: "Ví điện tử MoMo",
+    //   fee: 0,
+    // },
+    // {
+    //   id: "zalopay",
+    //   name: "ZaloPay",
+    //   icon: <WalletOutlined />,
+    //   description: "Ví điện tử ZaloPay",
+    //   fee: 0,
+    // },
+    // {
+    //   id: "banking",
+    //   name: "Chuyển khoản ngân hàng",
+    //   icon: <BankOutlined />,
+    //   description: "Chuyển khoản trực tiếp qua ngân hàng",
+    //   fee: 0,
+    // },
   ];
 
   useEffect(() => {
@@ -175,8 +172,50 @@ const BookingPage: React.FC = () => {
         email: user.email || "",
         notes: "",
       });
+      // If phone is missing in the context user, fetch full profile from backend
+      if (!user.phone) {
+        let mounted = true;
+        (async () => {
+          try {
+            const res = await fetchAccountAPI();
+            // fetchAccountAPI returns IBackendRes<IFetchAccount>, where IFetchAccount has `user: IUser`
+            const fetchedUser = res?.data?.user;
+            if (mounted && fetchedUser) {
+              // Update form with fetched values (prefer fetched values)
+              form.setFieldsValue({
+                fullName:
+                  fetchedUser.fullName || form.getFieldValue("fullName"),
+                phone: fetchedUser.phone || form.getFieldValue("phone"),
+                email: fetchedUser.email || form.getFieldValue("email"),
+              });
+
+              // Update global user in context and sessionStorage so other pages can use it
+              try {
+                if (setUser) {
+                  setUser(fetchedUser);
+                }
+                sessionStorage.setItem("user", JSON.stringify(fetchedUser));
+              } catch (e) {
+                // ignore storage errors
+                console.warn(
+                  "Failed to update sessionStorage with fetched profile",
+                  e
+                );
+              }
+            }
+          } catch (err) {
+            console.warn(
+              "Failed to fetch account profile on booking page:",
+              err
+            );
+          }
+        })();
+        return () => {
+          mounted = false;
+        };
+      }
     }
-  }, [isAuthenticated, user, form]);
+  }, [isAuthenticated, user, form, setUser]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -509,6 +548,8 @@ const BookingPage: React.FC = () => {
             current={currentStep}
             items={steps}
             className="booking-steps"
+            direction="horizontal"
+            labelPlacement="horizontal"
           />
         </Card>
 
@@ -552,7 +593,7 @@ const BookingPage: React.FC = () => {
                             type="link"
                             size="small"
                             onClick={() =>
-                              navigate("/auth/login", {
+                              navigate("/login", {
                                 state: {
                                   returnUrl: location.pathname,
                                   bookingData: bookingData,
