@@ -134,211 +134,84 @@ const PayOSReturn: React.FC = () => {
         console.log(
           "🔄 Calling Backend PayOS status API (JSON) via service helper..."
         );
-        // Use helper to call JSON endpoint instead of raw fetch
         const backendResult = await getPayOSPaymentStatus(
           String(payosParams.orderCode)
         );
         console.log("✅ Backend status result:", backendResult);
 
-        if (backendResult.success && backendResult.data) {
-          const { booking: verifiedBooking, paymentInfo } = backendResult.data;
-
-          // Update local state with verified data
-          setBookingData(verifiedBooking);
-          const inferredStatus =
-            paymentInfo?.status ||
-            (verifiedBooking?.paymentStatus === "paid"
-              ? "PAID"
-              : verifiedBooking?.status === "confirmed"
-              ? "PAID"
-              : undefined);
-          const normalizedStatus = String(inferredStatus || "")
+        // Unpack BE payload: either {orderCode,status} or {booking}
+        if (!backendResult.success) {
+          throw new Error(
+            backendResult.message || "Backend verification failed"
+          );
+        }
+        const payload = backendResult.data;
+        // Case 1: success payment info
+        if (payload.orderCode) {
+          const normalizedStatus = String(payload.status || "")
             .trim()
             .toUpperCase();
+          const paymentInfo = {
+            orderCode: payload.orderCode,
+            status: normalizedStatus,
+          };
+          // update state
           setPaymentData({
-            paymentRef:
-              paymentInfo.orderCode ||
-              paymentInfo.paymentRef ||
-              payosParams.orderCode ||
-              verifiedBooking?.payosOrderCode,
-            amount:
-              Number(paymentInfo.amount) ||
-              Number(verifiedBooking?.totalPrice) ||
-              0,
-            status:
-              normalizedStatus === "PAID" ||
-              normalizedStatus === "SUCCESS" ||
-              normalizedStatus === "SUCCEEDED"
-                ? "success"
-                : "failed",
+            paymentRef: paymentInfo.orderCode,
+            amount: (payload as any).totalPrice || 0,
+            status: ["PAID", "SUCCESS", "SUCCEEDED"].includes(normalizedStatus)
+              ? "success"
+              : "failed",
             method: "PayOS",
             transactionId: payosParams.id,
           });
-
-          if (
-            normalizedStatus === "PAID" ||
-            normalizedStatus === "SUCCESS" ||
-            normalizedStatus === "SUCCEEDED"
-          ) {
-            // Merge booking data with any previously stored info (court names, customer info)
-            let stored: any = null;
-            try {
-              const raw = localStorage.getItem("currentBooking");
-              stored = raw ? JSON.parse(raw) : null;
-            } catch {
-              // ignore JSON parse error
-            }
-
-            const mergedBooking = {
-              ...stored,
-              ...verifiedBooking,
-              courtIds: stored?.courtIds || verifiedBooking?.courtIds || [],
-              courtNames:
-                stored?.courtNames ||
-                verifiedBooking?.courtNames ||
-                verifiedBooking?.court?.name,
-              customerInfo:
-                stored?.customerInfo || bookingData?.customerInfo || undefined,
-              bookingRef:
-                verifiedBooking?.bookingCode || stored?.bookingRef || undefined,
-              paymentStatus: "paid",
-            };
-
-            // Clear localStorage and navigate immediately to success page
+          // success → navigate
+          if (["PAID", "SUCCESS", "SUCCEEDED"].includes(normalizedStatus)) {
+            const stored =
+              JSON.parse(localStorage.getItem("currentBooking") || "null") ||
+              {};
             localStorage.removeItem("currentBooking");
             navigate("/booking/success", {
               state: {
-                booking: mergedBooking,
+                booking: stored,
                 paymentMethod: "payos",
                 paymentData: paymentInfo,
               },
             });
             return;
-          } else {
-            // Check if user cancelled payment first (highest priority)
-            if (payosParams.cancel) {
-              setPaymentStatus("failed");
-              setErrorMessage("Thanh toán đã bị hủy bởi người dùng");
-              message.error("Thanh toán đã bị hủy bởi người dùng");
-              return;
-            }
-
-            // If BE already classifies as FAILED/CANCELLED → fail immediately
-            if (
-              normalizedStatus === "FAILED" ||
-              normalizedStatus === "CANCELLED"
-            ) {
-              setPaymentStatus("failed");
-              setErrorMessage("Thanh toán thất bại hoặc đã hủy");
-              message.error("Thanh toán thất bại hoặc đã hủy");
-              return;
-            }
-
-            // If not paid, try redirecting to checkout if available (PENDING/INIT)
-            // But only if user didn't cancel
-            const redirectUrl =
-              paymentInfo.checkoutUrl || paymentInfo.paymentUrl;
-            if (
-              (normalizedStatus === "PENDING" || normalizedStatus === "INIT") &&
-              redirectUrl &&
-              !payosParams.cancel
-            ) {
-              window.location.href = redirectUrl;
-              return;
-            }
-            // Otherwise poll status until PAID/FAILED
-            try {
-              const orderCode =
-                paymentInfo.orderCode ||
-                paymentInfo.paymentRef ||
-                payosParams.orderCode;
-              if (!orderCode)
-                throw new Error("Missing order code to poll status");
-
-              let attempts = 0;
-              const maxAttempts = 30; // ~60s at 2s interval
-              const poll = setInterval(async () => {
-                attempts++;
-                try {
-                  const statusRes = await getPayOSPaymentStatus(
-                    String(orderCode)
-                  );
-                  const status = statusRes?.data?.status || statusRes?.status;
-                  if (status === "PAID") {
-                    clearInterval(poll);
-                    // Merge booking data with stored info before navigating
-                    let stored: any = null;
-                    try {
-                      const raw = localStorage.getItem("currentBooking");
-                      stored = raw ? JSON.parse(raw) : null;
-                    } catch {
-                      // ignore JSON parse error
-                    }
-                    const mergedBooking = {
-                      ...stored,
-                      ...verifiedBooking,
-                      courtIds:
-                        stored?.courtIds || verifiedBooking?.courtIds || [],
-                      courtNames:
-                        stored?.courtNames ||
-                        verifiedBooking?.courtNames ||
-                        verifiedBooking?.court?.name,
-                      customerInfo:
-                        stored?.customerInfo ||
-                        bookingData?.customerInfo ||
-                        undefined,
-                      bookingRef:
-                        verifiedBooking?.bookingCode ||
-                        stored?.bookingRef ||
-                        undefined,
-                      paymentStatus: "paid",
-                    };
-                    localStorage.removeItem("currentBooking");
-                    navigate("/booking/success", {
-                      state: {
-                        booking: mergedBooking,
-                        paymentMethod: "payos",
-                        paymentData: { ...paymentInfo, status: "PAID" },
-                      },
-                      replace: true,
-                    });
-                    return;
-                  } else if (status === "FAILED" || status === "CANCELLED") {
-                    setSuppressRender(false);
-                    clearInterval(poll);
-                    setPaymentStatus("failed");
-                    setErrorMessage("Thanh toán thất bại hoặc đã hủy");
-                    message.error("Thanh toán thất bại hoặc đã hủy");
-                  } else if (attempts >= maxAttempts) {
-                    setSuppressRender(false);
-                    clearInterval(poll);
-                    setPaymentStatus("failed");
-                    setErrorMessage("Hết thời gian chờ thanh toán");
-                    message.error("Hết thời gian chờ thanh toán");
-                  }
-                } catch {
-                  setSuppressRender(false);
-                  clearInterval(poll);
-                  setPaymentStatus("failed");
-                  setErrorMessage("Không thể kiểm tra trạng thái thanh toán");
-                  message.error("Không thể kiểm tra trạng thái thanh toán");
-                }
-              }, 2000);
-              return;
-            } catch {
-              setSuppressRender(false);
-              throw new Error(
-                `Payment was not successful (status: ${
-                  normalizedStatus || "UNKNOWN"
-                })`
-              );
-            }
           }
-        } else {
-          // Nếu backend trả về success=false hoặc data thiếu, throw để rơi vào catch
-          throw new Error(
-            backendResult.message || "Backend verification failed"
+          // pending or failed → show error
+          setSuppressRender(false);
+          setLoading(false);
+          setPaymentStatus(
+            ["PAID", "SUCCESS", "SUCCEEDED"].includes(normalizedStatus)
+              ? "success"
+              : "failed"
           );
+          setErrorMessage(
+            ["PAID", "SUCCESS", "SUCCEEDED"].includes(normalizedStatus)
+              ? ""
+              : "Thanh toán không thành công"
+          );
+          message[
+            ["PAID", "SUCCESS", "SUCCEEDED"].includes(normalizedStatus)
+              ? "success"
+              : "error"
+          ](
+            ["PAID", "SUCCESS", "SUCCEEDED"].includes(normalizedStatus)
+              ? "Thanh toán thành công"
+              : "Thanh toán thất bại"
+          );
+          return;
+        }
+        // Case 2: fallback booking info
+        if (payload.booking) {
+          setBookingData(payload.booking);
+          setSuppressRender(false);
+          setLoading(false);
+          setPaymentStatus("failed");
+          setErrorMessage(backendResult.message || "Booking info only");
+          return;
         }
       } catch (backendError: any) {
         console.error("❌ Backend status check failed:", backendError.message);
