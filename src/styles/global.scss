@@ -1,40 +1,44 @@
 $spacer: 1rem;
 $spacers: (
-    0: 0,
-    1: $spacer * .25,
-    2: $spacer * .5,
-    3: $spacer,
-    4: $spacer * 1.5,
-    5: $spacer * 3,
-    6: $spacer * 4,
-    7: $spacer * 5,
+  0: 0,
+  1: $spacer * 0.25,
+  2: $spacer * 0.5,
+  3: $spacer,
+  4: $spacer * 1.5,
+  5: $spacer * 3,
+  6: $spacer * 4,
+  7: $spacer * 5,
 );
 @import "variable.scss";
 @import "bootstrap/scss/bootstrap.scss";
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 // Force light theme globally - override any framework styles
-html, body, #root {
-    background-color: #FFFFFF !important;
-    color: #1a1a1a !important;
-    min-height: 100vh !important;
-    height: 100vh !important;
+html,
+body,
+#root {
+  background-color: #ffffff !important;
+  color: #1a1a1a !important;
+  min-height: 100vh !important;
+  height: 100vh !important;
 }
 
 // Global styles with fixed light theme
 html {
-  background-color: #FFFFFF !important;
+  background-color: #ffffff !important;
 }
 
 body {
-  background-color: #FFFFFF !important;
+  background-color: #ffffff !important;
   color: #1a1a1a !important;
-  font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: "Space Grotesk", "Inter", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+    "Droid Sans", "Helvetica Neue", sans-serif;
   transition: all 0.3s ease;
   margin: 0;
   padding: 0;
@@ -42,23 +46,30 @@ body {
 
 // Ensure root div also has light background
 #root {
-  background-color: #FFFFFF !important;
+  background-color: #ffffff !important;
   min-height: 100vh;
 }
 
 // Override any loading states or spinners
-.ant-spin-container, .ant-spin, .ant-spin-dot {
+.ant-spin-container,
+.ant-spin,
+.ant-spin-dot {
   background-color: transparent !important;
 }
 
 // Ensure all major containers have dark background
-.container, .container-fluid, .row, .col {
+.container,
+.container-fluid,
+.row,
+.col {
   background-color: transparent !important;
 }
 
 // Override bootstrap and antd dark backgrounds
-.bg-white, .ant-layout, .ant-layout-content {
-  background-color: #FFFFFF !important;
+.bg-white,
+.ant-layout,
+.ant-layout-content {
+  background-color: #ffffff !important;
   color: #1a1a1a !important;
 }
 
@@ -125,7 +136,7 @@ body {
   border: 1px solid var(--border-card);
   border-radius: 12px;
   transition: all 0.3s ease;
-  
+
   &:hover {
     background-color: var(--background-card-hover);
     transform: translateY(-2px);
@@ -159,14 +170,18 @@ body {
 }
 
 .btn-theme-primary {
-  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--brand-primary) 0%,
+    var(--brand-secondary) 100%
+  );
   border: none;
   color: white;
   font-weight: 600;
   padding: 0.75rem 2rem;
   border-radius: 25px;
   transition: all 0.3s ease;
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px var(--shadow-medium);
@@ -182,7 +197,7 @@ body {
   padding: 0.75rem 2rem;
   border-radius: 25px;
   transition: all 0.3s ease;
-  
+
   &:hover {
     background: var(--brand-primary);
     color: white;
@@ -193,24 +208,24 @@ body {
 
 // Custom navbar with fixed light theme
 .custom-navbar-theme {
-  background-color: #FFFFFF !important;
+  background-color: #ffffff !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
-  
+
   .navbar-brand {
     color: var(--brand-primary) !important;
     font-weight: 700;
   }
-  
+
   .nav-link {
     color: var(--text-primary) !important;
     font-weight: 500;
     transition: all 0.3s ease;
-    
+
     &:hover {
       color: var(--brand-primary) !important;
     }
-    
+
     &.active {
       color: var(--brand-primary) !important;
       font-weight: 600;
@@ -224,7 +239,7 @@ body {
   border: 1px solid var(--border-card);
   border-radius: 12px;
   transition: all 0.3s ease;
-  
+
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 30px var(--shadow-medium);
@@ -237,7 +252,11 @@ body {
 }
 
 .brand-gradient {
-  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--brand-primary) 0%,
+    var(--brand-secondary) 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -272,7 +291,7 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--scroll-thumb-background);
   border-radius: 4px;
-  
+
   &:hover {
     background: var(--scroll-thumb-hover);
   }
@@ -334,10 +353,10 @@ body {
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   height: 80px;
-  
+
   .logo-container {
     position: relative;
-    
+
     .logo-icon {
       width: 56px;
       height: 56px;
@@ -350,7 +369,7 @@ body {
       font-size: 24px;
       animation: pulse-neon 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
-    
+
     .logo-glow {
       position: absolute;
       inset: 0;
@@ -363,7 +382,7 @@ body {
       animation: glow 2s ease-in-out infinite alternate;
     }
   }
-  
+
   .logo-text {
     font-size: 32px;
     font-weight: 700;
@@ -376,7 +395,7 @@ body {
     line-height: 1;
     animation: gradient 3s ease infinite;
   }
-  
+
   .logo-subtitle {
     font-size: 12px;
     color: rgba(26, 26, 26, 0.6);
@@ -384,10 +403,10 @@ body {
     letter-spacing: 2px;
     margin: 0;
   }
-  
+
   .nav-links {
     gap: 8px;
-    
+
     .nav-link {
       padding: 12px 24px;
       color: rgba(26, 26, 26, 0.8);
@@ -396,30 +415,32 @@ body {
       transition: all 0.3s ease;
       font-weight: 500;
       backdrop-filter: blur(10px);
-      
-      &:hover, &.active {
+
+      &:hover,
+      &.active {
         color: #1a1a1a;
         background: rgba(0, 0, 0, 0.1);
       }
     }
   }
-  
+
   .user-profile {
     display: flex;
     align-items: center;
-    
+
     .profile-avatar {
       position: relative;
       width: 40px;
       height: 40px;
       background: linear-gradient(45deg, #0ea5e9, #d946ef);
-      border-radius: 12px;
+      border-radius: 50%; /* make circular */
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
       font-size: 18px;
-      
+      overflow: hidden; /* ensure inner image doesn't overflow */
+
       .status-indicator {
         position: absolute;
         top: -4px;
@@ -432,14 +453,14 @@ body {
         animation: pulse 2s infinite;
       }
     }
-    
+
     .profile-name {
       font-size: 14px;
       font-weight: 600;
       margin: 0;
       color: #1a1a1a;
     }
-    
+
     .profile-level {
       font-size: 12px;
       color: rgba(26, 26, 26, 0.6);
@@ -454,8 +475,8 @@ body {
   z-index: 10;
   padding: 80px 0 32px;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
-  background-color: #FFFFFF;
-  
+  background-color: #ffffff;
+
   .footer-brand {
     .footer-logo {
       width: 64px;
@@ -468,7 +489,7 @@ body {
       color: white;
       font-size: 24px;
     }
-    
+
     .footer-brand-name {
       font-size: 64px;
       font-weight: 700;
@@ -478,13 +499,13 @@ body {
       background-clip: text;
       margin: 0;
     }
-    
+
     .footer-brand-subtitle {
       color: rgba(26, 26, 26, 0.6);
       font-weight: 500;
       margin: 0;
     }
-    
+
     .footer-description {
       font-size: 18px;
       line-height: 1.6;
@@ -492,11 +513,11 @@ body {
       max-width: 400px;
       margin: 16px 0 24px 0;
     }
-    
+
     .social-links {
       display: flex;
       gap: 16px;
-      
+
       .social-link {
         width: 48px;
         height: 48px;
@@ -509,21 +530,29 @@ body {
         font-size: 20px;
         text-decoration: none;
         transition: all 0.3s ease;
-        
+
         &:hover {
           background: rgba(0, 0, 0, 0.2);
           color: #1a1a1a;
           transform: translateY(-2px);
         }
-        
-        &.facebook:hover { color: #1877f2; }
-        &.twitter:hover { color: #1da1f2; }
-        &.instagram:hover { color: #e4405f; }
-        &.discord:hover { color: #5865f2; }
+
+        &.facebook:hover {
+          color: #1877f2;
+        }
+        &.twitter:hover {
+          color: #1da1f2;
+        }
+        &.instagram:hover {
+          color: #e4405f;
+        }
+        &.discord:hover {
+          color: #5865f2;
+        }
       }
     }
   }
-  
+
   .footer-section {
     .footer-section-title {
       font-size: 20px;
@@ -531,21 +560,21 @@ body {
       color: #1a1a1a;
       margin-bottom: 24px;
     }
-    
+
     .footer-links {
       list-style: none;
       padding: 0;
       margin: 0;
-      
+
       li {
         margin-bottom: 12px;
-        
+
         a {
           color: rgba(26, 26, 26, 0.6);
           text-decoration: none;
           font-size: 16px;
           transition: all 0.3s ease;
-          
+
           &:hover {
             color: #0ea5e9;
           }
@@ -553,13 +582,13 @@ body {
       }
     }
   }
-  
+
   .footer-bottom {
     margin-top: 48px;
     padding-top: 32px;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     text-align: center;
-    
+
     p {
       color: rgba(26, 26, 26, 0.6);
       margin: 0;
@@ -569,7 +598,8 @@ body {
 
 // Animations
 @keyframes pulse-neon {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7);
     transform: scale(1);
   }
@@ -620,28 +650,28 @@ body {
   .theme-section {
     padding: 2rem 0;
   }
-  
+
   .btn-theme-primary,
   .btn-theme-outline {
     padding: 0.5rem 1.5rem;
     font-size: 0.9rem;
   }
-  
+
   .futuristic-header {
     .logo-text {
       font-size: 24px;
     }
-    
+
     .nav-links {
       display: none;
     }
-    
+
     .user-profile .profile-name,
     .user-profile .profile-level {
       display: none;
     }
   }
-  
+
   .futuristic-footer {
     .footer-brand-name {
       font-size: 32px;
@@ -657,15 +687,15 @@ body {
   background-color: #fff !important;
   border: 1px solid rgba(0, 0, 0, 0.1) !important;
   border-radius: 12px !important;
-  
+
   .ant-select-item {
     color: rgba(26, 26, 26, 0.8) !important;
-    
+
     &:hover {
       background-color: rgba(14, 165, 233, 0.2) !important;
       color: #1a1a1a !important;
     }
-    
+
     &.ant-select-item-option-selected {
       background-color: rgba(14, 165, 233, 0.3) !important;
       color: #1a1a1a !important;
@@ -679,39 +709,39 @@ body {
     border: 1px solid rgba(0, 0, 0, 0.1) !important;
     border-radius: 12px !important;
   }
-  
+
   .ant-picker-panel {
     background-color: #fff !important;
     border: none !important;
   }
-  
+
   .ant-picker-header {
     border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
-    
+
     .ant-picker-header-view {
       color: #1a1a1a !important;
     }
   }
-  
+
   .ant-picker-body {
     .ant-picker-cell {
       color: rgba(26, 26, 26, 0.6) !important;
-      
+
       &:hover {
         background-color: rgba(14, 165, 233, 0.2) !important;
-        
+
         .ant-picker-cell-inner {
           color: #1a1a1a !important;
         }
       }
-      
+
       &.ant-picker-cell-selected {
         .ant-picker-cell-inner {
           background-color: #0ea5e9 !important;
           color: white !important;
         }
       }
-      
+
       &.ant-picker-cell-today {
         .ant-picker-cell-inner {
           border-color: #0ea5e9 !important;
@@ -725,16 +755,16 @@ body {
 // Time picker specific
 .ant-picker-time-panel {
   background-color: #fff !important;
-  
+
   .ant-picker-time-panel-column {
     .ant-picker-time-panel-cell {
       color: rgba(26, 26, 26, 0.6) !important;
-      
+
       &:hover {
         background-color: rgba(14, 165, 233, 0.2) !important;
         color: #1a1a1a !important;
       }
-      
+
       &.ant-picker-time-panel-cell-selected {
         background-color: #0ea5e9 !important;
         color: white !important;
@@ -757,13 +787,13 @@ body {
   font-size: 15px !important;
   font-weight: 500 !important;
   transition: all 0.3s ease !important;
-  
+
   &:hover {
     color: #1a1a1a !important;
     background-color: rgba(255, 255, 255, 0.1) !important;
     transform: translateY(-1px) !important;
   }
-  
+
   &.active {
     color: #0ea5e9 !important;
     background-color: rgba(14, 165, 233, 0.1) !important;

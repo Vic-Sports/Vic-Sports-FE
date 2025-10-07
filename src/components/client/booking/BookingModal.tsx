@@ -47,6 +47,8 @@ interface TimeSlot {
   end: string;
   isAvailable: boolean;
   price: number;
+  // Optional map of courtId -> price for this slot when multiple courts selected
+  priceByCourt?: Record<string, number>;
 }
 
 interface CourtWithNumber extends ICourt {
@@ -499,50 +501,109 @@ const BookingModal: React.FC<BookingModalProps> = ({
           isAvailable = true;
         }
 
-        // Prefer price returned by availability API if present; fallback to court pricing
-        let slotPrice: number | undefined = undefined;
-        if (selectedCourts.length === 1) {
-          const availability = availabilityResponses[0];
-          const timeSlotData = availability?.data?.timeSlots?.find(
-            (slot) => slot.start === start && slot.end === end
-          );
-          slotPrice = timeSlotData?.price;
-        } else {
-          // If multiple courts, ensure price is consistent; take first available price
-          const firstWithPrice = availabilityResponses.find((availability) => {
+        // Compute per-court prices from availability API when possible
+        const priceByCourt: Record<string, number> = {};
+        if (selectedCourts.length >= 1) {
+          for (let i = 0; i < selectedCourts.length; i++) {
+            const courtId = selectedCourts[i];
+            const availability = availabilityResponses[i];
             const timeSlotData = availability?.data?.timeSlots?.find(
               (slot) => slot.start === start && slot.end === end
             );
-            return typeof timeSlotData?.price === "number";
-          });
-          if (firstWithPrice) {
-            const timeSlotData = firstWithPrice?.data?.timeSlots?.find(
-              (slot) => slot.start === start && slot.end === end
-            );
-            slotPrice = timeSlotData?.price;
+
+            // Prefer availability API price but only if it's a positive number
+            let perCourtPrice: number | undefined =
+              typeof timeSlotData?.price === "number" && timeSlotData.price > 0
+                ? timeSlotData.price
+                : undefined;
+
+            // Fallback to court pricing if availability API didn't return a positive price
+            if (typeof perCourtPrice !== "number" || perCourtPrice <= 0) {
+              // Find pricing from the court object
+              const courtObj = selectedCourtsData.find(
+                (c) => c._id === courtId
+              ) as any;
+              if (courtObj && Array.isArray(courtObj.pricing)) {
+                // Try to match pricing same as earlier logic (timeSlot/dayType)
+                let courtPricing = courtObj.pricing.find((p: any) => {
+                  const pricingStart = p.timeSlot?.start;
+                  const pricingEnd = p.timeSlot?.end;
+                  if (!pricingStart || !pricingEnd) return false;
+                  return (
+                    start >= pricingStart &&
+                    end <= pricingEnd &&
+                    p.dayType === dayType &&
+                    p.isActive !== false &&
+                    typeof p.pricePerHour === "number" &&
+                    p.pricePerHour > 0
+                  );
+                });
+
+                if (!courtPricing) {
+                  courtPricing = courtObj.pricing.find(
+                    (p: any) =>
+                      p.dayType === dayType &&
+                      p.isActive !== false &&
+                      typeof p.pricePerHour === "number" &&
+                      p.pricePerHour > 0
+                  );
+                }
+
+                if (!courtPricing) {
+                  courtPricing = courtObj.pricing.find(
+                    (p: any) =>
+                      p.isActive !== false &&
+                      typeof p.pricePerHour === "number" &&
+                      p.pricePerHour > 0
+                  );
+                }
+
+                if (
+                  courtPricing &&
+                  typeof courtPricing.pricePerHour === "number" &&
+                  courtPricing.pricePerHour > 0
+                ) {
+                  perCourtPrice = courtPricing.pricePerHour;
+                }
+              }
+            }
+
+            // Final fallback if still not a positive number
+            if (typeof perCourtPrice !== "number" || perCourtPrice <= 0) {
+              perCourtPrice = getFallbackPrice(dayType);
+            }
+
+            priceByCourt[courtId] = perCourtPrice;
           }
         }
+
+        // Sum per-court prices for the slot as the slot's total price
+        const summedSlotPrice = Object.values(priceByCourt).reduce(
+          (s, v) => s + v,
+          0
+        );
 
         timeSlots.push({
           start,
           end,
           isAvailable,
           price:
-            typeof slotPrice === "number" && slotPrice > 0
-              ? slotPrice
-              : pricing?.pricePerHour && pricing.pricePerHour > 0
-              ? pricing.pricePerHour
-              : getFallbackPrice(dayType), // Use fallback price based on day type
+            selectedCourts.length > 1
+              ? summedSlotPrice
+              : priceByCourt[selectedCourts[0]] || getFallbackPrice(dayType),
+          priceByCourt: Object.keys(priceByCourt).length
+            ? priceByCourt
+            : undefined,
         });
 
         console.log(`Added time slot ${start}-${end}:`, {
           isAvailable,
           price:
-            typeof slotPrice === "number" && slotPrice > 0
-              ? slotPrice
-              : pricing?.pricePerHour && pricing.pricePerHour > 0
-              ? pricing.pricePerHour
-              : getFallbackPrice(dayType),
+            selectedCourts.length > 1
+              ? summedSlotPrice
+              : priceByCourt[selectedCourts[0]] ||
+                pricing?.pricePerHour ||
+                getFallbackPrice(dayType),
         });
       }
 
@@ -787,8 +848,20 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
   const calculateTotal = () => {
     const selectedSlots = getSelectedSlotsDetails();
-    const totalPrice = selectedSlots.reduce((sum, slot) => sum + slot.price, 0);
-    return totalPrice * selectedCourts.length; // Nhân với số sân được chọn
+    // If priceByCourt exists, sum per-court prices for each slot; otherwise use slot.price
+    const totalPrice = selectedSlots.reduce((sum, slot) => {
+      if (slot.priceByCourt && selectedCourts.length > 0) {
+        // Sum prices only for selected courts (ensure order matches)
+        const perSlotSum = selectedCourts.reduce((s, courtId) => {
+          return s + (slot.priceByCourt?.[courtId] || 0);
+        }, 0);
+        return sum + perSlotSum;
+      }
+      // slot.price already represents single-court price or summed price
+      return sum + (slot.price || 0);
+    }, 0);
+
+    return totalPrice;
   };
 
   const handleProceedToBooking = () => {
@@ -1127,7 +1200,62 @@ const BookingModal: React.FC<BookingModalProps> = ({
                                   )}
                                 </div>
                                 <div className="time-slot-price">
-                                  {formatCurrency(slot.price)}
+                                  {slot.priceByCourt &&
+                                  selectedCourts.length > 1 ? (
+                                    (() => {
+                                      const perCourtPrices = selectedCourts.map(
+                                        (id) => ({
+                                          id,
+                                          price: slot.priceByCourt?.[id] || 0,
+                                          courtNumber:
+                                            availableCourts.find(
+                                              (c) => c._id === id
+                                            )?.courtNumber || id,
+                                        })
+                                      );
+
+                                      const uniquePrices = new Set(
+                                        perCourtPrices.map((p) => p.price)
+                                      );
+
+                                      // If prices differ between courts, show breakdown
+                                      if (uniquePrices.size > 1) {
+                                        return (
+                                          <div className="per-court-prices">
+                                            <div className="per-court-list">
+                                              {perCourtPrices.map((p) => (
+                                                <div
+                                                  className="per-court-price"
+                                                  key={p.id}
+                                                >
+                                                  <span className="court-number">
+                                                    {p.courtNumber}:
+                                                  </span>
+                                                  <span className="court-price">
+                                                    {formatCurrency(p.price)}
+                                                  </span>
+                                                </div>
+                                              ))}
+                                            </div>
+                                            <div className="per-court-total">
+                                              Tổng:{" "}
+                                              {formatCurrency(
+                                                perCourtPrices.reduce(
+                                                  (s, p) => s + p.price,
+                                                  0
+                                                )
+                                              )}
+                                            </div>
+                                          </div>
+                                        );
+                                      }
+
+                                      // Otherwise show the slot price (single value)
+                                      return <>{formatCurrency(slot.price)}</>;
+                                    })()
+                                  ) : (
+                                    <>{formatCurrency(slot.price)}</>
+                                  )}
                                 </div>
                               </div>
                             </Button>
