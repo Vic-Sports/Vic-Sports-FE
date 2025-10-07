@@ -150,7 +150,8 @@ export const getPayOSPaymentStatus = async (orderCode: string) => {
       if (err?.response) return err.response.data;
       throw new Error(err?.message || "PayOS BE status error");
     });
-  return res?.data ?? res;
+  // Trả nguyên payload từ backend: { success, data, message }
+  return res;
 };
 
 // FE gọi BE để hủy thanh toán PayOS
