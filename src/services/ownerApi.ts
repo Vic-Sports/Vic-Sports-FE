@@ -1,7 +1,7 @@
 import createInstanceAxios from "./axios.customize";
 import {
-  uploadMultipleVenueImages,
-  uploadMultipleCourtImages,
+    uploadMultipleCourtImages,
+    uploadMultipleVenueImages,
 } from "./uploadHelpers";
 
 // Base path for owner APIs
@@ -16,6 +16,15 @@ export interface DashboardStats {
   pendingBookings: number;
   confirmedBookings: number;
   completedBookings: number;
+  totalTournaments: number;
+  activeTournaments: number;
+  upcomingTournaments: number;
+  aboutToStartTournaments: number;
+  ongoingTournaments: number;
+  completedTournaments: number;
+  cancelledTournaments: number;
+  totalParticipants: number;
+  totalPrizePool: number;
 }
 
 export interface RevenueChartData {
@@ -302,6 +311,154 @@ export const ownerBookingApi = {
   // Check-in customer
   checkInBooking: (bookingId: string): Promise<ApiResponse<any>> => {
     return axios.put(`${OWNER_API_BASE}/bookings/${bookingId}/checkin`);
+  },
+};
+
+// Tournament APIs
+export const ownerTournamentApi = {
+  // Get tournaments with filtering
+  getTournaments: (params?: {
+    search?: string;
+    status?: "upcoming" | "ongoing" | "completed" | "cancelled";
+    sportType?: string;
+    venueId?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+    page?: number;
+    limit?: number;
+  }): Promise<ApiResponse<{ tournaments: any[] }>> => {
+    return axios.get(`${OWNER_API_BASE}/tournaments`, { params });
+  },
+
+  // Get tournament statistics
+  getTournamentStats: (): Promise<ApiResponse<any>> => {
+    return axios.get(`${OWNER_API_BASE}/tournaments/stats`);
+  },
+
+  // Get tournament by ID
+  getTournament: (tournamentId: string): Promise<ApiResponse<any>> => {
+    return axios.get(`${OWNER_API_BASE}/tournaments/${tournamentId}`);
+  },
+
+  // Create new tournament
+  createTournament: (data: {
+    name: string;
+    description?: string;
+    sportType: string;
+    venueId: string;
+    startDate: string;
+    endDate: string;
+    registrationStartDate: string;
+    registrationEndDate: string;
+    maxParticipants: number;
+    minParticipants: number;
+    entryFee: number;
+    prizePool: number;
+    format: "single_elimination" | "double_elimination" | "round_robin" | "swiss";
+    rules?: string;
+    requirements?: string;
+    isActive?: boolean;
+    images?: string[];
+  }): Promise<ApiResponse<any>> => {
+    return axios.post(`${OWNER_API_BASE}/tournaments`, data);
+  },
+
+  // Update tournament
+  updateTournament: (
+    tournamentId: string,
+    data: {
+      name?: string;
+      description?: string;
+      sportType?: string;
+      venueId?: string;
+      startDate?: string;
+      endDate?: string;
+      registrationStartDate?: string;
+      registrationEndDate?: string;
+      maxParticipants?: number;
+      minParticipants?: number;
+      entryFee?: number;
+      prizePool?: number;
+      format?: "single_elimination" | "double_elimination" | "round_robin" | "swiss";
+      rules?: string;
+      requirements?: string;
+      isActive?: boolean;
+      images?: string[];
+    }
+  ): Promise<ApiResponse<any>> => {
+    return axios.put(`${OWNER_API_BASE}/tournaments/${tournamentId}`, data);
+  },
+
+  // Delete tournament
+  deleteTournament: (tournamentId: string): Promise<ApiResponse<any>> => {
+    return axios.delete(`${OWNER_API_BASE}/tournaments/${tournamentId}`);
+  },
+
+  // Start tournament
+  startTournament: (tournamentId: string): Promise<ApiResponse<any>> => {
+    return axios.put(`${OWNER_API_BASE}/tournaments/${tournamentId}/start`);
+  },
+
+  // Cancel tournament
+  cancelTournament: (
+    tournamentId: string,
+    reason?: string
+  ): Promise<ApiResponse<any>> => {
+    return axios.put(`${OWNER_API_BASE}/tournaments/${tournamentId}/cancel`, {
+      reason,
+    });
+  },
+
+  // Get tournament participants
+  getTournamentParticipants: (
+    tournamentId: string
+  ): Promise<ApiResponse<any>> => {
+    return axios.get(`${OWNER_API_BASE}/tournaments/${tournamentId}/participants`);
+  },
+
+  // Get tournament matches
+  getTournamentMatches: (
+    tournamentId: string
+  ): Promise<ApiResponse<any>> => {
+    return axios.get(`${OWNER_API_BASE}/tournaments/${tournamentId}/matches`);
+  },
+
+  // Update match result
+  updateMatchResult: (
+    tournamentId: string,
+    matchId: string,
+    data: {
+      winnerId?: string;
+      score1?: number;
+      score2?: number;
+      status: "scheduled" | "ongoing" | "completed" | "cancelled";
+      notes?: string;
+    }
+  ): Promise<ApiResponse<any>> => {
+    return axios.put(
+      `${OWNER_API_BASE}/tournaments/${tournamentId}/matches/${matchId}`,
+      data
+    );
+  },
+
+  // Upload tournament images
+  uploadTournamentImages: async (
+    tournamentId: string,
+    files: File[]
+  ): Promise<ApiResponse<string[]>> => {
+    const formData = new FormData();
+    files.forEach((file) => formData.append("images", file));
+
+    const response = await axios.post(
+      `${OWNER_API_BASE}/tournaments/${tournamentId}/upload-images`,
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
+    return response;
   },
 };
 
