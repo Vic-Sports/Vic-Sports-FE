@@ -129,31 +129,33 @@ const PayOSReturn: React.FC = () => {
         throw new Error("Missing PayOS orderCode");
       }
 
-      // Step 1: Call Backend API to verify payment
+      // Step 1: Call Backend API to get payment status
       try {
-        console.log("🔄 Calling Backend PayOS verification API...");
+        console.log("🔄 Calling Backend PayOS status API...");
 
-        const verifyPayload = {
-          orderCode: parseInt(payosParams.orderCode),
-          amount: 0, // Will be validated by Backend
-          description: `Payment verification for order ${payosParams.orderCode}`,
-          accountNumber: "", // Optional
-          reference: payosParams.id,
-          transactionDateTime: new Date().toISOString(),
-          currency: "VND",
+        // Get auth token if available
+        const token =
+          localStorage.getItem("token") || localStorage.getItem("authToken");
+        const headers: Record<string, string> = {
+          "Content-Type": "application/json",
         };
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
 
-        // Call Backend verification endpoint
-        const backendResponse = await fetch("/api/v1/payments/payos/verify", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(verifyPayload),
-        });
+        // Call Backend status endpoint
+        const backendResponse = await fetch(
+          `/api/v1/payments/payos/status/${encodeURIComponent(
+            payosParams.orderCode
+          )}`,
+          {
+            method: "GET",
+            headers,
+          }
+        );
 
         const backendResult = await backendResponse.json();
-        console.log("✅ Backend verification result:", backendResult);
+        console.log("✅ Backend status result:", backendResult);
 
         if (backendResult.success && backendResult.data) {
           const { booking: verifiedBooking, paymentInfo } = backendResult.data;
@@ -425,12 +427,12 @@ const PayOSReturn: React.FC = () => {
           );
         }
       } catch (backendError: any) {
-        console.error("❌ Backend verification failed:", backendError.message);
+        console.error("❌ Backend status check failed:", backendError.message);
         setSuppressRender(false);
         setPaymentStatus("failed");
         const errorMsg = payosParams.cancel
           ? "Thanh toán đã bị hủy"
-          : backendError.message || "Xác thực thanh toán thất bại";
+          : backendError.message || "Kiểm tra trạng thái thanh toán thất bại";
         setErrorMessage(errorMsg);
         message.error(errorMsg);
       }
