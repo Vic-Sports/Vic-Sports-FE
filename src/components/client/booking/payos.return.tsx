@@ -129,32 +129,15 @@ const PayOSReturn: React.FC = () => {
         throw new Error("Missing PayOS orderCode");
       }
 
-      // Step 1: Call Backend API to get payment status
+      // Step 1: Call Backend API to get payment status via service helper
       try {
-        console.log("🔄 Calling Backend PayOS status API...");
-
-        // Get auth token if available
-        const token =
-          localStorage.getItem("token") || localStorage.getItem("authToken");
-        const headers: Record<string, string> = {
-          "Content-Type": "application/json",
-        };
-        if (token) {
-          headers["Authorization"] = `Bearer ${token}`;
-        }
-
-        // Call Backend status endpoint
-        const backendResponse = await fetch(
-          `/api/v1/payments/payos/status/${encodeURIComponent(
-            payosParams.orderCode
-          )}`,
-          {
-            method: "GET",
-            headers,
-          }
+        console.log(
+          "🔄 Calling Backend PayOS status API (JSON) via service helper..."
         );
-
-        const backendResult = await backendResponse.json();
+        // Use helper to call JSON endpoint instead of raw fetch
+        const backendResult = await getPayOSPaymentStatus(
+          String(payosParams.orderCode)
+        );
         console.log("✅ Backend status result:", backendResult);
 
         if (backendResult.success && backendResult.data) {
@@ -352,76 +335,7 @@ const PayOSReturn: React.FC = () => {
             }
           }
         } else {
-          // Check if user cancelled payment first (before any polling)
-          if (payosParams.cancel) {
-            setSuppressRender(false);
-            setPaymentStatus("failed");
-            setErrorMessage("Thanh toán đã bị hủy bởi người dùng");
-            message.error("Thanh toán đã bị hủy bởi người dùng");
-            return;
-          }
-
-          // Treat 202 or explicit pending/unknown statuses as processing → start polling
-          const statusCode = backendResponse.status;
-          const topLevelStatus = backendResult?.status;
-          if (
-            statusCode === 202 ||
-            topLevelStatus === "PENDING" ||
-            topLevelStatus === "UNKNOWN"
-          ) {
-            setPaymentStatus("processing");
-
-            const orderCode = payosParams.orderCode;
-            if (!orderCode) {
-              throw new Error(
-                "Thiếu orderCode để kiểm tra trạng thái thanh toán"
-              );
-            }
-
-            let attempts = 0;
-            const maxAttempts = 30; // ~60s at 2s interval
-            const poll = setInterval(async () => {
-              attempts++;
-              try {
-                const statusRes = await getPayOSPaymentStatus(
-                  String(orderCode)
-                );
-                const status = statusRes?.data?.status || statusRes?.status;
-                if (status === "PAID") {
-                  clearInterval(poll);
-                  localStorage.removeItem("currentBooking");
-                  navigate("/booking/success", {
-                    state: {
-                      booking: bookingData,
-                      paymentMethod: "payos",
-                      paymentData: { paymentRef: orderCode, status: "PAID" },
-                    },
-                    replace: true,
-                  });
-                } else if (status === "FAILED" || status === "CANCELLED") {
-                  setSuppressRender(false);
-                  clearInterval(poll);
-                  setPaymentStatus("failed");
-                  setErrorMessage("Thanh toán thất bại hoặc đã hủy");
-                  message.error("Thanh toán thất bại hoặc đã hủy");
-                } else if (attempts >= maxAttempts) {
-                  setSuppressRender(false);
-                  clearInterval(poll);
-                  setPaymentStatus("failed");
-                  setErrorMessage("Hết thời gian chờ thanh toán");
-                  message.error("Hết thời gian chờ thanh toán");
-                }
-              } catch {
-                setSuppressRender(false);
-                clearInterval(poll);
-                setPaymentStatus("failed");
-                setErrorMessage("Không thể kiểm tra trạng thái thanh toán");
-                message.error("Không thể kiểm tra trạng thái thanh toán");
-              }
-            }, 2000);
-            return;
-          }
-
+          // Nếu backend trả về success=false hoặc data thiếu, throw để rơi vào catch
           throw new Error(
             backendResult.message || "Backend verification failed"
           );
