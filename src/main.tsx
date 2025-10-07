@@ -5,7 +5,6 @@ import { App } from "antd";
 import "antd/dist/reset.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { AppProvider } from "components/context/app.context";
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./i18n"; //👈 phải import trước App
@@ -36,12 +35,15 @@ import BookingSuccessPage from "./pages/client/booking-success";
 import CourtDetailPage from "./pages/client/court-detail";
 import BookingHistory from "./pages/client/history";
 import HomePage from "./pages/client/home";
+import TournamentDetailPage from "./pages/client/tournament-detail";
+import TournamentsListPage from "./pages/client/tournaments-list";
 import VenuesPage from "./pages/client/venues";
-import OwnerDashBoardPage from "./pages/owner/dashboard";
-import OwnerVenuesPage from "./pages/owner/venues";
-import OwnerCourtsPage from "./pages/owner/courts";
 import OwnerBookingsPage from "./pages/owner/bookings";
+import OwnerCourtsPage from "./pages/owner/courts";
+import OwnerDashBoardPage from "./pages/owner/dashboard";
 import ManageUserOwnerPage from "./pages/owner/manage.user";
+import OwnerTournamentsPage from "./pages/owner/tournaments";
+import OwnerVenuesPage from "./pages/owner/venues";
 
 const router = createBrowserRouter([
   {
@@ -55,6 +57,14 @@ const router = createBrowserRouter([
       {
         path: "venues",
         element: <VenuesPage />,
+      },
+      {
+        path: "tournaments",
+        element: <TournamentsListPage />,
+      },
+      {
+        path: "tournament/:id",
+        element: <TournamentDetailPage />,
       },
       {
         path: "venue/:venueId",
@@ -165,6 +175,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <OwnerBookingsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "tournaments",
+        element: (
+          <ProtectedRoute>
+            <OwnerTournamentsPage />
           </ProtectedRoute>
         ),
       },
