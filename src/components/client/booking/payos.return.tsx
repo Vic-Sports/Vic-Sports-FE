@@ -129,76 +129,33 @@ const PayOSReturn: React.FC = () => {
         throw new Error("Missing PayOS orderCode");
       }
 
-      // Step 1: Call Backend API to verify payment
+      // Step 1: Call Backend API to get payment status
       try {
-        console.log("🔄 Calling Backend PayOS verification API...");
+        console.log("🔄 Calling Backend PayOS status API...");
 
-        const verifyPayload = {
-          orderCode: parseInt(payosParams.orderCode),
-          amount: 0, // Will be validated by Backend
-          description: `Payment verification for order ${payosParams.orderCode}`,
-          accountNumber: "", // Optional
-          reference: payosParams.id,
-          transactionDateTime: new Date().toISOString(),
-          currency: "VND",
+        // Get auth token if available
+        const token =
+          localStorage.getItem("token") || localStorage.getItem("authToken");
+        const headers: Record<string, string> = {
+          "Content-Type": "application/json",
         };
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
 
-        // Call Backend verification endpoint
-        const backendResponse = await fetch("/api/v1/payments/payos/verify", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(verifyPayload),
-        });
-
-        // Safe JSON parsing: backend may return non-JSON on errors (405) or empty body
-        const safeParseJson = async (res: Response) => {
-          try {
-            const contentType = res.headers.get("content-type") || "";
-            if (!contentType.includes("application/json")) {
-              // Not JSON — return null but include text for logging
-              const txt = await res.text();
-              return { __rawText: txt } as any;
-            }
-            // Try parse JSON; if empty body this will throw and caught below
-            return await res.json();
-          } catch {
-            // Fall back to raw text for diagnostics
-            try {
-              const txt = await res.text();
-              return { __rawText: txt } as any;
-            } catch {
-              return null;
-            }
+        // Call Backend status endpoint
+        const backendResponse = await fetch(
+          `/api/v1/payments/payos/status/${encodeURIComponent(
+            payosParams.orderCode
+          )}`,
+          {
+            method: "GET",
+            headers,
           }
-        };
-
-        const backendResult = await safeParseJson(backendResponse);
-        console.log(
-          "✅ Backend verification response status:",
-          backendResponse.status,
-          backendResponse.statusText
         );
-        if (backendResult && (backendResult as any).__rawText) {
-          console.warn(
-            "Backend returned non-JSON body:",
-            (backendResult as any).__rawText
-          );
-        } else {
-          console.log("✅ Backend verification result:", backendResult);
-        }
 
-        if (!backendResponse.ok) {
-          // Provide a helpful error with status and potential body for debugging
-          const bodyPreview =
-            backendResult && (backendResult as any).__rawText
-              ? (backendResult as any).__rawText
-              : JSON.stringify(backendResult);
-          throw new Error(
-            `Backend verify failed: HTTP ${backendResponse.status} ${backendResponse.statusText} - ${bodyPreview}`
-          );
-        }
+        const backendResult = await backendResponse.json();
+        console.log("✅ Backend status result:", backendResult);
 
         if (backendResult.success && backendResult.data) {
           const { booking: verifiedBooking, paymentInfo } = backendResult.data;
@@ -470,12 +427,12 @@ const PayOSReturn: React.FC = () => {
           );
         }
       } catch (backendError: any) {
-        console.error("❌ Backend verification failed:", backendError.message);
+        console.error("❌ Backend status check failed:", backendError.message);
         setSuppressRender(false);
         setPaymentStatus("failed");
         const errorMsg = payosParams.cancel
           ? "Thanh toán đã bị hủy"
-          : backendError.message || "Xác thực thanh toán thất bại";
+          : backendError.message || "Kiểm tra trạng thái thanh toán thất bại";
         setErrorMessage(errorMsg);
         message.error(errorMsg);
       }
