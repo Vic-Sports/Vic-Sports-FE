@@ -15,6 +15,7 @@ import {
   Input,
   Statistic,
   Avatar,
+  Form,
 } from "antd";
 import {
   CalendarOutlined,
@@ -29,10 +30,17 @@ import {
   ClockCircleOutlined,
 } from "@ant-design/icons";
 import { useState, useEffect } from "react";
+import { useCurrentApp } from "../../context/app.context";
 import type { ColumnsType } from "antd/es/table";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
-import { ownerBookingApi, handleApiError } from "@/services/ownerApi";
+import {
+  ownerBookingApi,
+  ownerVenueApi,
+  ownerCourtApi,
+  handleApiError,
+} from "@/services/ownerApi";
+import { fetchAccountAPI } from "@/services/api";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -101,7 +109,17 @@ interface Booking {
 const ManageBookings = () => {
   const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const { user, setUser } = useCurrentApp();
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
+  const [formLoading, setFormLoading] = useState(false);
+  const [generatedFormUrl, setGeneratedFormUrl] = useState<string | null>(null);
+  const [formModalVisible, setFormModalVisible] = useState(false);
+  const [venues, setVenues] = useState<any[]>([]);
+  const [courts, setCourts] = useState<any[]>([]);
+  const [selectedVenueId, setSelectedVenueId] = useState<string | null>(null);
+  const [selectedCourtId, setSelectedCourtId] = useState<string | null>(null);
+  // onlyAvailableSlots removed per request
+  const [formDate, setFormDate] = useState<Dayjs | null>(null);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchText, setSearchText] = useState<string>("");
@@ -111,7 +129,199 @@ const ManageBookings = () => {
   // Load bookings data
   useEffect(() => {
     loadBookings();
+    // also load venues for form generation
+    loadVenues();
   }, []);
+
+  const loadVenues = async () => {
+    try {
+      const res = await ownerVenueApi.getVenues({});
+      if (res?.success && res.data?.venues) {
+        setVenues(res.data.venues);
+      } else if (res?.success && Array.isArray(res.data)) {
+        setVenues(res.data);
+      } else {
+        setVenues([]);
+      }
+    } catch (err) {
+      // ignore quietly, user can still open modal and no venues will be shown
+      console.error("Failed to load venues", err);
+    }
+  };
+
+  const loadCourtsForVenue = async (venueId: string | null) => {
+    if (!venueId) {
+      setCourts([]);
+      return;
+    }
+    try {
+      const resp = await ownerCourtApi.getCourts({ venueId });
+      if (resp?.success && resp.data?.courts) {
+        setCourts(resp.data.courts);
+      } else if (resp?.success && Array.isArray(resp.data)) {
+        setCourts(resp.data);
+      } else {
+        setCourts([]);
+      }
+    } catch (err) {
+      console.error("Failed to load courts", err);
+      setCourts([]);
+    }
+  };
+
+  const handleSubmitGenerateForm = async () => {
+    try {
+      setFormLoading(true);
+
+      // Quick client-side guard: if user is not active, stop early
+      const currentStatus = (user as any)?.googleGroupStatus ?? "pending";
+      if (currentStatus !== "active") {
+        notification.warning({
+          message: "Tính năng chưa kích hoạt",
+          description:
+            "Tài khoản owner của bạn đang chờ kích hoạt. Vui lòng yêu cầu quản trị viên thêm bạn vào Google Group hoặc bấm Kiểm tra trạng thái.",
+        });
+        setFormLoading(false);
+        return;
+      }
+
+      // ensure Google auth token is ready: verify or redirect to consent flow
+      try {
+        const verifyRes = await fetch("/api/v1/auth/google/verify", {
+          method: "GET",
+          credentials: "include",
+        });
+        if (!verifyRes.ok) {
+          // redirect to Google consent screen to obtain refresh token
+          window.location.href = "/api/v1/auth/google";
+          return;
+        }
+      } catch (verifyErr) {
+        console.error("Google verify failed", verifyErr);
+        window.location.href = "/api/v1/auth/google";
+        return;
+      }
+
+      const token = localStorage.getItem("access_token");
+
+      const payload: any = {
+        template: {
+          title: "Booking Form",
+          items: [
+            { title: "Họ và tên", type: "text", required: true },
+            { title: "Số điện thoại", type: "text", required: true },
+            { title: "Email", type: "text", required: false },
+          ],
+        },
+        filters: {
+          date: formDate ? formDate.format("YYYY-MM-DD") : undefined,
+        },
+      };
+
+      // include venue & court details if selected
+      if (selectedVenueId) {
+        const venue = venues.find((v) => v._id === selectedVenueId);
+        if (venue) payload.venue = venue;
+      }
+      if (selectedCourtId) {
+        const court = courts.find((c) => c._id === selectedCourtId);
+        if (court) payload.court = court;
+      }
+
+      const res = await fetch("/api/v1/forms/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(payload),
+      });
+
+      // Try to parse body even when not ok so we can read structured error codes
+      const text = await res.text();
+      let data: any = null;
+      try {
+        data = JSON.parse(text || "null");
+      } catch (parseErr) {
+        data = text;
+      }
+
+      if (!res.ok) {
+        const code = data?.code || data?.errorCode;
+        const message = data?.message || (typeof data === "string" ? data : null);
+        if (code === "OWNER_GOOGLE_GROUP_PENDING" || (message && message.toLowerCase().includes("pending"))) {
+          // Backend says owner is not active yet - sync UI
+          notification.warning({
+            message: "Tài khoản owner đang chờ kích hoạt",
+            description:
+              "Quản trị viên chưa kích hoạt quyền Google Group. Vui lòng kiểm tra lại sau hoặc liên hệ quản trị viên.",
+          });
+
+          // update local user state to pending to immediately reflect UI
+          try {
+            if (setUser) {
+              setUser({ ...(user as any), googleGroupStatus: "pending" });
+            }
+            sessionStorage.setItem(
+              "user",
+              JSON.stringify({ ...(user as any), googleGroupStatus: "pending" })
+            );
+          } catch {
+            // ignore
+          }
+
+          setFormLoading(false);
+          return;
+        }
+
+        throw new Error(message || "Không thể tạo form");
+      }
+
+      // success path
+      if (data?.success && data.data?.editUrl) {
+        setGeneratedFormUrl(data.data.editUrl);
+        // open in new tab for convenience
+        window.open(data.data.editUrl, "_blank");
+        setFormModalVisible(false);
+      } else if (data?.url) {
+        // backward compatibility
+        setGeneratedFormUrl(data.url);
+        window.open(data.url, "_blank");
+        setFormModalVisible(false);
+      } else {
+        throw new Error("Server did not return a form URL");
+      }
+    } catch (err: any) {
+      notification.error({
+        message: "Lỗi tạo form",
+        description: err.message || "Vui lòng thử lại",
+      });
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
+  const handleRefreshProfile = async () => {
+    try {
+      setFormLoading(true);
+      const res = await fetchAccountAPI();
+      if (res?.data?.user) {
+        if (setUser) setUser(res.data.user);
+        // update sessionStorage used by AppProvider
+        sessionStorage.setItem("user", JSON.stringify(res.data.user));
+        notification.success({ message: "Đã cập nhật trạng thái" });
+      } else {
+        notification.error({ message: "Không thể cập nhật profile" });
+      }
+    } catch (err) {
+      notification.error({
+        message: "Lỗi",
+        description: "Không thể lấy profile. Vui lòng thử lại sau.",
+      });
+    } finally {
+      setFormLoading(false);
+    }
+  };
 
   const loadBookings = async (params?: any) => {
     try {
@@ -505,6 +715,151 @@ const ManageBookings = () => {
         <Text type="secondary">
           Xử lý yêu cầu đặt sân và theo dõi lịch sử booking
         </Text>
+        {generatedFormUrl && (
+          <div style={{ marginTop: 12 }}>
+            <Text strong>Generated form URL</Text>
+            <Input
+              value={generatedFormUrl}
+              readOnly
+              style={{ marginTop: 8 }}
+              addonAfter={
+                <Button
+                  onClick={() => {
+                    navigator.clipboard
+                      .writeText(generatedFormUrl)
+                      .then(() =>
+                        notification.success({
+                          message: "Copied",
+                          description: "Form URL copied to clipboard",
+                        })
+                      )
+                      .catch(() =>
+                        notification.error({
+                          message: "Copy failed",
+                        })
+                      );
+                  }}
+                >
+                  Copy
+                </Button>
+              }
+            />
+          </div>
+        )}
+        {user?.role === "owner" && (
+          <>
+            {((user as any)?.googleGroupStatus || "pending") !== "active" ? (
+              <>
+                <Button
+                  type="primary"
+                  style={{ marginLeft: 16 }}
+                  loading={formLoading}
+                  disabled
+                  aria-label="Tạo Form (chờ kích hoạt)"
+                >
+                  Generate Booking Form
+                </Button>
+                <Button style={{ marginLeft: 8 }} onClick={handleRefreshProfile}>
+                  Kiểm tra trạng thái
+                </Button>
+                <div
+                  role="status"
+                  aria-live="polite"
+                  style={{ marginTop: 8, color: "#614700" }}
+                >
+                  Tài khoản owner của bạn đang chờ kích hoạt. Quản trị viên sẽ thêm
+                  bạn vào Google Group để bật tính năng này. Vui lòng kiểm tra lại
+                  sau.
+                </div>
+              </>
+            ) : (
+              <>
+                <Button
+                  type="primary"
+                  style={{ marginLeft: 16 }}
+                  loading={formLoading}
+                  onClick={() => setFormModalVisible(true)}
+                >
+                  Generate Booking Form
+                </Button>
+                <Button style={{ marginLeft: 8 }} onClick={handleRefreshProfile}>
+                  Kiểm tra trạng thái
+                </Button>
+              </>
+            )}
+
+            <Modal
+              title="Generate Booking Form"
+              open={formModalVisible}
+              onCancel={() => setFormModalVisible(false)}
+              onOk={async () => {
+                // submit form
+                await handleSubmitGenerateForm();
+              }}
+              okText="Generate"
+              cancelText="Cancel"
+            >
+              <Form layout="vertical">
+                <Form.Item label="Venue">
+                  <Select
+                    placeholder="Select venue"
+                    value={selectedVenueId || undefined}
+                    onChange={(val) => {
+                      setSelectedVenueId(val);
+                      setSelectedCourtId(null);
+                      loadCourtsForVenue(val);
+                    }}
+                    allowClear
+                    showSearch
+                    options={venues.map((v) => ({
+                      value: v._id,
+                      label: v.name,
+                    }))}
+                  />
+                </Form.Item>
+
+                <Form.Item label="Court">
+                  <Select
+                    placeholder="Select court"
+                    value={selectedCourtId || undefined}
+                    onChange={(val) => setSelectedCourtId(val)}
+                    allowClear
+                    showSearch
+                    options={courts.map((c) => ({
+                      value: c._id,
+                      label: c.name,
+                    }))}
+                  />
+                </Form.Item>
+
+                <Form.Item label="Date">
+                  <DatePicker
+                    style={{ width: "100%" }}
+                    value={formDate}
+                    onChange={(d) => setFormDate(d)}
+                    format="DD/MM/YYYY"
+                  />
+                </Form.Item>
+
+                {/* onlyAvailableSlots option removed */}
+
+                {/* start/end time removed: only date is sent to the backend */}
+
+                <Form.Item>
+                  <div style={{ fontSize: 12, color: "#8c8c8c" }}>
+                    The generated form will include the following fields by
+                    default:
+                    <ul>
+                      <li>Họ và tên (required)</li>
+                      <li>Số điện thoại (required)</li>
+                      <li>Email (optional)</li>
+                    </ul>
+                  </div>
+                </Form.Item>
+              </Form>
+            </Modal>
+          </>
+        )}
       </div>
 
       {/* Statistics Cards */}
