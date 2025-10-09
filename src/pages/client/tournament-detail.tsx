@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ITournament, tournamentApi } from '../../services/tournamentApi';
+import TournamentRegistrationModal from '../../components/client/TournamentRegistrationModal';
 import './tournament-detail.scss';
 
 const TournamentDetail: React.FC = () => {
@@ -9,7 +10,8 @@ const TournamentDetail: React.FC = () => {
   const [tournament, setTournament] = useState<ITournament | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [joining, setJoining] = useState(false);
+  // const [joining, setJoining] = useState(false);
+  const [registrationModalVisible, setRegistrationModalVisible] = useState(false);
 
   const loadTournamentDetail = async () => {
     try {
@@ -44,26 +46,14 @@ const TournamentDetail: React.FC = () => {
     loadTournamentDetail();
   }, [id]);
 
-  const handleJoinTournament = async () => {
-    if (!tournament || !id) return;
 
-    try {
-      setJoining(true);
-      const response = await tournamentApi.joinTournament(id);
-      
-      if (response.success) {
-        alert('Đăng ký thành công!');
-        // Reload tournament data to update participant count
-        loadTournamentDetail();
-      } else {
-        alert(response.error || 'Failed to join tournament');
-      }
-    } catch (err) {
-      alert('Failed to join tournament');
-      console.error('Error joining tournament:', err);
-    } finally {
-      setJoining(false);
-    }
+  const handleOpenRegistrationModal = () => {
+    setRegistrationModalVisible(true);
+  };
+
+  const handleRegistrationSuccess = () => {
+    // Reload tournament data to update participant count
+    loadTournamentDetail();
   };
 
   const getStatusBadge = (status: string) => {
@@ -183,13 +173,14 @@ const TournamentDetail: React.FC = () => {
                 ← Quay lại
               </button>
               {tournament.canJoin && (
-                <button 
-                  className="join-btn"
-                  onClick={handleJoinTournament}
-                  disabled={joining}
-                >
-                  {joining ? 'Đang đăng ký...' : 'Đăng ký ngay'}
-                </button>
+                <div className="registration-buttons">
+                  <button 
+                    className="join-btn detailed"
+                    onClick={handleOpenRegistrationModal}
+                  >
+                    Đăng ký chi tiết
+                  </button>
+                </div>
               )}
             </div>
           </div>
@@ -333,17 +324,17 @@ const TournamentDetail: React.FC = () => {
                   </div>
                   <div className="organizer-details">
                     <h4>{tournament.organizerId?.fullName}</h4>
-                    <p>{tournament.organizerId?.email}</p>
+                    {/* Email property does not exist, so we remove this line */}
                   </div>
                 </div>
               </div>
 
               {/* Participants */}
               <div className="sidebar-section">
-                <h3>Người tham gia ({tournament.participantsCount})</h3>
+                <h3>Người tham gia ({tournament.currentParticipants})</h3>
                 <div className="participants-list">
-                  {tournament.participants && tournament.participants.length > 0 ? (
-                    tournament.participants.slice(0, 5).map((participant: any, index: number) => (
+                  {tournament.participantList && tournament.participantList.length > 0 ? (
+                    tournament.participantList.slice(0, 5).map((participant: any, index: number) => (
                       <div key={index} className="participant-item">
                         <div className="participant-avatar">
                           {participant.user?.avatar ? (
@@ -360,9 +351,9 @@ const TournamentDetail: React.FC = () => {
                   ) : (
                     <p className="no-participants">Chưa có người tham gia</p>
                   )}
-                  {tournament.participantsCount > 5 && (
+                  {tournament.currentParticipants > 5 && (
                     <p className="more-participants">
-                      +{tournament.participantsCount - 5} người khác
+                      +{tournament.currentParticipants - 5} người khác
                     </p>
                   )}
                 </div>
@@ -396,6 +387,14 @@ const TournamentDetail: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Tournament Registration Modal */}
+      <TournamentRegistrationModal
+        visible={registrationModalVisible}
+        tournament={tournament}
+        onCancel={() => setRegistrationModalVisible(false)}
+        onSuccess={handleRegistrationSuccess}
+      />
     </div>
   );
 };

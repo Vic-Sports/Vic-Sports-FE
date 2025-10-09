@@ -284,12 +284,39 @@ export const deleteTournamentAPI = (id: string) => {
   return axios.delete<IBackendRes<any>>(urlBackend);
 };
 
-// Join tournament
+// Join tournament (simple)
 export const joinTournamentAPI = (tournamentId: string) => {
   const urlBackend = `/api/v1/tournaments/${tournamentId}/join`;
   return axios.post<IBackendRes<{
     registration: ITournamentRegistration;
   }>>(urlBackend);
+};
+
+// Register for tournament (detailed)
+export const registerForTournamentAPI = (data: {
+  tournamentId: string;
+  registrationType: 'individual' | 'team';
+  teamName?: string;
+  teamMembers: Array<{
+    userId: string;
+    fullName: string;
+    email: string;
+    role: 'captain' | 'member' | 'substitute';
+    isConfirmed: boolean;
+  }>;
+  emergencyContact: {
+    name: string;
+    phone: string;
+    relationship: string;
+  };
+  medicalConditions?: string;
+  notes?: string;
+}) => {
+  const urlBackend = `/api/v1/tournaments/${data.tournamentId}/register`;
+  return axios.post<IBackendRes<{
+    registration: ITournamentRegistration;
+    paymentUrl?: string;
+  }>>(urlBackend, data);
 };
 
 // Get tournament statistics
@@ -312,6 +339,7 @@ export const tournamentApi = {
   getTournamentById: getTournamentByIdAPI,
   getTournamentParticipants: getTournamentParticipantsAPI,
   joinTournament: joinTournamentAPI,
+  registerForTournament: registerForTournamentAPI,
   createTournament: createTournamentAPI,
   updateTournament: updateTournamentAPI,
   deleteTournament: deleteTournamentAPI,

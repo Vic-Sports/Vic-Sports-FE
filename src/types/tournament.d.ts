@@ -221,6 +221,7 @@ export interface TournamentFormData {
   registrationEndDate: string;
   maxParticipants: number;
   minParticipants: number;
+  teamSize: number;
   entryFee: number;
   prizePool: number;
   format: TournamentFormat;
