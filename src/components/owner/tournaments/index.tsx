@@ -1,58 +1,62 @@
 import { uploadFileAPI } from "@/services/api";
 import {
-  handleApiError,
-  ownerCourtApi,
-  ownerTournamentApi,
-  ownerVenueApi,
+    handleApiError,
+    ownerTournamentApi,
+    ownerVenueApi,
 } from "@/services/ownerApi";
 import type {
-  Tournament,
-  TournamentFormData
+    Tournament,
+    TournamentFormData
 } from "@/types/tournament";
 import {
-  getTournamentFormatDisplay,
-  getTournamentStatusColor,
-  getTournamentStatusDisplay,
+    getTournamentFormatDisplay,
+    getTournamentStatusColor,
+    getTournamentStatusDisplay,
 } from "@/utils/tournamentHelpers";
 import {
-  CalendarOutlined,
-  ClockCircleOutlined,
-  DeleteOutlined,
-  DollarOutlined,
-  EditOutlined,
-  ExclamationCircleOutlined,
-  EyeOutlined,
-  PlayCircleOutlined,
-  PlusOutlined,
-  StopOutlined,
-  TeamOutlined,
-  TrophyOutlined
+    CalendarOutlined,
+    CheckCircleOutlined,
+    CheckOutlined,
+    ClockCircleOutlined,
+    CloseCircleOutlined,
+    CloseOutlined,
+    DeleteOutlined,
+    DollarOutlined,
+    EditOutlined,
+    ExclamationCircleOutlined,
+    EyeOutlined,
+    PlayCircleOutlined,
+    PlusOutlined,
+    StopOutlined,
+    TeamOutlined,
+    TrophyOutlined,
+    UserOutlined
 } from "@ant-design/icons";
 import type { UploadFile } from "antd";
 import {
-  Avatar,
-  Button,
-  Card,
-  Col,
-  DatePicker,
-  Divider,
-  Form,
-  Image,
-  Input,
-  InputNumber,
-  Modal,
-  notification,
-  Progress,
-  Row,
-  Select,
-  Space,
-  Switch,
-  Table,
-  Tabs,
-  Tag,
-  Tooltip,
-  Typography,
-  Upload
+    Avatar,
+    Button,
+    Card,
+    Col,
+    DatePicker,
+    Divider,
+    Form,
+    Image,
+    Input,
+    InputNumber,
+    Modal,
+    notification,
+    Progress,
+    Row,
+    Select,
+    Space,
+    Switch,
+    Table,
+    Tabs,
+    Tag,
+    Tooltip,
+    Typography,
+    Upload
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
@@ -69,12 +73,27 @@ const ManageTournaments = () => {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [filteredTournaments, setFilteredTournaments] = useState<Tournament[]>([]);
   const [venues, setVenues] = useState<any[]>([]);
-  const [courts, setCourts] = useState<any[]>([]);
   const [isTournamentModalVisible, setIsTournamentModalVisible] = useState(false);
   const [editingTournament, setEditingTournament] = useState<Tournament | null>(null);
   const [form] = Form.useForm();
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
+  
+  // Registration management states
+  const [registrationsModalVisible, setRegistrationsModalVisible] = useState(false);
+  const [selectedTournamentForRegistrations, setSelectedTournamentForRegistrations] = useState<Tournament | null>(null);
+  const [registrations, setRegistrations] = useState<any[]>([]);
+  const [filteredRegistrations, setFilteredRegistrations] = useState<any[]>([]);
+  const [registrationsLoading, setRegistrationsLoading] = useState(false);
+  const [registrationDetailModalVisible, setRegistrationDetailModalVisible] = useState(false);
+  const [selectedRegistration, setSelectedRegistration] = useState<any>(null);
+  const [rejectModalVisible, setRejectModalVisible] = useState(false);
+  const [rejectForm] = Form.useForm();
+  
+  // Registration filter states
+  const [registrationTypeFilter, setRegistrationTypeFilter] = useState<string>("all");
+  const [registrationStatusFilter, setRegistrationStatusFilter] = useState<string>("all");
+  const [registrationSearchText, setRegistrationSearchText] = useState<string>("");
 
   // Filter states
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -95,19 +114,14 @@ const ManageTournaments = () => {
     try {
       setLoading(true);
 
-      // Load venues, courts, and tournaments in parallel
-      const [venuesRes, courtsRes, tournamentsRes] = await Promise.all([
+      // Load venues and tournaments in parallel
+      const [venuesRes, tournamentsRes] = await Promise.all([
         ownerVenueApi.getVenues(),
-        ownerCourtApi.getCourts(),
         ownerTournamentApi.getTournaments(),
       ]);
 
       if (venuesRes.success && venuesRes.data?.venues) {
         setVenues(venuesRes.data.venues);
-      }
-
-      if (courtsRes.success && courtsRes.data?.courts) {
-        setCourts(courtsRes.data.courts);
       }
 
       if (tournamentsRes.success && tournamentsRes.data?.tournaments) {
@@ -252,6 +266,13 @@ const ManageTournaments = () => {
               onClick={() => handleViewDetail(record)}
             />
           </Tooltip>
+          <Tooltip title="Quản lý đăng ký">
+            <Button
+              type="text"
+              icon={<UserOutlined />}
+              onClick={() => handleManageRegistrations(record)}
+            />
+          </Tooltip>
           <Tooltip title="Chỉnh sửa">
             <Button
               type="text"
@@ -306,6 +327,149 @@ const ManageTournaments = () => {
     setDetailModalVisible(true);
   };
 
+  const handleManageRegistrations = async (tournament: Tournament) => {
+    setSelectedTournamentForRegistrations(tournament);
+    setRegistrationsModalVisible(true);
+    await loadTournamentRegistrations(tournament._id);
+  };
+
+  const loadTournamentRegistrations = async (tournamentId: string) => {
+    try {
+      setRegistrationsLoading(true);
+      const response = await ownerTournamentApi.getTournamentRegistrations(tournamentId);
+      if (response.success && response.data?.registrations) {
+        setRegistrations(response.data.registrations);
+      }
+    } catch (error) {
+      const apiError = handleApiError(error);
+      notification.error({
+        message: "Lỗi tải danh sách đăng ký",
+        description: apiError.message,
+      });
+    } finally {
+      setRegistrationsLoading(false);
+    }
+  };
+
+  // Filter registrations
+  useEffect(() => {
+    let filtered = registrations;
+
+    // Filter by registration type
+    if (registrationTypeFilter !== "all") {
+      filtered = filtered.filter((registration) => {
+        const isTeam = registration.teamName && registration.teamMembers?.length > 1;
+        return registrationTypeFilter === "team" ? isTeam : !isTeam;
+      });
+    }
+
+    // Filter by status
+    if (registrationStatusFilter !== "all") {
+      filtered = filtered.filter((registration) => registration.status === registrationStatusFilter);
+    }
+
+    // Filter by search text
+    if (registrationSearchText) {
+      filtered = filtered.filter((registration) =>
+        (registration.teamName || "Cá nhân").toLowerCase().includes(registrationSearchText.toLowerCase()) ||
+        (registration.participantId?.fullName || "").toLowerCase().includes(registrationSearchText.toLowerCase())
+      );
+    }
+
+    setFilteredRegistrations(filtered);
+  }, [registrations, registrationTypeFilter, registrationStatusFilter, registrationSearchText]);
+
+  const handleApproveRegistration = async (registrationId: string) => {
+    if (!selectedTournamentForRegistrations) return;
+    
+    try {
+      const response = await ownerTournamentApi.approveTournamentRegistration(
+        selectedTournamentForRegistrations._id,
+        registrationId
+      );
+      if (response.success) {
+        await loadTournamentRegistrations(selectedTournamentForRegistrations._id);
+        notification.success({
+          message: "Thành công",
+          description: "Đăng ký đã được duyệt!",
+        });
+      }
+    } catch (error) {
+      const apiError = handleApiError(error);
+      notification.error({
+        message: "Lỗi duyệt đăng ký",
+        description: apiError.message,
+      });
+    }
+  };
+
+  const handleRejectRegistration = async (values: { reason: string; notes?: string }) => {
+    if (!selectedTournamentForRegistrations || !selectedRegistration) return;
+    
+    try {
+      const response = await ownerTournamentApi.rejectTournamentRegistration(
+        selectedTournamentForRegistrations._id,
+        selectedRegistration._id,
+        values
+      );
+      if (response.success) {
+        await loadTournamentRegistrations(selectedTournamentForRegistrations._id);
+        setRejectModalVisible(false);
+        rejectForm.resetFields();
+        notification.success({
+          message: "Thành công",
+          description: "Đăng ký đã bị từ chối!",
+        });
+      }
+    } catch (error) {
+      const apiError = handleApiError(error);
+      notification.error({
+        message: "Lỗi từ chối đăng ký",
+        description: apiError.message,
+      });
+    }
+  };
+
+  const handleViewRegistrationDetail = (registration: any) => {
+    setSelectedRegistration(registration);
+    setRegistrationDetailModalVisible(true);
+  };
+
+  const handleWithdrawRegistration = async (registrationId: string) => {
+    if (!selectedTournamentForRegistrations) return;
+    
+    confirm({
+      title: "Xác nhận rút đăng ký",
+      icon: <ExclamationCircleOutlined />,
+      content: "Bạn có chắc chắn muốn rút đăng ký này? Hành động này không thể hoàn tác.",
+      okText: "Rút đăng ký",
+      okType: "danger",
+      cancelText: "Hủy",
+      async onOk() {
+        try {
+          const response = await ownerTournamentApi.withdrawTournamentRegistration(
+            selectedTournamentForRegistrations._id,
+            registrationId,
+            { reason: "Rút đăng ký bởi chủ sở hữu" }
+          );
+          if (response.success) {
+            await loadTournamentRegistrations(selectedTournamentForRegistrations._id);
+            notification.success({
+              message: "Thành công",
+              description: "Đăng ký đã được rút!",
+            });
+          }
+        } catch (error) {
+          const apiError = handleApiError(error);
+          notification.error({
+            message: "Lỗi rút đăng ký",
+            description: apiError.message,
+          });
+        }
+      },
+    });
+  };
+
   const handleEditTournament = (tournament: Tournament) => {
     setEditingTournament(tournament);
     
@@ -315,6 +479,7 @@ const ManageTournaments = () => {
       endDate: dayjs(tournament.endDate),
       registrationStartDate: dayjs(tournament.registrationStartDate),
       registrationEndDate: dayjs(tournament.registrationEndDate),
+      teamSize: tournament.teamSize ?? 1,
       // Removed courtIds as it's not in the model anymore
     });
 
@@ -408,13 +573,26 @@ const ManageTournaments = () => {
 
   const handleSaveTournament = async (values: TournamentFormData) => {
     try {
-      const tournamentData = {
-        ...values,
+      const tournamentData: any = {
+        // Map FE form to BE payload
+        name: values.name,
+        description: values.description,
+        sportType: values.sportType,
+        venueId: values.venueId,
         startDate: dayjs(values.startDate).format("YYYY-MM-DD"),
         endDate: dayjs(values.endDate).format("YYYY-MM-DD"),
         registrationStartDate: dayjs(values.registrationStartDate).format("YYYY-MM-DD"),
         registrationEndDate: dayjs(values.registrationEndDate).format("YYYY-MM-DD"),
+        maxParticipants: values.maxParticipants,
+        minParticipants: values.minParticipants,
+        entryFee: (values as any).registrationFee, // map correctly to BE
+        prizePool: values.prizePool,
+        format: values.format || (values as any).tournamentType, // ensure correct key
+        rules: values.rules,
+        requirements: values.requirements,
+        isActive: values.isActive,
         images: tournamentImages,
+        teamSize: (values as any).teamSize ?? 1,
       };
 
       let response;
@@ -785,6 +963,19 @@ const ManageTournaments = () => {
                 </Col>
                 <Col xs={24} md={8}>
                   <Form.Item
+                    label="Kích thước đội (teamSize)"
+                    name="teamSize"
+                    tooltip="1 = cá nhân; >1 = bắt buộc đăng ký đội"
+                    initialValue={1}
+                    rules={[
+                      { required: true, message: "Vui lòng nhập kích thước đội!" },
+                    ]}
+                  >
+                    <InputNumber min={1} max={50} style={{ width: "100%" }} />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} md={8}>
+                  <Form.Item
                     label="Định dạng giải đấu"
                     name="tournamentType"
                     rules={[
@@ -813,7 +1004,7 @@ const ManageTournaments = () => {
                     <InputNumber
                       min={0}
                       formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                      parser={(value) => Number(value!.replace(/\$\s?|(,*)/g, ""))}
+                      parser={(value) => value ? Number(value.replace(/\$\s?|(,*)/g, "")) : 0 as any}
                       style={{ width: "100%" }}
                     />
                   </Form.Item>
@@ -829,7 +1020,7 @@ const ManageTournaments = () => {
                     <InputNumber
                       min={0}
                       formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                      parser={(value) => Number(value!.replace(/\$\s?|(,*)/g, ""))}
+                      parser={(value) => value ? Number(value.replace(/\$\s?|(,*)/g, "")) : 0 as any}
                       style={{ width: "100%" }}
                     />
                   </Form.Item>
@@ -1103,6 +1294,395 @@ const ManageTournaments = () => {
             )}
           </div>
         )}
+      </Modal>
+
+      {/* Registrations Management Modal */}
+      <Modal
+        title={
+          <div>
+            <UserOutlined style={{ marginRight: 8 }} />
+            Quản lý đăng ký - {selectedTournamentForRegistrations?.name}
+    </div>
+        }
+        open={registrationsModalVisible}
+        onCancel={() => {
+          setRegistrationsModalVisible(false);
+          setSelectedTournamentForRegistrations(null);
+          setRegistrations([]);
+        }}
+        footer={[
+          <Button key="close" onClick={() => setRegistrationsModalVisible(false)}>
+            Đóng
+          </Button>,
+        ]}
+        width={1200}
+        destroyOnClose={true}
+      >
+        {selectedTournamentForRegistrations && (
+          <div>
+            {/* Tournament Info */}
+            <Card size="small" style={{ marginBottom: 16 }}>
+              <Row gutter={16}>
+                <Col span={6}>
+                  <Text strong>Giải đấu:</Text> {selectedTournamentForRegistrations.name}
+                </Col>
+                <Col span={6}>
+                  <Text strong>Môn thể thao:</Text> {selectedTournamentForRegistrations.sportType}
+                </Col>
+                <Col span={6}>
+                  <Text strong>Tham gia:</Text> {selectedTournamentForRegistrations.currentParticipants}/{selectedTournamentForRegistrations.maxParticipants}
+                </Col>
+                <Col span={6}>
+                  <Text strong>Tổng đăng ký:</Text> {registrations.length} 
+                  <div style={{ fontSize: "12px", color: "#8c8c8c" }}>
+                    Cá nhân: {registrations.filter(r => !r.teamName || r.teamMembers?.length <= 1).length} | 
+                    Đội nhóm: {registrations.filter(r => r.teamName && r.teamMembers?.length > 1).length}
+                  </div>
+                </Col>
+              </Row>
+            </Card>
+
+            {/* Registration Filters */}
+            <Card size="small" style={{ marginBottom: 16 }}>
+              <Row gutter={[16, 16]}>
+                <Col xs={24} sm={8}>
+                  <Search
+                    placeholder="Tìm theo tên đội/người đăng ký..."
+                    allowClear
+                    value={registrationSearchText}
+                    onChange={(e) => setRegistrationSearchText(e.target.value)}
+                    style={{ width: "100%" }}
+                  />
+                </Col>
+                <Col xs={12} sm={4}>
+                  <Select
+                    placeholder="Loại đăng ký"
+                    style={{ width: "100%" }}
+                    value={registrationTypeFilter}
+                    onChange={setRegistrationTypeFilter}
+                  >
+                    <Option value="all">Tất cả</Option>
+                    <Option value="individual">Cá nhân</Option>
+                    <Option value="team">Đội nhóm</Option>
+                  </Select>
+                </Col>
+                <Col xs={12} sm={4}>
+                  <Select
+                    placeholder="Trạng thái"
+                    style={{ width: "100%" }}
+                    value={registrationStatusFilter}
+                    onChange={setRegistrationStatusFilter}
+                  >
+                    <Option value="all">Tất cả trạng thái</Option>
+                    <Option value="pending">Chờ duyệt</Option>
+                    <Option value="approved">Đã duyệt</Option>
+                    <Option value="rejected">Từ chối</Option>
+                    <Option value="withdrawn">Đã rút</Option>
+                  </Select>
+                </Col>
+                <Col xs={24} sm={4}>
+                  <Button 
+                    onClick={() => {
+                      setRegistrationTypeFilter("all");
+                      setRegistrationStatusFilter("all");
+                      setRegistrationSearchText("");
+                    }} 
+                    style={{ width: "100%" }}
+                  >
+                    Xóa bộ lọc
+                  </Button>
+                </Col>
+              </Row>
+            </Card>
+
+            {/* Registrations Table */}
+            <Table
+              columns={[
+                {
+                  title: "Loại đăng ký",
+                  key: "registrationType",
+                  width: 120,
+                  render: (_, record) => {
+                    const isTeam = record.teamName && record.teamMembers?.length > 1;
+                    return (
+                      <Tag color={isTeam ? "blue" : "green"} icon={isTeam ? <TeamOutlined /> : <UserOutlined />}>
+                        {isTeam ? "Đội nhóm" : "Cá nhân"}
+                      </Tag>
+                    );
+                  },
+                },
+                {
+                  title: "Người đăng ký",
+                  key: "participant",
+                  render: (_, record) => (
+                    <Space>
+                      <Avatar icon={<UserOutlined />} />
+                      <div>
+                        <div style={{ fontWeight: 600 }}>{record.teamName || "Cá nhân"}</div>
+                        <Text type="secondary" style={{ fontSize: "12px" }}>
+                          {record.teamMembers?.length || 0} thành viên
+                        </Text>
+                        {record.teamName && (
+                          <div style={{ fontSize: "11px", color: "#8c8c8c" }}>
+                            Đội trưởng: {record.participantId?.fullName || "N/A"}
+                          </div>
+                        )}
+                      </div>
+                    </Space>
+                  ),
+                },
+                {
+                  title: "Ngày đăng ký",
+                  dataIndex: "registeredAt",
+                  key: "registeredAt",
+                  render: (date) => dayjs(date).format("DD/MM/YYYY HH:mm"),
+                },
+                {
+                  title: "Trạng thái thanh toán",
+                  dataIndex: "paymentStatus",
+                  key: "paymentStatus",
+                  render: (status) => {
+                    const statusConfig = {
+                      paid: { color: "green", text: "Đã thanh toán", icon: <CheckCircleOutlined /> },
+                      pending: { color: "orange", text: "Chờ thanh toán", icon: <ClockCircleOutlined /> },
+                      failed: { color: "red", text: "Thanh toán thất bại", icon: <CloseCircleOutlined /> },
+                      refunded: { color: "blue", text: "Đã hoàn tiền", icon: <CheckCircleOutlined /> },
+                    };
+                    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+                    return (
+                      <Tag color={config.color} icon={config.icon}>
+                        {config.text}
+                      </Tag>
+                    );
+                  },
+                },
+                {
+                  title: "Trạng thái duyệt",
+                  dataIndex: "status",
+                  key: "status",
+                  render: (status) => {
+                    const statusConfig = {
+                      pending: { color: "orange", text: "Chờ duyệt", icon: <ClockCircleOutlined /> },
+                      approved: { color: "green", text: "Đã duyệt", icon: <CheckCircleOutlined /> },
+                      rejected: { color: "red", text: "Từ chối", icon: <CloseCircleOutlined /> },
+                      withdrawn: { color: "gray", text: "Đã rút", icon: <CloseCircleOutlined /> },
+                    };
+                    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+                    return (
+                      <Tag color={config.color} icon={config.icon}>
+                        {config.text}
+                      </Tag>
+                    );
+                  },
+                },
+                {
+                  title: "Thao tác",
+                  key: "action",
+                  render: (_, record) => (
+                    <Space size="small">
+                      <Tooltip title="Xem chi tiết">
+                        <Button
+                          type="text"
+                          size="small"
+                          icon={<EyeOutlined />}
+                          onClick={() => handleViewRegistrationDetail(record)}
+                        />
+                      </Tooltip>
+                      {record.status === "pending" && record.paymentStatus === "paid" && (
+                        <>
+                          <Tooltip title="Duyệt">
+                            <Button
+                              type="text"
+                              size="small"
+                              icon={<CheckOutlined />}
+                              style={{ color: "#52c41a" }}
+                              onClick={() => handleApproveRegistration(record._id)}
+                            />
+                          </Tooltip>
+                          <Tooltip title="Từ chối">
+                            <Button
+                              type="text"
+                              size="small"
+                              icon={<CloseOutlined />}
+                              style={{ color: "#ff4d4f" }}
+                              onClick={() => {
+                                setSelectedRegistration(record);
+                                setRejectModalVisible(true);
+                              }}
+                            />
+                          </Tooltip>
+                        </>
+                      )}
+                      {record.status === "approved" && (
+                        <Tooltip title="Rút đăng ký">
+                          <Button
+                            type="text"
+                            size="small"
+                            danger
+                            icon={<CloseOutlined />}
+                            onClick={() => handleWithdrawRegistration(record._id)}
+                          />
+                        </Tooltip>
+                      )}
+                    </Space>
+                  ),
+                },
+              ]}
+              dataSource={filteredRegistrations}
+              rowKey="_id"
+              loading={registrationsLoading}
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: true,
+                showTotal: (total, range) =>
+                  `${range[0]}-${range[1]} của ${total} đăng ký`,
+              }}
+            />
+          </div>
+        )}
+      </Modal>
+
+      {/* Registration Detail Modal */}
+      <Modal
+        title="Chi tiết đăng ký"
+        open={registrationDetailModalVisible}
+        onCancel={() => setRegistrationDetailModalVisible(false)}
+        footer={[
+          <Button key="close" onClick={() => setRegistrationDetailModalVisible(false)}>
+            Đóng
+          </Button>,
+        ]}
+        width={800}
+      >
+        {selectedRegistration && (
+          <div>
+            <Row gutter={[16, 16]}>
+              <Col span={12}>
+                <Title level={5}>Thông tin đăng ký</Title>
+                <p><strong>Loại đăng ký:</strong> 
+                  <Tag color={selectedRegistration.teamName && selectedRegistration.teamMembers?.length > 1 ? "blue" : "green"} style={{ marginLeft: 8 }}>
+                    {selectedRegistration.teamName && selectedRegistration.teamMembers?.length > 1 ? "Đội nhóm" : "Cá nhân"}
+                  </Tag>
+                </p>
+                <p><strong>Tên đội:</strong> {selectedRegistration.teamName || "Cá nhân"}</p>
+                <p><strong>Người đăng ký:</strong> {selectedRegistration.participantId?.fullName || "N/A"}</p>
+                <p><strong>Ngày đăng ký:</strong> {dayjs(selectedRegistration.registeredAt).format("DD/MM/YYYY HH:mm")}</p>
+                <p><strong>Trạng thái thanh toán:</strong> 
+                  <Tag color={selectedRegistration.paymentStatus === "paid" ? "green" : "orange"} style={{ marginLeft: 8 }}>
+                    {selectedRegistration.paymentStatus === "paid" ? "Đã thanh toán" : "Chờ thanh toán"}
+                  </Tag>
+                </p>
+                <p><strong>Trạng thái duyệt:</strong>
+                  <Tag color={
+                    selectedRegistration.status === "approved" ? "green" : 
+                    selectedRegistration.status === "rejected" ? "red" : "orange"
+                  } style={{ marginLeft: 8 }}>
+                    {selectedRegistration.status === "approved" ? "Đã duyệt" : 
+                     selectedRegistration.status === "rejected" ? "Từ chối" : "Chờ duyệt"}
+                  </Tag>
+                </p>
+              </Col>
+              <Col span={12}>
+                <Title level={5}>Thông tin liên hệ khẩn cấp</Title>
+                <p><strong>Tên:</strong> {selectedRegistration.emergencyContact?.name}</p>
+                <p><strong>Số điện thoại:</strong> {selectedRegistration.emergencyContact?.phone}</p>
+                <p><strong>Mối quan hệ:</strong> {selectedRegistration.emergencyContact?.relationship}</p>
+                <p><strong>Tình trạng sức khỏe:</strong> {selectedRegistration.medicalConditions || "Không có"}</p>
+              </Col>
+            </Row>
+
+            <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+              <Col span={24}>
+                <Title level={5}>Thành viên đội ({selectedRegistration.teamMembers?.length || 0})</Title>
+                <Table
+                  columns={[
+                    {
+                      title: "Thành viên",
+                      key: "member",
+                      render: (_, member: any) => (
+                        <Space>
+                          <Avatar icon={<UserOutlined />} />
+                          <div>
+                            <div style={{ fontWeight: 600 }}>ID: {member.userId}</div>
+                            <Text type="secondary" style={{ fontSize: "12px" }}>
+                              {member.role === "captain" ? "Đội trưởng" : "Thành viên"}
+                            </Text>
+                          </div>
+                        </Space>
+                      ),
+                    },
+                    {
+                      title: "Vai trò",
+                      dataIndex: "role",
+                      key: "role",
+                      render: (role) => (
+                        <Tag color={role === "captain" ? "blue" : "default"}>
+                          {role === "captain" ? "Đội trưởng" : "Thành viên"}
+                        </Tag>
+                      ),
+                    },
+                    {
+                      title: "Xác nhận",
+                      dataIndex: "isConfirmed",
+                      key: "isConfirmed",
+                      render: (confirmed) => (
+                        <Tag color={confirmed ? "green" : "orange"}>
+                          {confirmed ? "Đã xác nhận" : "Chờ xác nhận"}
+                        </Tag>
+                      ),
+                    },
+                  ]}
+                  dataSource={selectedRegistration.teamMembers || []}
+                  rowKey="userId"
+                  pagination={false}
+                  size="small"
+                />
+              </Col>
+            </Row>
+          </div>
+        )}
+      </Modal>
+
+      {/* Reject Registration Modal */}
+      <Modal
+        title="Từ chối đăng ký"
+        open={rejectModalVisible}
+        onCancel={() => {
+          setRejectModalVisible(false);
+          rejectForm.resetFields();
+        }}
+        footer={null}
+        destroyOnClose={true}
+      >
+        <Form
+          form={rejectForm}
+          layout="vertical"
+          onFinish={handleRejectRegistration}
+        >
+          <Form.Item
+            label="Lý do từ chối"
+            name="reason"
+            rules={[{ required: true, message: "Vui lòng nhập lý do từ chối!" }]}
+          >
+            <TextArea rows={3} placeholder="Nhập lý do từ chối đăng ký..." />
+          </Form.Item>
+          <Form.Item label="Ghi chú thêm" name="notes">
+            <TextArea rows={2} placeholder="Ghi chú thêm (tùy chọn)..." />
+          </Form.Item>
+          <Form.Item style={{ marginTop: "24px", textAlign: "right" }}>
+            <Space>
+              <Button onClick={() => {
+                setRejectModalVisible(false);
+                rejectForm.resetFields();
+              }}>
+                Hủy
+              </Button>
+              <Button type="primary" danger htmlType="submit">
+                Từ chối đăng ký
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   );
