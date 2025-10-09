@@ -13,6 +13,7 @@ import {
   Modal,
   Form,
   Input,
+  InputNumber,
   Select,
   Upload,
   Switch,
@@ -107,9 +108,7 @@ const ManageVenues = () => {
 
   // Image management state
   const [venueImages, setVenueImages] = useState<string[]>([]);
-  const [uploadingImages, setUploadingImages] = useState<Set<string>>(
-    new Set()
-  );
+  const [, setUploadingImages] = useState<Set<string>>(new Set());
   const [fileList, setFileList] = useState<any[]>([]);
 
   // Load venues data
@@ -333,6 +332,11 @@ const ManageVenues = () => {
       city: venue.address.city,
       phone: venue.contactInfo.phone,
       email: venue.contactInfo.email,
+      parking: {
+        available: venue.parking?.available ?? false,
+        capacity: venue.parking?.capacity ?? undefined,
+        fee: venue.parking?.fee ?? undefined,
+      },
       amenities: Array.isArray(venue.amenities)
         ? venue.amenities.map((a: any) => ({
             name: a?.name || "",
@@ -474,6 +478,11 @@ const ManageVenues = () => {
           email: values.email,
         },
         images: venueImages, // Include images in the save data
+        parking: {
+          available: values.parking?.available ?? false,
+          capacity: values.parking?.capacity ?? undefined,
+          fee: values.parking?.fee ?? undefined,
+        },
         amenities,
         isActive: values.isActive ?? true,
       };
@@ -1403,6 +1412,86 @@ const ManageVenues = () => {
             </Col>
           </Row>
 
+          {/* Parking Section */}
+          <Row gutter={16} style={{ marginBottom: 16 }}>
+            <Col xs={24} md={8}>
+              <Form.Item
+                label="Bãi đỗ xe"
+                name={["parking", "available"]}
+                valuePropName="checked"
+                initialValue={false}
+              >
+                <Switch checkedChildren="Có" unCheckedChildren="Không" />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} md={8}>
+              <Form.Item
+                label="Sức chứa (số chỗ)"
+                name={["parking", "capacity"]}
+                rules={[
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const avail = getFieldValue(["parking", "available"]);
+                      if (avail) {
+                        if (
+                          value === undefined ||
+                          value === null ||
+                          value === ""
+                        ) {
+                          return Promise.reject(
+                            new Error("Vui lòng nhập sức chứa khi có bãi đỗ xe")
+                          );
+                        }
+                        if (value < 0) {
+                          return Promise.reject(
+                            new Error("Sức chứa phải là số dương")
+                          );
+                        }
+                      }
+                      return Promise.resolve();
+                    },
+                  }),
+                ]}
+              >
+                <InputNumber style={{ width: "100%" }} min={0} />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} md={8}>
+              <Form.Item
+                label="Phí gửi (VNĐ)"
+                name={["parking", "fee"]}
+                rules={[
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const avail = getFieldValue(["parking", "available"]);
+                      if (avail) {
+                        if (
+                          value === undefined ||
+                          value === null ||
+                          value === ""
+                        ) {
+                          return Promise.reject(
+                            new Error("Vui lòng nhập phí gửi khi có bãi đỗ xe")
+                          );
+                        }
+                        if (value < 0) {
+                          return Promise.reject(
+                            new Error("Phí phải là số dương")
+                          );
+                        }
+                      }
+                      return Promise.resolve();
+                    },
+                  }),
+                ]}
+              >
+                <InputNumber style={{ width: "100%" }} min={0} />
+              </Form.Item>
+            </Col>
+          </Row>
+
           <Form.Item style={{ marginTop: "24px", textAlign: "right" }}>
             <Space>
               <Button onClick={() => setIsVenueModalVisible(false)}>Hủy</Button>
@@ -1544,6 +1633,24 @@ const ManageVenues = () => {
                 <p>
                   <strong>Tổng số sân:</strong> {selectedVenue.totalCourts || 0}
                 </p>
+                {selectedVenue.parking && (
+                  <p>
+                    <strong>Bãi đỗ xe:</strong>{" "}
+                    {selectedVenue.parking.available ? (
+                      <span style={{ color: "#52c41a" }}>
+                        Có
+                        {selectedVenue.parking.capacity
+                          ? ` - ${selectedVenue.parking.capacity} chỗ`
+                          : ""}{" "}
+                        {selectedVenue.parking.fee
+                          ? `- ${selectedVenue.parking.fee.toLocaleString()} VNĐ`
+                          : ""}
+                      </span>
+                    ) : (
+                      <span>Không</span>
+                    )}
+                  </p>
+                )}
                 <p>
                   <strong>Lượt đặt:</strong>{" "}
                   {selectedVenue.totalBookings.toLocaleString()}

@@ -1,3 +1,14 @@
+.booking-loading {
+  /* Full-screen centered loading used when booking page returns early */
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.92);
+  z-index: 9999;
+}
+
 .booking-page {
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -9,8 +20,8 @@
     padding: 0 16px;
   }
 
-  // Loading State
-  .booking-loading {
+  // Loading State (page-scoped smaller loading)
+  .booking-inline-loading {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -50,26 +61,28 @@
       }
     }
 
-    .booking-steps {
-      .ant-steps-item {
-        .ant-steps-item-title {
-          font-size: 14px;
-          font-weight: 500;
-        }
+    /* Page-scoped avatar override to ensure circular avatars on booking page */
+    .user-profile {
+      .profile-avatar {
+        width: 40px !important;
+        height: 40px !important;
+        min-width: 40px !important;
+        min-height: 40px !important;
+        border-radius: 50% !important;
+        overflow: hidden !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
 
-        &.ant-steps-item-active {
-          .ant-steps-item-icon {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #667eea;
-          }
-        }
-
-        &.ant-steps-item-finish {
-          .ant-steps-item-icon {
-            background: #52c41a;
-            border-color: #52c41a;
-          }
-        }
+      /* Ensure any image/svg/avatar inside fits the circle without distortion */
+      .profile-avatar img,
+      .profile-avatar svg,
+      .profile-avatar .ant-avatar {
+        width: 100% !important;
+        height: 100% !important;
+        display: block !important;
+        object-fit: cover !important;
       }
     }
   }
@@ -428,6 +441,16 @@
     }
 
     .booking-steps {
+      /* Keep icon and title on a single line and prevent wrapping */
+      .ant-steps-item {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px;
+      }
+
+      .ant-steps-item-title {
+        white-space: nowrap;
+      }
       .ant-steps-item {
         .ant-steps-item-title {
           font-size: 12px;
