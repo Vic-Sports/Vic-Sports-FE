@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ITournament, tournamentApi } from '../../services/tournamentApi';
-import TournamentRegistrationModal from '../../components/client/TournamentRegistrationModal';
+import type { ITournament } from '../../services/tournamentApi';
+import { tournamentApi } from '../../services/tournamentApi';
 import './tournament-detail.scss';
 
 const TournamentDetail: React.FC = () => {
@@ -10,8 +10,7 @@ const TournamentDetail: React.FC = () => {
   const [tournament, setTournament] = useState<ITournament | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // const [joining, setJoining] = useState(false);
-  const [registrationModalVisible, setRegistrationModalVisible] = useState(false);
+  const [joining, setJoining] = useState(false);
 
   const loadTournamentDetail = async () => {
     try {
@@ -30,9 +29,9 @@ const TournamentDetail: React.FC = () => {
       console.log('🔍 API Response:', response);
       
       if (response.success) {
-        setTournament(response.data);
+        setTournament(response.data as ITournament);
       } else {
-        setError(response.error || 'Failed to load tournament details');
+        setError(typeof response.error === 'string' ? response.error : 'Failed to load tournament details');
       }
     } catch (err) {
       setError('Failed to load tournament details');
@@ -46,14 +45,26 @@ const TournamentDetail: React.FC = () => {
     loadTournamentDetail();
   }, [id]);
 
+  const handleJoinTournament = async () => {
+    if (!tournament || !id) return;
 
-  const handleOpenRegistrationModal = () => {
-    setRegistrationModalVisible(true);
-  };
-
-  const handleRegistrationSuccess = () => {
-    // Reload tournament data to update participant count
-    loadTournamentDetail();
+    try {
+      setJoining(true);
+      const response = await tournamentApi.joinTournament(id);
+      
+      if (response.success) {
+        alert('Đăng ký thành công!');
+        // Reload tournament data to update participant count
+        loadTournamentDetail();
+      } else {
+        alert(response.error || 'Failed to join tournament');
+      }
+    } catch (err) {
+      alert('Failed to join tournament');
+      console.error('Error joining tournament:', err);
+    } finally {
+      setJoining(false);
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -172,15 +183,14 @@ const TournamentDetail: React.FC = () => {
               >
                 ← Quay lại
               </button>
-              {tournament.canJoin && (
-                <div className="registration-buttons">
-                  <button 
-                    className="join-btn detailed"
-                    onClick={handleOpenRegistrationModal}
-                  >
-                    Đăng ký chi tiết
-                  </button>
-                </div>
+              {(tournament.status === 'registration_open' && tournament.currentParticipants < tournament.maxParticipants) && (
+                <button 
+                  className="join-btn"
+                  onClick={handleJoinTournament}
+                  disabled={joining}
+                >
+                  {joining ? 'Đang đăng ký...' : 'Đăng ký ngay'}
+                </button>
               )}
             </div>
           </div>
@@ -303,9 +313,6 @@ const TournamentDetail: React.FC = () => {
                     {tournament.venueId?.address?.street}, {tournament.venueId?.address?.ward}, 
                     {tournament.venueId?.address?.district}, {tournament.venueId?.address?.city}
                   </p>
-                  {tournament.venueId?.contactInfo?.phone && (
-                    <p className="venue-phone">📞 {tournament.venueId.contactInfo.phone}</p>
-                  )}
                 </div>
               </div>
 
@@ -324,7 +331,6 @@ const TournamentDetail: React.FC = () => {
                   </div>
                   <div className="organizer-details">
                     <h4>{tournament.organizerId?.fullName}</h4>
-                    {/* Email property does not exist, so we remove this line */}
                   </div>
                 </div>
               </div>
@@ -333,27 +339,12 @@ const TournamentDetail: React.FC = () => {
               <div className="sidebar-section">
                 <h3>Người tham gia ({tournament.currentParticipants})</h3>
                 <div className="participants-list">
-                  {tournament.participantList && tournament.participantList.length > 0 ? (
-                    tournament.participantList.slice(0, 5).map((participant: any, index: number) => (
-                      <div key={index} className="participant-item">
-                        <div className="participant-avatar">
-                          {participant.user?.avatar ? (
-                            <img src={participant.user.avatar} alt="Participant" />
-                          ) : (
-                            <div className="avatar-placeholder">
-                              {participant.user?.fullName?.charAt(0)}
-                            </div>
-                          )}
-                        </div>
-                        <span className="participant-name">{participant.user?.fullName}</span>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="no-participants">Chưa có người tham gia</p>
-                  )}
-                  {tournament.currentParticipants > 5 && (
+                  <p className="no-participants">
+                    {tournament.currentParticipants} người đã đăng ký
+                  </p>
+                  {tournament.currentParticipants > 0 && (
                     <p className="more-participants">
-                      +{tournament.currentParticipants - 5} người khác
+                      Danh sách người tham gia sẽ được hiển thị sau khi đăng ký
                     </p>
                   )}
                 </div>
@@ -372,13 +363,13 @@ const TournamentDetail: React.FC = () => {
                   <div className="stat-item">
                     <span className="stat-label">Còn:</span>
                     <span className="stat-value">
-                      {tournament.daysUntilRegistrationEnd} ngày để đăng ký
+                      {Math.ceil((new Date(tournament.registrationEndDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} ngày để đăng ký
                     </span>
                   </div>
                   <div className="stat-item">
                     <span className="stat-label">Bắt đầu sau:</span>
                     <span className="stat-value">
-                      {tournament.daysUntilStart} ngày
+                      {Math.ceil((new Date(tournament.startDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} ngày
                     </span>
                   </div>
                 </div>
@@ -387,14 +378,6 @@ const TournamentDetail: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Tournament Registration Modal */}
-      <TournamentRegistrationModal
-        visible={registrationModalVisible}
-        tournament={tournament}
-        onCancel={() => setRegistrationModalVisible(false)}
-        onSuccess={handleRegistrationSuccess}
-      />
     </div>
   );
 };
