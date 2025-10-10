@@ -164,23 +164,39 @@
           }
         }
 
-        .join-btn {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          border: none;
-          padding: 0.75rem 2rem;
-          border-radius: 10px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: transform 0.2s ease;
+        .registration-buttons {
+          display: flex;
+          gap: 1rem;
+          flex-wrap: wrap;
 
-          &:hover:not(:disabled) {
-            transform: translateY(-2px);
-          }
+          .join-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            flex: 1;
+            min-width: 150px;
 
-          &:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
+            &.simple {
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            &.detailed {
+              background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            }
+
+            &:hover:not(:disabled) {
+              transform: translateY(-2px);
+            }
+
+            &:disabled {
+              opacity: 0.7;
+              cursor: not-allowed;
+            }
           }
         }
       }
