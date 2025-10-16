@@ -354,6 +354,7 @@ export const ownerTournamentApi = {
     registrationEndDate: string;
     maxParticipants: number;
     minParticipants: number;
+    teamSize: number;
     entryFee: number;
     prizePool: number;
     format: "single_elimination" | "double_elimination" | "round_robin" | "swiss";
@@ -379,6 +380,7 @@ export const ownerTournamentApi = {
       registrationEndDate?: string;
       maxParticipants?: number;
       minParticipants?: number;
+      teamSize?: number;
       entryFee?: number;
       prizePool?: number;
       format?: "single_elimination" | "double_elimination" | "round_robin" | "swiss";
@@ -459,6 +461,63 @@ export const ownerTournamentApi = {
       }
     );
     return response;
+  },
+
+  // Get tournament registrations
+  getTournamentRegistrations: (
+    tournamentId: string,
+    params?: {
+      status?: "pending" | "approved" | "rejected" | "withdrawn";
+      search?: string;
+      sortBy?: string;
+      sortOrder?: "asc" | "desc";
+      page?: number;
+      limit?: number;
+    }
+  ): Promise<ApiResponse<{ registrations: any[] }>> => {
+    return axios.get(`${OWNER_API_BASE}/tournaments/${tournamentId}/registrations`, { params });
+  },
+
+  // Get tournament registration by ID
+  getTournamentRegistration: (
+    tournamentId: string,
+    registrationId: string
+  ): Promise<ApiResponse<any>> => {
+    return axios.get(`${OWNER_API_BASE}/tournaments/${tournamentId}/registrations/${registrationId}`);
+  },
+
+  // Approve tournament registration
+  approveTournamentRegistration: (
+    tournamentId: string,
+    registrationId: string,
+    data?: {
+      notes?: string;
+    }
+  ): Promise<ApiResponse<any>> => {
+    return axios.put(`${OWNER_API_BASE}/tournaments/${tournamentId}/registrations/${registrationId}/approve`, data);
+  },
+
+  // Reject tournament registration
+  rejectTournamentRegistration: (
+    tournamentId: string,
+    registrationId: string,
+    data: {
+      reason: string;
+      notes?: string;
+    }
+  ): Promise<ApiResponse<any>> => {
+    return axios.put(`${OWNER_API_BASE}/tournaments/${tournamentId}/registrations/${registrationId}/reject`, data);
+  },
+
+  // Withdraw tournament registration (for owner to remove approved registration)
+  withdrawTournamentRegistration: (
+    tournamentId: string,
+    registrationId: string,
+    data: {
+      reason: string;
+    }
+  ): Promise<ApiResponse<any>> => {
+    return axios.put(`${OWNER_API_BASE}/tournaments/${tournamentId}/registrations/${registrationId}/withdraw`, data);
   },
 };
 
