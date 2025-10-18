@@ -76,7 +76,11 @@ const router = createBrowserRouter([
       },
       {
         path: "booking",
-        element: <BookingPage />,
+        element: (
+          <ProtectedRoute>
+            <BookingPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "booking/success",
@@ -241,12 +245,12 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   // <StrictMode>
-    <App>
-      <AppProvider>
-        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-          <RouterProvider router={router} />
-        </GoogleOAuthProvider>
-      </AppProvider>
-    </App>
+  <App>
+    <AppProvider>
+      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+        <RouterProvider router={router} />
+      </GoogleOAuthProvider>
+    </AppProvider>
+  </App>
   // </StrictMode>
 );

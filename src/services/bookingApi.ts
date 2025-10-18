@@ -13,6 +13,23 @@ export const createBookingAPI = (bookingData: ICreateBookingRequest) => {
   return axios.post<IBackendRes<IBookingResponse>>(urlBackend, bookingData);
 };
 
+// Create a short-term hold for given booking data (backend should set holdUntil)
+export const holdBookingAPI = (holdData: {
+  venueId: string;
+  courtIds: string[];
+  date: string;
+  timeSlots: { startTime: string; endTime: string; price: number }[];
+}) => {
+  const urlBackend = "/api/v1/bookings/hold"; // backend should implement this route
+  return axios.post<IBackendRes<{ bookingId?: string }>>(urlBackend, holdData);
+};
+
+// Release a held booking
+export const releaseBookingAPI = (bookingId: string) => {
+  const urlBackend = `/api/v1/bookings/${bookingId}/release`;
+  return axios.post<IBackendRes<any>>(urlBackend);
+};
+
 export const getBookingByIdAPI = (bookingId: string) => {
   const urlBackend = `/api/v1/bookings/${bookingId}`;
   return axios.get<IBackendRes<IBookingResponse>>(urlBackend);

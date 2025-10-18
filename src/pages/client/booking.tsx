@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Card,
@@ -16,6 +16,8 @@ import {
   Spin,
   Tag,
   Space,
+  Alert,
+  Progress,
 } from "antd";
 import {
   CalendarOutlined,
@@ -25,11 +27,12 @@ import {
   CheckCircleOutlined,
   ArrowLeftOutlined,
   TeamOutlined,
+  WarningOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useCurrentApp } from "@/components/context/app.context";
 import { fetchAccountAPI } from "@/services/api";
-import { createBookingAPI } from "@/services/bookingApi";
+import { createBookingAPI, releaseBookingAPI } from "@/services/bookingApi";
 import { createPayOSPayment } from "@/services/payOSApi";
 import type { ICreateBookingRequest } from "@/types/payment";
 import "./booking.scss";
@@ -101,6 +104,21 @@ const BookingPage: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<string>("");
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
 
+  // Countdown timer state (5 minutes = 300 seconds)
+  const [timeLeft, setTimeLeft] = useState(300);
+  const [initialTime, setInitialTime] = useState(300); // Store initial time for progress calculation
+  const [timerExpired, setTimerExpired] = useState(false);
+
+  // Booking ID from hold process
+  const [holdBookingId, setHoldBookingId] = useState<string | null>(null);
+
+  // Back confirmation modal
+  const [backConfirmVisible, setBackConfirmVisible] = useState(false);
+  const [originalLocation, setOriginalLocation] = useState<string | null>(null);
+
+  // Use ref for immediate flag check in event handlers
+  const isRedirectingRef = useRef(false);
+
   const paymentMethods: PaymentMethod[] = [
     {
       id: "payos",
@@ -131,7 +149,195 @@ const BookingPage: React.FC = () => {
     // },
   ];
 
+  // Countdown timer effect
   useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          setTimerExpired(true);
+          clearInterval(timer);
+
+          // Clear sessionStorage when timer expires
+          sessionStorage.removeItem("booking_hold_info");
+
+          // Show expiration modal
+          Modal.error({
+            title: "Thời gian giữ sân đã hết",
+            content: "Thời gian giữ sân đã hết. Vui lòng đặt sân lại.",
+            okText: "Quay lại",
+            onOk: () => navigate(-1),
+          });
+
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [navigate]);
+
+  // Release booking on page unload/navigation
+  useEffect(() => {
+    const releaseBooking = async () => {
+      if (holdBookingId && !timerExpired) {
+        try {
+          console.log("Releasing booking on page unload:", holdBookingId);
+          await releaseBookingAPI(holdBookingId);
+          // Clear sessionStorage when booking is released
+          sessionStorage.removeItem("booking_hold_info");
+        } catch (error) {
+          console.error("Failed to release booking:", error);
+        }
+      }
+    };
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      // Check ref first (most immediate), then other flags
+      const isRedirecting =
+        isRedirectingRef.current ||
+        sessionStorage.getItem("redirecting_to_payment") === "true" ||
+        (window as any).__REDIRECTING_TO_PAYMENT__;
+
+      // Don't show warning when redirecting to payment
+      if (isRedirecting) {
+        console.log(
+          "Skipping beforeunload warning - redirecting to payment (ref:",
+          isRedirectingRef.current,
+          ")"
+        );
+        // Don't prevent default or set returnValue
+        return;
+      }
+
+      if (holdBookingId && !timerExpired) {
+        // Always show confirmation but don't release booking on beforeunload
+        // (we'll handle actual release in visibilitychange event)
+        event.preventDefault();
+        event.returnValue =
+          "Bạn có chắc muốn rời khỏi trang? Việc đặt sân sẽ bị hủy.";
+      }
+    };
+
+    // Handle page visibility change (covers tab close, browser close, navigation away)
+    const handleVisibilityChange = () => {
+      // Check immediate flag from sessionStorage
+      const isRedirecting =
+        sessionStorage.getItem("redirecting_to_payment") === "true";
+
+      // Don't release booking when redirecting to payment
+      if (isRedirecting) {
+        console.log("Skipping booking release - redirecting to payment");
+        return;
+      }
+
+      if (
+        document.visibilityState === "hidden" &&
+        holdBookingId &&
+        !timerExpired
+      ) {
+        // Only release booking when page actually becomes hidden
+        // This won't trigger on reload since page stays visible
+        setTimeout(() => {
+          const stillRedirecting =
+            sessionStorage.getItem("redirecting_to_payment") === "true";
+          if (document.visibilityState === "hidden" && !stillRedirecting) {
+            // Still hidden after timeout, likely a real navigation away
+            releaseBooking();
+          }
+        }, 1000);
+      }
+    };
+
+    // Setup back button interception
+    // Alternative approach: use hash-based detection
+    const handleHashChange = () => {
+      console.log("Hash change detected");
+      if (holdBookingId && !timerExpired) {
+        console.log("Showing modal due to hash change");
+        setBackConfirmVisible(true);
+      }
+    };
+
+    // Add event listeners (popstate removed as it's handled in separate useEffect)
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("hashchange", handleHashChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      // Cleanup listeners
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("hashchange", handleHashChange);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+
+      // Cleanup redirect flag
+      sessionStorage.removeItem("redirecting_to_payment");
+      (window as any).__REDIRECTING_TO_PAYMENT__ = false;
+
+      // Release booking when component unmounts (if not expired)
+      if (holdBookingId && !timerExpired) {
+        releaseBooking();
+      }
+    };
+  }, [holdBookingId, timerExpired]);
+
+  // Improved back button detection using router approach
+  useEffect(() => {
+    if (holdBookingId && !timerExpired) {
+      console.log("Setting up browser back button interception");
+
+      // Add history entry to intercept back button
+      const currentPath = window.location.pathname + window.location.search;
+      window.history.pushState(null, "", currentPath);
+
+      // Listen for popstate event
+      const handleBrowserBack = (event: PopStateEvent) => {
+        console.log("Browser back button detected!", event);
+
+        // Immediately push state back to prevent navigation
+        window.history.pushState(null, "", currentPath);
+
+        // Show confirmation modal
+        setBackConfirmVisible(true);
+      };
+
+      window.addEventListener("popstate", handleBrowserBack);
+
+      return () => {
+        window.removeEventListener("popstate", handleBrowserBack);
+      };
+    }
+  }, [holdBookingId, timerExpired]);
+
+  // Format time for display
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+  };
+
+  // Get countdown color based on time remaining
+  const getCountdownColor = () => {
+    if (timeLeft <= 60) return "#ff4d4f"; // Red when <= 1 minute
+    if (timeLeft <= 120) return "#fa8c16"; // Orange when <= 2 minutes
+    return "#52c41a"; // Green otherwise
+  };
+
+  // Get progress percentage
+  const getProgressPercent = () => {
+    return ((initialTime - timeLeft) / initialTime) * 100;
+  };
+
+  useEffect(() => {
+    // Track original location for navigation back
+    if (!originalLocation) {
+      const referrer = document.referrer;
+      if (referrer && referrer !== window.location.href) {
+        setOriginalLocation(referrer);
+        console.log("Original location set to:", referrer);
+      }
+    }
+
     // Check current URL for PayOS return params (no debug log)
 
     // First check if this is a PayOS return redirected to wrong URL
@@ -140,28 +346,103 @@ const BookingPage: React.FC = () => {
     }
 
     const data = location.state?.bookingData as BookingData;
+    const bookingId = location.state?.bookingId as string;
+    const holdUntil = location.state?.holdUntil as string;
+
+    // If no location.state (e.g., page reload), try to recover from sessionStorage
+    let recoveredData = data;
+    let recoveredBookingId = bookingId;
+    let recoveredHoldUntil = holdUntil;
+
+    if (!data) {
+      try {
+        const savedHoldInfo = sessionStorage.getItem("booking_hold_info");
+        if (savedHoldInfo) {
+          const holdInfo = JSON.parse(savedHoldInfo);
+          const holdUntilTime = dayjs(holdInfo.holdUntil);
+          const currentTime = dayjs();
+
+          // Check if hold is still valid
+          if (holdUntilTime.isAfter(currentTime)) {
+            console.log("Recovering booking data from sessionStorage");
+            recoveredData = holdInfo.bookingData;
+            recoveredBookingId = holdInfo.bookingId;
+            recoveredHoldUntil = holdInfo.holdUntil;
+          } else {
+            console.log("Hold has expired, clearing sessionStorage");
+            sessionStorage.removeItem("booking_hold_info");
+          }
+        }
+      } catch (error) {
+        console.error("Error recovering hold info from sessionStorage:", error);
+        sessionStorage.removeItem("booking_hold_info");
+      }
+    }
+
     // location.state processed (debug logs removed)
 
-    if (data) {
+    if (recoveredData) {
       // Validate courtIds array
       if (
-        !data.courtIds ||
-        data.courtIds.length === 0 ||
-        data.courtIds.some((id) => id === null || id === undefined || id === "")
+        !recoveredData.courtIds ||
+        recoveredData.courtIds.length === 0 ||
+        recoveredData.courtIds.some(
+          (id) => id === null || id === undefined || id === ""
+        )
       ) {
-        console.error("Invalid courtIds in bookingData:", data.courtIds);
+        console.error(
+          "Invalid courtIds in bookingData:",
+          recoveredData.courtIds
+        );
         message.error("Thông tin sân không hợp lệ. Vui lòng chọn lại sân.");
         navigate(-1);
         return;
       }
 
-      console.log("Valid bookingData, setting state:", data);
-      setBookingData(data);
+      console.log("Valid bookingData, setting state:", recoveredData);
+      setBookingData(recoveredData);
+
+      // Set booking ID if available (from hold process)
+      if (recoveredBookingId) {
+        console.log("Setting hold booking ID:", recoveredBookingId);
+        setHoldBookingId(recoveredBookingId);
+      }
+
+      // Calculate countdown time based on holdUntil
+      if (recoveredHoldUntil) {
+        const holdUntilTime = dayjs(recoveredHoldUntil);
+        const currentTime = dayjs();
+        const secondsLeft = holdUntilTime.diff(currentTime, "seconds");
+
+        console.log(
+          "Hold until:",
+          recoveredHoldUntil,
+          "Seconds left:",
+          secondsLeft
+        );
+
+        if (secondsLeft > 0) {
+          setTimeLeft(secondsLeft);
+          setInitialTime(secondsLeft); // Set initial time for progress calculation
+        } else {
+          // Hold has already expired
+          setTimeLeft(0);
+          setInitialTime(300); // Default for progress calculation
+          setTimerExpired(true);
+          // Clear expired hold info
+          sessionStorage.removeItem("booking_hold_info");
+        }
+      } else {
+        // Fallback to 5 minutes if holdUntil is not available
+        console.log("No holdUntil provided, using default 5 minutes");
+        setTimeLeft(300);
+        setInitialTime(300);
+      }
     } else {
       message.error("Không có thông tin đặt sân");
       navigate(-1);
     }
-  }, [location.state, navigate]);
+  }, [location.state, navigate, originalLocation]);
 
   // Auto-fill user information if logged in
   useEffect(() => {
@@ -231,6 +512,71 @@ const BookingPage: React.FC = () => {
     return bookingData.totalPrice + fee;
   };
 
+  const handleGoBack = () => {
+    console.log(
+      "Back button clicked, holdBookingId:",
+      holdBookingId,
+      "timerExpired:",
+      timerExpired
+    );
+
+    if (holdBookingId && !timerExpired) {
+      console.log(
+        "Active booking hold detected, showing confirmation modal..."
+      );
+      setBackConfirmVisible(true);
+    } else {
+      console.log("No active booking hold, navigating back immediately");
+      navigate(-1);
+    }
+  };
+
+  const handleConfirmGoBack = async () => {
+    console.log("User confirmed to leave, releasing booking and navigating...");
+    setBackConfirmVisible(false);
+
+    try {
+      if (holdBookingId) {
+        await releaseBookingAPI(holdBookingId);
+        console.log("Booking released successfully");
+        // Clear sessionStorage when booking is released
+        sessionStorage.removeItem("booking_hold_info");
+      }
+    } catch (error) {
+      console.error("Failed to release booking on back navigation:", error);
+    } finally {
+      console.log("Navigating back...");
+
+      // Try different navigation approaches
+      if (originalLocation) {
+        console.log("Using original location:", originalLocation);
+        window.location.href = originalLocation;
+      } else {
+        // Fallback approaches
+        console.log("No original location, trying history.go(-2)");
+        window.history.go(-2);
+
+        // Double fallback with navigate
+        setTimeout(() => {
+          if (window.location.pathname.includes("/booking")) {
+            console.log("Final fallback: navigate(-1)");
+            navigate(-1);
+          }
+        }, 200);
+      }
+    }
+  };
+
+  const handleCancelGoBack = () => {
+    console.log("User cancelled leaving");
+    setBackConfirmVisible(false);
+
+    // Push another state to catch the next back button press
+    if (holdBookingId && !timerExpired) {
+      const currentPath = window.location.pathname + window.location.search;
+      window.history.pushState(null, "", currentPath);
+    }
+  };
   const handleNextStep = () => {
     if (currentStep === 0) {
       form
@@ -257,6 +603,12 @@ const BookingPage: React.FC = () => {
   };
 
   const handleConfirmBooking = () => {
+    // Set redirect flag immediately when user confirms booking
+    // This prevents beforeunload alert when redirecting to payment
+    isRedirectingRef.current = true;
+    sessionStorage.setItem("redirecting_to_payment", "true");
+    (window as any).__REDIRECTING_TO_PAYMENT__ = true;
+
     setConfirmModalVisible(true);
   };
 
@@ -459,7 +811,13 @@ const BookingPage: React.FC = () => {
             "currentBooking",
             JSON.stringify(bookingToStore)
           );
-          window.location.href = payosResponse.paymentUrl;
+
+          // Clear booking hold info since we're proceeding with payment
+          sessionStorage.removeItem("booking_hold_info");
+
+          // Use the handlePaymentRedirection function to properly redirect
+          handlePaymentRedirection(payosResponse);
+
           return;
         } catch (payosError: any) {
           console.error("Create/Redirect PayOS error:", payosError);
@@ -473,6 +831,9 @@ const BookingPage: React.FC = () => {
       } else {
         // Handle other payment methods (cash, banking, etc.)
         message.success("Đặt sân thành công! Vui lòng thanh toán khi đến sân.");
+
+        // Clear sessionStorage when booking is successful
+        sessionStorage.removeItem("booking_hold_info");
 
         // Navigate to success page
         navigate("/booking/success", {
@@ -488,6 +849,11 @@ const BookingPage: React.FC = () => {
       }
     } catch (error: any) {
       console.error("Payment error:", error);
+
+      // Reset redirect flags on error
+      isRedirectingRef.current = false;
+      sessionStorage.removeItem("redirecting_to_payment");
+      (window as any).__REDIRECTING_TO_PAYMENT__ = false;
 
       // Check if it's form validation error
       if (error.errorFields && error.errorFields.length > 0) {
@@ -505,6 +871,24 @@ const BookingPage: React.FC = () => {
     }
   };
 
+  // Function to handle payment redirection
+  const handlePaymentRedirection = (payosResponse: { paymentUrl: string }) => {
+    // Set flags to indicate redirection
+    (window as any).__REDIRECTING_TO_PAYMENT__ = true;
+    sessionStorage.setItem("redirecting_to_payment", "true");
+    isRedirectingRef.current = true;
+
+    console.log("Redirecting to PayOS payment URL...");
+    console.log("Payment redirect flags set:", {
+      ref: isRedirectingRef.current,
+      sessionStorage: sessionStorage.getItem("redirecting_to_payment"),
+      window: (window as any).__REDIRECTING_TO_PAYMENT__,
+    });
+
+    // Redirect to payment URL
+    window.location.replace(payosResponse.paymentUrl);
+  };
+
   const steps = [
     {
       title: "Thông tin khách hàng",
@@ -519,6 +903,16 @@ const BookingPage: React.FC = () => {
       icon: <CheckCircleOutlined />,
     },
   ];
+
+  // Check redirection state on component mount
+  useEffect(() => {
+    const isRedirecting =
+      sessionStorage.getItem("redirecting_to_payment") === "true";
+    if (isRedirecting) {
+      console.log("Redirecting to payment page...");
+      sessionStorage.removeItem("redirecting_to_payment");
+    }
+  }, []);
 
   if (!bookingData) {
     return (
@@ -536,7 +930,7 @@ const BookingPage: React.FC = () => {
             <Button
               type="text"
               icon={<ArrowLeftOutlined />}
-              onClick={() => navigate(-1)}
+              onClick={handleGoBack}
               className="back-btn"
             >
               Quay lại
@@ -551,6 +945,54 @@ const BookingPage: React.FC = () => {
             direction="horizontal"
             labelPlacement="horizontal"
           />
+        </Card>
+
+        {/* Countdown Timer */}
+        <Card className="countdown-timer-card" style={{ marginBottom: 24 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <WarningOutlined
+                style={{ color: getCountdownColor(), fontSize: 18 }}
+              />
+              <div>
+                <Text strong style={{ fontSize: 16 }}>
+                  Thời gian giữ sân còn lại:
+                </Text>
+                <Text
+                  strong
+                  style={{
+                    fontSize: 20,
+                    color: getCountdownColor(),
+                    marginLeft: 8,
+                  }}
+                >
+                  {formatTime(timeLeft)}
+                </Text>
+              </div>
+            </div>
+            <div style={{ flex: 1, maxWidth: 200, marginLeft: 24 }}>
+              <Progress
+                percent={getProgressPercent()}
+                strokeColor={getCountdownColor()}
+                showInfo={false}
+                size="small"
+              />
+            </div>
+          </div>
+          {timeLeft <= 120 && (
+            <div style={{ marginTop: 8 }}>
+              <Text type="warning" style={{ fontSize: 12 }}>
+                ⚠️ Vui lòng hoàn tất đặt sân trước khi hết thời gian để không
+                mất chỗ
+              </Text>
+            </div>
+          )}
         </Card>
 
         <Row gutter={[24, 24]}>
@@ -818,10 +1260,16 @@ const BookingPage: React.FC = () => {
               {/* Navigation Buttons */}
               <div className="step-actions">
                 {currentStep > 0 && (
-                  <Button onClick={handlePrevStep}>Quay lại</Button>
+                  <Button onClick={handlePrevStep} disabled={timerExpired}>
+                    Quay lại
+                  </Button>
                 )}
                 {currentStep < 2 && (
-                  <Button type="primary" onClick={handleNextStep}>
+                  <Button
+                    type="primary"
+                    onClick={handleNextStep}
+                    disabled={timerExpired}
+                  >
                     Tiếp tục
                   </Button>
                 )}
@@ -830,6 +1278,7 @@ const BookingPage: React.FC = () => {
                     type="primary"
                     onClick={handleConfirmBooking}
                     className="confirm-btn"
+                    disabled={timerExpired}
                   >
                     Xác nhận và thanh toán
                   </Button>
@@ -841,6 +1290,15 @@ const BookingPage: React.FC = () => {
           {/* Booking Summary */}
           <Col xs={24} lg={8}>
             <Card className="booking-summary-card" title="Thông tin đặt sân">
+              {timeLeft <= 180 && (
+                <Alert
+                  message={`Còn ${formatTime(timeLeft)} để hoàn tất đặt sân`}
+                  description="Vui lòng nhanh chóng hoàn tất các bước để không mất chỗ đã giữ"
+                  type="warning"
+                  showIcon
+                  style={{ marginBottom: 16 }}
+                />
+              )}
               <div className="summary-content">
                 <div className="court-info">
                   <Title level={5}>{bookingData.courtNames}</Title>
@@ -919,7 +1377,13 @@ const BookingPage: React.FC = () => {
           title="Xác nhận thanh toán"
           open={confirmModalVisible}
           onOk={processPayment}
-          onCancel={() => setConfirmModalVisible(false)}
+          onCancel={() => {
+            // Reset redirect flags when user cancels
+            isRedirectingRef.current = false;
+            sessionStorage.removeItem("redirecting_to_payment");
+            (window as any).__REDIRECTING_TO_PAYMENT__ = false;
+            setConfirmModalVisible(false);
+          }}
           okText="Thanh toán ngay"
           cancelText="Hủy"
           confirmLoading={loading}
@@ -943,6 +1407,22 @@ const BookingPage: React.FC = () => {
               </Text>
             </div>
           </div>
+        </Modal>
+
+        {/* Back Confirmation Modal */}
+        <Modal
+          title="Xác nhận rời khỏi trang"
+          open={backConfirmVisible}
+          onOk={handleConfirmGoBack}
+          onCancel={handleCancelGoBack}
+          okText="Rời khỏi"
+          cancelText="Ở lại"
+          okType="danger"
+        >
+          <p>
+            Bạn có chắc muốn rời khỏi trang? Việc giữ sân sẽ bị hủy và bạn sẽ
+            cần đặt lại.
+          </p>
         </Modal>
       </div>
     </div>

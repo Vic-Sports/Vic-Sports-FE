@@ -32,6 +32,7 @@ import {
   getCourtsByVenueAPI,
 } from "@/services/courtApi";
 import { getVenueByIdAPI } from "@/services/venueApi";
+import { holdBookingAPI } from "@/services/bookingApi";
 import "./BookingModal.scss";
 
 const { Title, Text } = Typography;
@@ -49,6 +50,15 @@ interface TimeSlot {
   price: number;
   // Optional map of courtId -> price for this slot when multiple courts selected
   priceByCourt?: Record<string, number>;
+  // New: held slots info from API (per court)
+  heldSlots?: {
+    courtId?: string;
+    holdUntil: string;
+    bookingId?: string;
+    start?: string;
+    end?: string;
+    reason?: string; // For synthetic holds like 'unavailable'
+  }[];
 }
 
 interface CourtWithNumber extends ICourt {
@@ -73,6 +83,10 @@ const BookingModal: React.FC<BookingModalProps> = ({
   const [availableTimeSlots, setAvailableTimeSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [venueName, setVenueName] = useState<string>("");
+  const [holdModalVisible, setHoldModalVisible] = useState<boolean>(false);
+  const [holdConflicts, setHoldConflicts] = useState<
+    { slotKey: string; holds: TimeSlot["heldSlots"] }[]
+  >([]);
 
   // Helper function to get fallback price based on day type
   const getFallbackPrice = (dayType: "weekend" | "weekday"): number => {
@@ -249,8 +263,8 @@ const BookingModal: React.FC<BookingModalProps> = ({
     }
   }, [court]);
 
-  const generateTimeSlots = useCallback(async () => {
-    if (!court || !selectedDate || selectedCourts.length === 0) return;
+  const generateTimeSlots = useCallback(async (): Promise<TimeSlot[]> => {
+    if (!court || !selectedDate || selectedCourts.length === 0) return [];
 
     const selectedDayOfWeek = selectedDate.day(); // 0 = Sunday, 1 = Monday, ...
 
@@ -274,12 +288,12 @@ const BookingModal: React.FC<BookingModalProps> = ({
     // NEW BUSINESS LOGIC: If ANY selected court is closed, show NO time slots
     if (selectedCourtsOpenToday.length < selectedCourtsData.length) {
       setAvailableTimeSlots([]);
-      return;
+      return [];
     }
 
     if (selectedCourtsOpenToday.length === 0) {
       setAvailableTimeSlots([]);
-      return;
+      return [];
     }
 
     // Get operating hours for SELECTED courts on selected day
@@ -295,7 +309,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
     if (operatingRanges.length === 0) {
       setAvailableTimeSlots([]);
-      return;
+      return [];
     }
 
     // For multiple courts, find common operating hours
@@ -328,7 +342,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
       if (commonOperatingHours.start >= commonOperatingHours.end) {
         // No common operating hours
         setAvailableTimeSlots([]);
-        return;
+        return [];
       }
     } else if (selectedCourtsOpenToday.length === 1) {
       // Single court - use its operating hours
@@ -459,6 +473,14 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
         // Logic hiển thị khung giờ trống theo số sân được chọn
         let isAvailable = false;
+        // Collect held slots for this time slot (from API)
+        const heldSlotsForThisSlot: {
+          courtId?: string;
+          holdUntil: string;
+          bookingId?: string;
+          start?: string;
+          end?: string;
+        }[] = [];
 
         // If time slot has passed, mark as unavailable regardless of API response
         if (hasTimePassed) {
@@ -474,7 +496,27 @@ const BookingModal: React.FC<BookingModalProps> = ({
             const timeSlotData = availability?.data?.timeSlots?.find(
               (slot) => slot.start === start && slot.end === end
             );
-            isAvailable = timeSlotData?.isAvailable || false;
+            // Check heldSlots from API (backend returns heldSlots per court)
+            const held =
+              (availability?.data as any)?.heldSlots?.find(
+                (h: any) =>
+                  h.start === start &&
+                  h.end === end &&
+                  dayjs(h.holdUntil).isAfter(dayjs())
+              ) || null;
+
+            if (held) {
+              heldSlotsForThisSlot.push({
+                courtId: selectedCourts[0],
+                holdUntil: held.holdUntil,
+                bookingId: held.bookingId,
+                start: held.start,
+                end: held.end,
+              });
+            }
+
+            isAvailable =
+              !held && (timeSlotData?.isAvailable === true || false);
 
             console.log(`Slot ${start}-${end} availability:`, {
               timeSlotData,
@@ -484,12 +526,43 @@ const BookingModal: React.FC<BookingModalProps> = ({
           } else {
             // Nếu chọn nhiều sân, chỉ hiển thị khung giờ trống chung của tất cả các sân
             // Khung giờ chỉ available nếu TẤT CẢ các sân đều trống cùng lúc
-            isAvailable = availabilityResponses.every((availability) => {
+            // Nếu chọn nhiều sân, chỉ hiển thị khung giờ trống chung của tất cả các sân
+            // Khung giờ chỉ available nếu TẤT CẢ các sân đều trống cùng lúc và không có hold
+            let allAvailable = true;
+
+            for (let i = 0; i < availabilityResponses.length; i++) {
+              const availability = availabilityResponses[i];
+              const courtId = selectedCourts[i];
+
               const timeSlotData = availability?.data?.timeSlots?.find(
                 (slot) => slot.start === start && slot.end === end
               );
-              return timeSlotData?.isAvailable || false;
-            });
+
+              const held =
+                (availability?.data as any)?.heldSlots?.find(
+                  (h: any) =>
+                    h.start === start &&
+                    h.end === end &&
+                    dayjs(h.holdUntil).isAfter(dayjs())
+                ) || null;
+
+              if (held) {
+                heldSlotsForThisSlot.push({
+                  courtId,
+                  holdUntil: held.holdUntil,
+                  bookingId: held.bookingId,
+                  start: held.start,
+                  end: held.end,
+                });
+              }
+
+              // If any court either not available or held -> not available for combined booking
+              if (!timeSlotData?.isAvailable || held) {
+                allAvailable = false;
+              }
+            }
+
+            isAvailable = allAvailable;
           }
         }
 
@@ -498,7 +571,10 @@ const BookingModal: React.FC<BookingModalProps> = ({
           console.log(
             `FORCING slot ${start}-${end} to be available for testing`
           );
-          isAvailable = true;
+          // don't override if it's held - respect holds
+          if (heldSlotsForThisSlot.length === 0) {
+            isAvailable = true;
+          }
         }
 
         // Compute per-court prices from availability API when possible
@@ -594,6 +670,9 @@ const BookingModal: React.FC<BookingModalProps> = ({
           priceByCourt: Object.keys(priceByCourt).length
             ? priceByCourt
             : undefined,
+          heldSlots: heldSlotsForThisSlot.length
+            ? heldSlotsForThisSlot
+            : undefined,
         });
 
         console.log(`Added time slot ${start}-${end}:`, {
@@ -609,9 +688,10 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
       console.log("Final time slots created:", timeSlots);
       setAvailableTimeSlots(timeSlots);
+      return timeSlots;
 
       // Show warning if fallback prices were used due to invalid pricing data
-      const hasInvalidPricing = court.pricing.some(
+      const hasInvalidPricing = court!.pricing.some(
         (p) =>
           !p.timeSlot?.start ||
           !p.timeSlot?.end ||
@@ -622,7 +702,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
       if (hasInvalidPricing) {
         console.warn(
           "Court has invalid pricing data, using fallback prices:",
-          court.pricing
+          court!.pricing
         );
       }
     } catch (error) {
@@ -632,7 +712,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
       if (selectedCourtsOpenToday.length === 0) {
         console.log("No courts open today, not creating fallback slots");
         setAvailableTimeSlots([]);
-        return;
+        return [];
       }
 
       // Fallback to mock data if API fails - use common operating hours
@@ -750,6 +830,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
       // Show warning for fallback pricing
       console.warn("Using fallback time slots and pricing due to API error");
+      return timeSlots;
     }
   }, [court, selectedDate, selectedCourts, availableCourts]);
 
@@ -864,7 +945,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
     return totalPrice;
   };
 
-  const handleProceedToBooking = () => {
+  const handleProceedToBooking = async () => {
     if (!selectedDate || selectedTimeSlots.length === 0) {
       message.warning("Vui lòng chọn ngày và ít nhất một khung giờ");
       return;
@@ -877,6 +958,30 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
     // Prepare booking data
     const selectedSlots = getSelectedSlotsDetails();
+
+    // FE check: if any selected slot is currently held, show modal and refresh UI
+    const conflicts = selectedSlots
+      .map((slot) => {
+        const slotKey = `${slot.start}-${slot.end}`;
+        const activeHolds = (slot.heldSlots || []).filter((h) =>
+          dayjs(h!.holdUntil).isAfter(dayjs())
+        );
+        return activeHolds.length ? { slotKey, holds: activeHolds } : null;
+      })
+      .filter(Boolean) as { slotKey: string; holds: TimeSlot["heldSlots"] }[];
+
+    if (conflicts.length > 0) {
+      setHoldConflicts(conflicts);
+      setHoldModalVisible(true);
+      // Refresh availability UI
+      try {
+        // generateTimeSlots returns refreshed slots
+        await generateTimeSlots();
+      } catch (err) {
+        console.error("Error refreshing time slots after hold conflict:", err);
+      }
+      return;
+    }
     const bookingData: IBookingData = {
       courtIds: selectedCourts, // Thay đổi từ courtId thành courtIds
       courtNames: availableCourts
@@ -895,11 +1000,186 @@ const BookingModal: React.FC<BookingModalProps> = ({
     };
 
     // Navigate to booking page with booking data
-    navigate("/booking", {
-      state: { bookingData },
-    });
+    // First, call backend to create a short-term hold for this booking
+    // Backend is expected to set holdUntil = now + 5 minutes and return bookingId (optional)
+    try {
+      // Final server-side availability check to avoid race where local state is stale
+      try {
+        const availabilityResponses = await Promise.all(
+          selectedCourts.map((courtId) =>
+            getCourtAvailabilityAPI(courtId, bookingData.date)
+          )
+        );
 
-    onCancel(); // Close modal
+        // Check for ANY active hold on selected time slots across all selected courts
+        const serverConflicts: { slotKey: string; holds: any[] }[] = [];
+
+        // For each selected time slot, check all courts
+        for (const slot of selectedSlots) {
+          const slotKey = `${slot.start}-${slot.end}`;
+          const holds: any[] = [];
+
+          for (let i = 0; i < availabilityResponses.length; i++) {
+            const resp = availabilityResponses[i];
+            const courtId = selectedCourts[i];
+
+            // Check if this court has any held slots for this time
+            const heldSlots = (resp?.data as any)?.heldSlots || [];
+
+            for (const h of heldSlots) {
+              if (
+                h.start === slot.start &&
+                h.end === slot.end &&
+                dayjs(h.holdUntil).isAfter(dayjs())
+              ) {
+                holds.push({ courtId, ...h });
+                console.log(
+                  `Server conflict detected: Court ${courtId}, slot ${slotKey}, hold until ${h.holdUntil}`
+                );
+              }
+            }
+
+            // Also check if the slot is marked as unavailable (could indicate a booking)
+            const timeSlotData = resp?.data?.timeSlots?.find(
+              (ts: any) => ts.start === slot.start && ts.end === slot.end
+            );
+
+            if (timeSlotData && !timeSlotData.isAvailable) {
+              console.log(
+                `Server conflict detected: Court ${courtId}, slot ${slotKey} is not available`
+              );
+              // Add a synthetic hold entry for unavailable slots
+              holds.push({
+                courtId,
+                start: slot.start,
+                end: slot.end,
+                holdUntil: dayjs().add(1, "hour").toISOString(),
+                reason: "unavailable",
+              });
+            }
+          }
+
+          if (holds.length > 0) {
+            serverConflicts.push({ slotKey, holds });
+          }
+        }
+
+        if (serverConflicts.length > 0) {
+          console.log("Server conflicts found:", serverConflicts);
+
+          // Automatically remove conflicted time slots from selection
+          const conflictedSlotKeys = serverConflicts.map((c) => c.slotKey);
+          const remainingSlots = selectedTimeSlots.filter(
+            (slotKey) => !conflictedSlotKeys.includes(slotKey)
+          );
+
+          setSelectedTimeSlots(remainingSlots);
+          setHoldConflicts(serverConflicts);
+          setHoldModalVisible(true);
+
+          // Show message about removed slots
+          if (conflictedSlotKeys.length === 1) {
+            message.warning(
+              `Đã bỏ chọn khung giờ ${conflictedSlotKeys[0]} vì đang bị giữ`
+            );
+          } else {
+            message.warning(
+              `Đã bỏ chọn ${
+                conflictedSlotKeys.length
+              } khung giờ bị giữ: ${conflictedSlotKeys.join(", ")}`
+            );
+          }
+
+          // Refresh availability UI
+          try {
+            await generateTimeSlots();
+          } catch (e) {
+            console.error(
+              "Error refreshing time slots after server conflict:",
+              e
+            );
+          }
+          return;
+        }
+
+        console.log(
+          "No server conflicts detected, proceeding with hold request"
+        );
+      } catch (e) {
+        console.error("Server availability check failed:", e);
+        message.error(
+          "Không thể kiểm tra trạng thái khung giờ, vui lòng thử lại"
+        );
+        return;
+      }
+
+      const holdRequestPayload = {
+        venueId: bookingData.venue,
+        courtIds: bookingData.courtIds,
+        date: bookingData.date,
+        timeSlots: bookingData.timeSlots.map((ts) => ({
+          startTime: ts.start,
+          endTime: ts.end,
+          price: ts.price,
+        })),
+      };
+
+      // Fire the hold request and await response
+      console.log(
+        "Attempting to create hold with payload:",
+        holdRequestPayload
+      );
+      const holdResp = await holdBookingAPI(holdRequestPayload);
+      console.log("Hold API response:", holdResp);
+
+      const holdData = (holdResp?.data as any) || {};
+
+      // Treat backend response as success if it does not explicitly set success=false
+      const isSuccess = holdData && holdData.success !== false;
+      console.log("Hold success status:", isSuccess, "holdData:", holdData);
+
+      if (!isSuccess) {
+        message.error(`Không thể giữ khung giờ: ${holdData.message || "Lỗi"}`);
+        // Refresh availability UI to reflect current server state
+        try {
+          await generateTimeSlots();
+        } catch (e) {
+          console.error("Error refreshing time slots after failed hold:", e);
+        }
+        return;
+      }
+
+      // Optionally retrieve bookingId returned from hold endpoint
+      const bookingId =
+        holdData?.data?.bookingId || holdData?.bookingId || null;
+
+      // Calculate holdUntil time (backend sets 5-minute hold from now)
+      const holdUntil = dayjs().add(5, "minutes").toISOString();
+
+      // Save hold information to sessionStorage for reload recovery
+      const holdInfo = {
+        bookingData,
+        bookingId,
+        holdUntil,
+        timestamp: dayjs().toISOString(),
+      };
+      sessionStorage.setItem("booking_hold_info", JSON.stringify(holdInfo));
+
+      // Navigate immediately based on hold success. We consider BE's response authoritative.
+      navigate("/booking", {
+        state: { bookingData, bookingId, holdUntil },
+      });
+
+      onCancel(); // Close modal
+
+      // Refresh availability in background to update UI for other users
+      generateTimeSlots().catch((err) => {
+        console.error("Background refresh of time slots failed:", err);
+      });
+    } catch (err: any) {
+      console.error("Hold request failed:", err);
+      message.error("Không thể giữ khung giờ, vui lòng thử lại");
+    }
   };
 
   const disabledDate = (current: Dayjs) => {
@@ -1166,6 +1446,16 @@ const BookingModal: React.FC<BookingModalProps> = ({
                               );
                             })();
 
+                          // Check if slot is held (active holdUntil)
+                          const slotHeld = (slot.heldSlots || []).some((h) =>
+                            dayjs(h.holdUntil).isAfter(dayjs())
+                          );
+                          const firstHoldUntil =
+                            slot.heldSlots && slot.heldSlots[0]?.holdUntil;
+                          const holdUntilLabel = firstHoldUntil
+                            ? dayjs(firstHoldUntil).format("HH:mm")
+                            : null;
+
                           return (
                             <Button
                               key={slotKey}
@@ -1179,6 +1469,10 @@ const BookingModal: React.FC<BookingModalProps> = ({
                                 !slot.isAvailable
                                   ? hasPassed
                                     ? "Khung giờ đã qua"
+                                    : slotHeld
+                                    ? holdUntilLabel
+                                      ? `Đang giữ đến ${holdUntilLabel}`
+                                      : "Đang giữ"
                                     : "Khung giờ đã được đặt"
                                   : `Đặt khung giờ ${slot.start} - ${slot.end}`
                               }
@@ -1196,6 +1490,17 @@ const BookingModal: React.FC<BookingModalProps> = ({
                                       }}
                                     >
                                       (Đã qua)
+                                    </span>
+                                  )}
+                                  {slotHeld && !hasPassed && (
+                                    <span
+                                      style={{
+                                        marginLeft: "6px",
+                                        fontSize: "11px",
+                                        color: "#faad14",
+                                      }}
+                                    >
+                                      (Đang giữ đến {holdUntilLabel || "?"})
                                     </span>
                                   )}
                                 </div>
@@ -1396,6 +1701,97 @@ const BookingModal: React.FC<BookingModalProps> = ({
               Tiếp tục đặt sân
             </Button>
           </div>
+          {/* Hold conflict modal */}
+          <Modal
+            title="Khung giờ đang được giữ"
+            open={holdModalVisible}
+            onCancel={() => setHoldModalVisible(false)}
+            footer={
+              <div style={{ textAlign: "right" }}>
+                <Button
+                  onClick={() => {
+                    setHoldModalVisible(false);
+                    // Refresh slots
+                    generateTimeSlots();
+                  }}
+                >
+                  Làm mới
+                </Button>
+                {selectedTimeSlots.length > 0 && (
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      setHoldModalVisible(false);
+                      // Continue with remaining slots
+                      handleProceedToBooking();
+                    }}
+                    style={{ marginLeft: 8 }}
+                  >
+                    Tiếp tục với {selectedTimeSlots.length} khung giờ còn lại
+                  </Button>
+                )}
+                <Button
+                  onClick={() => setHoldModalVisible(false)}
+                  style={{ marginLeft: 8 }}
+                >
+                  Đóng
+                </Button>
+              </div>
+            }
+          >
+            <div>
+              <Text>
+                Một số khung giờ bạn chọn đang được giữ tạm và đã được bỏ chọn
+                tự động.
+                {selectedTimeSlots.length > 0
+                  ? ` Bạn có thể tiếp tục đặt với ${selectedTimeSlots.length} khung giờ còn lại.`
+                  : " Vui lòng chọn khung giờ khác."}
+              </Text>
+              <Divider />
+              <Text strong>Các khung giờ đã bỏ chọn:</Text>
+              {holdConflicts.map((c) => (
+                <div key={c.slotKey} style={{ marginBottom: 8, marginTop: 8 }}>
+                  <Tag color="red" style={{ marginBottom: 4 }}>
+                    {c.slotKey}
+                  </Tag>
+                  <div>
+                    {(c.holds || []).map((h, idx) => (
+                      <div
+                        key={idx}
+                        style={{ fontSize: 12, color: "#666", marginLeft: 8 }}
+                      >
+                        {h.reason === "unavailable"
+                          ? "Khung giờ không có sẵn"
+                          : `Giữ đến: ${
+                              h?.holdUntil
+                                ? dayjs(h.holdUntil).format("HH:mm")
+                                : "-"
+                            }`}
+                        {h?.bookingId ? ` (id: ${h.bookingId})` : ""}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {selectedTimeSlots.length > 0 && (
+                <>
+                  <Divider />
+                  <Text strong>Khung giờ còn lại đã chọn:</Text>
+                  <div style={{ marginTop: 8 }}>
+                    {selectedTimeSlots.map((slotKey) => (
+                      <Tag
+                        key={slotKey}
+                        color="blue"
+                        style={{ marginBottom: 4, marginRight: 4 }}
+                      >
+                        {slotKey}
+                      </Tag>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          </Modal>
         </div>
       </Spin>
     </Modal>
