@@ -203,9 +203,15 @@ const ManageBookings = () => {
           <div>
             <MailOutlined /> {record.customerInfo.email}
           </div>
-          {record.user.avatar && (
+          {record.user && record.user.avatar ? (
             <Avatar
               src={record.user.avatar}
+              size="small"
+              style={{ marginTop: 4 }}
+            />
+          ) : (
+            <Avatar
+              icon={<UserOutlined />}
               size="small"
               style={{ marginTop: 4 }}
             />
