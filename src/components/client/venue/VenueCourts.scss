@@ -1,46 +1,262 @@
 .venue-courts-page {
   min-height: 100vh;
-  color: #1a1a1a;
-  padding: 24px;
-  max-width: 1400px;
-  margin: 0 auto;
-  position: relative;
+  padding: 40px 0;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
 
-  .venue-breadcrumb {
-    margin-bottom: 24px;
-    padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 12px;
-    backdrop-filter: blur(10px);
+  // Breadcrumb Navigation
+  .breadcrumb-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    animation: fadeInDown 0.6s ease;
 
-    .ant-breadcrumb-link {
-      color: #666;
+    .breadcrumb-link {
+      background: none;
+      border: none;
+      color: #667eea;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 4px 8px;
+      border-radius: 8px;
 
-      a {
-        color: #1890ff;
-        text-decoration: none;
-        font-weight: 500;
+      &:hover {
+        background: #f0f4ff;
+        color: #5568d3;
+      }
+    }
 
-        &:hover {
-          color: #40a9ff;
+    .breadcrumb-separator {
+      color: #cbd5e0;
+    }
+
+    .breadcrumb-current {
+      color: #2d3748;
+      font-weight: 600;
+    }
+  }
+
+  // Venue Hero Section
+  .venue-hero-section {
+    animation: fadeInUp 0.8s ease;
+
+    .venue-image-gallery {
+      position: relative;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+      height: 100%;
+      min-height: 400px;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+      }
+
+      &:hover img {
+        transform: scale(1.05);
+      }
+
+      .verified-badge-overlay {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 4px 20px rgba(82, 196, 26, 0.4);
+        animation: pulse 2s infinite;
+
+        svg {
+          margin-right: 8px;
         }
       }
     }
 
-    .ant-breadcrumb-separator {
-      color: #999;
+    .venue-info-card {
+      background: white;
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      height: 100%;
+
+      .venue-title {
+        font-size: 32px;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 16px;
+        line-height: 1.2;
+      }
+
+      .venue-rating {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 24px;
+
+        .star-filled {
+          color: #ffa940;
+          font-size: 18px;
+        }
+
+        .star-empty {
+          color: #d9d9d9;
+          font-size: 18px;
+        }
+
+        .rating-value {
+          color: #666;
+          font-weight: 600;
+          font-size: 15px;
+        }
+      }
+
+      .venue-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+
+        .stat-box {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          padding: 20px;
+          background: linear-gradient(135deg, #f8f9ff 0%, #e6f0ff 100%);
+          border-radius: 16px;
+          border: 1px solid #d6e4ff;
+          transition: all 0.3s ease;
+
+          &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+          }
+
+          .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+
+            &.bg-primary {
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            &.bg-success {
+              background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+            }
+          }
+
+          .stat-info {
+            .stat-value {
+              font-size: 24px;
+              font-weight: 800;
+              color: #1a202c;
+              line-height: 1;
+              margin-bottom: 4px;
+            }
+
+            .stat-label {
+              font-size: 13px;
+              color: #718096;
+              font-weight: 500;
+            }
+          }
+        }
+      }
+
+      .venue-details-list {
+        margin-top: 24px;
+
+        .detail-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          padding: 12px 0;
+          border-bottom: 1px solid #f0f0f0;
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          .detail-icon {
+            color: #667eea;
+            font-size: 16px;
+            margin-top: 2px;
+            flex-shrink: 0;
+          }
+
+          span {
+            color: #4a5568;
+            font-size: 15px;
+            line-height: 1.6;
+          }
+        }
+      }
+
+      .venue-description {
+        color: #718096;
+        font-size: 15px;
+        line-height: 1.7;
+        margin-top: 16px;
+      }
+
+      .venue-amenities {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        .amenity-badge {
+          background: linear-gradient(135deg, #e6f7ff 0%, #f0f8ff 100%);
+          color: #1890ff;
+          padding: 8px 16px;
+          border-radius: 50px;
+          font-size: 13px;
+          font-weight: 500;
+          border: 1px solid #91d5ff;
+          transition: all 0.3s ease;
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.2);
+          }
+
+          &.more {
+            background: linear-gradient(135deg, #fff7e6 0%, #fffbe6 100%);
+            color: #fa8c16;
+            border-color: #ffd591;
+          }
+        }
+      }
     }
   }
 
-  .venue-info-header {
-    margin-bottom: 32px;
+  // Filter Section
+  .filter-section {
+    background: white;
     border-radius: 24px;
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 16px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    overflow: hidden;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    animation: fadeInUp 1s ease;
     position: relative;
-    backdrop-filter: blur(20px);
+    overflow: hidden;
 
     &::before {
       content: "";
@@ -49,362 +265,333 @@
       left: 0;
       right: 0;
       height: 4px;
-      background: linear-gradient(
-        90deg,
-        #1890ff,
-        #722ed1,
-        #52c41a,
-        #fa8c16,
-        #1890ff
-      );
+      background: linear-gradient(90deg, #667eea, #764ba2, #52c41a, #fa8c16);
       animation: gradient-shift 3s ease-in-out infinite;
     }
 
-    .venue-image {
-      position: relative;
-      overflow: hidden;
-
-      img {
-        width: 100%;
-        height: 320px;
-        object-fit: cover;
-        border-radius: 20px;
-        transition: transform 0.3s ease;
-
-        &:hover {
-          transform: scale(1.05);
-        }
-      }
-
-      .verified-badge {
-        position: absolute;
-        top: 16px;
-        right: 16px;
-        background: linear-gradient(45deg, #52c41a, #73d13d);
-        color: white;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
-        animation: pulse 2s infinite;
-      }
-    }
-
-    .venue-details {
-      padding: 24px;
-
-      .venue-title-section {
-        margin-bottom: 24px;
-
-        h2 {
-          margin-bottom: 12px;
-          color: #1a1a1a;
-          font-weight: 700;
-          font-size: 32px;
-          background: linear-gradient(45deg, #1890ff, #722ed1);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        .venue-rating-location {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-
-          .ant-rate {
-            .ant-rate-star {
-              color: #ffa940;
-            }
-          }
-
-          .rating-text {
-            color: #666;
-            font-size: 14px;
-            font-weight: 500;
-          }
-        }
-      }
-
-      .venue-stats-row {
-        margin-bottom: 24px;
-        padding: 20px;
-        background: linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%);
-        border-radius: 16px;
-        border: 1px solid #d6e4ff;
-      }
-
-      .venue-meta {
-        margin-bottom: 20px;
-
-        .meta-item {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          margin-bottom: 12px;
-          color: #666;
-          padding: 8px 0;
-          font-weight: 500;
-
-          .anticon {
-            color: #1890ff;
-            font-size: 16px;
-          }
-        }
-      }
-
-      .venue-description {
-        color: #555;
-        line-height: 1.6;
-        font-size: 15px;
-        margin-bottom: 20px;
-      }
-
-      .venue-amenities {
-        .amenity-tag {
-          margin-right: 8px;
-          margin-bottom: 8px;
-          border-radius: 20px;
-          background: linear-gradient(45deg, #e6f7ff, #f0f8ff);
-          border: 1px solid #91d5ff;
-          color: #1890ff;
-          padding: 6px 16px;
-          font-size: 12px;
-          font-weight: 500;
-          transition: all 0.3s ease;
-
-          &:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.2);
-          }
-
-          &.amenity-more {
-            background: linear-gradient(45deg, #f6ffed, #f0f9ff);
-            border-color: #b7eb8f;
-            color: #52c41a;
-          }
-        }
-      }
-    }
-  }
-
-  .booking-filters {
-    margin-bottom: 32px;
-    border-radius: 24px;
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 16px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(20px);
-    overflow: hidden;
-    position: relative;
-
-    &::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, #fa8c16, #1890ff, #722ed1, #52c41a);
-    }
-
-    .ant-card-body {
-      background: transparent;
-      padding: 32px;
-    }
-
     .filter-header {
-      margin-bottom: 24px;
-      text-align: center;
-
-      h4 {
-        margin: 0 0 8px 0;
-        color: #1a1a1a;
+      .section-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 12px;
-        font-weight: 700;
-        font-size: 20px;
+
+        svg {
+          color: #667eea;
+        }
+      }
+
+      .section-subtitle {
+        color: #718096;
+        font-size: 16px;
+        font-weight: 500;
       }
     }
 
     .filter-group {
-      margin-bottom: 16px;
-
-      span[data-text="strong"] {
-        display: block;
-        margin-bottom: 12px;
-        font-weight: 700;
-        font-size: 14px;
-      }
-
-      .ant-select {
-        .ant-select-selector {
-          background: rgba(255, 255, 255, 0.9) !important;
-          border: 2px solid #e8f4f8 !important;
-          border-radius: 12px !important;
-          padding: 8px 12px !important;
-          transition: all 0.3s ease !important;
-
-          &:hover {
-            border-color: #1890ff !important;
-            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1) !important;
-          }
-
-          &:focus {
-            border-color: #722ed1 !important;
-            box-shadow: 0 0 0 3px rgba(114, 46, 209, 0.2) !important;
-          }
-        }
-
-        .ant-select-selection-placeholder {
-          color: #bfbfbf !important;
-          font-weight: 500 !important;
-        }
-
-        .ant-select-arrow {
-          color: #1890ff !important;
-        }
-      }
-    }
-
-    .filter-summary {
-      margin-top: 20px;
-      text-align: center;
-      padding: 16px;
-      background: linear-gradient(135deg, #fff7e6 0%, #fff2e8 100%);
-      border-radius: 12px;
-      border: 1px solid #ffd591;
-
-      span {
-        font-weight: 600;
-        color: #fa8c16;
-      }
-    }
-  }
-
-  .courts-section {
-    .section-header {
-      margin-bottom: 32px;
-      text-align: center;
-      padding: 24px;
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 20px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      backdrop-filter: blur(10px);
-
-      .header-content {
+      .filter-label {
         display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 16px;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 12px;
+        font-size: 15px;
+        letter-spacing: 0.3px;
+
+        svg {
+          color: #667eea;
+          font-size: 14px;
+        }
+      }
+    }
+
+    .filter-result-info {
+      animation: fadeIn 0.5s ease;
+
+      .result-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #f0f4ff 0%, #e6f0ff 100%);
+        color: #667eea;
+        padding: 14px 36px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 15px;
+        border: 2px solid #d6e4ff;
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
+        }
+      }
+    }
+  }
+
+  // Courts Grid Section
+  .courts-grid-section {
+    animation: fadeInUp 1.2s ease;
+
+    .section-header {
+      .section-title {
+        font-size: 36px;
+        font-weight: 800;
         margin-bottom: 12px;
 
-        h3 {
-          margin: 0;
-          color: #1a1a1a;
-          font-weight: 700;
-          font-size: 24px;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .court-count-badge {
-          background: linear-gradient(45deg, #e6f7ff, #f0f8ff);
-          padding: 8px 16px;
-          border-radius: 20px;
-          border: 1px solid #91d5ff;
+        &.gradient-text {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
         }
       }
 
-      .section-description {
+      .section-subtitle {
+        color: #718096;
+        font-size: 18px;
+      }
+    }
+
+    .no-results {
+      background: white;
+      border-radius: 24px;
+      padding: 60px 40px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+
+      h4 {
+        color: #2d3748;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      p {
+        color: #718096;
         font-size: 16px;
-        color: #666;
-        font-weight: 500;
-      }
-    }
-  }
-
-  .venue-courts-loading {
-    /* Single, top-level full-screen overlay loader to avoid duplicate loaders */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    background: rgba(255, 255, 255, 0.8);
-    z-index: 99999; /* ensure this overlay sits above other spinners */
-
-    .ant-spin-dot {
-      .ant-spin-dot-item {
-        background-color: #1890ff;
       }
     }
 
-    span {
-      color: #666;
-      font-size: 16px;
-    }
-  }
-
-  .venue-courts-error {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
-    gap: 16px;
-
-    .ant-empty-description {
-      color: #666;
-    }
-
-    .ant-btn {
-      margin-top: 16px;
-      background: #1890ff;
-      border: none;
-      border-radius: 12px;
-      color: #fff;
-      font-weight: 600;
+    // Sport Cards
+    .sport-card {
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      height: 100%;
+      border: 1px solid #e2e8f0;
 
       &:hover {
-        background: #40a9ff;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(24, 144, 255, 0.3);
+        transform: translateY(-12px);
+        box-shadow: 0 20px 60px rgba(102, 126, 234, 0.25);
+      }
+
+      .sport-card-image {
+        position: relative;
+        height: 240px;
+        overflow: hidden;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.4s ease;
+        }
+
+        &:hover img {
+          transform: scale(1.1);
+        }
+
+        .sport-card-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            180deg,
+            rgba(0, 0, 0, 0.2) 0%,
+            rgba(0, 0, 0, 0.8) 100%
+          );
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+
+          .sport-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+          }
+
+          .sport-name {
+            color: white;
+            font-size: 20px;
+            font-weight: 800;
+            margin: 0;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+          }
+
+          &:hover .sport-icon {
+            transform: scale(1.1) rotate(10deg);
+            background: rgba(255, 255, 255, 0.3);
+          }
+        }
+      }
+
+      .sport-card-body {
+        padding: 24px;
+
+        .sport-stats-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .stat-item-small {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 14px;
+
+            svg {
+              font-size: 16px;
+            }
+          }
+        }
+
+        .price-range {
+          padding: 16px;
+          background: linear-gradient(135deg, #f8f9ff 0%, #e6f0ff 100%);
+          border-radius: 12px;
+          border: 1px solid #d6e4ff;
+
+          .price-label {
+            color: #718096;
+            font-size: 13px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+          }
+
+          .price-value {
+            color: #667eea;
+            font-size: 16px;
+            font-weight: 700;
+            display: block;
+          }
+        }
+
+        .court-details {
+          .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+
+            &:last-child {
+              border-bottom: none;
+            }
+
+            .detail-label {
+              color: #718096;
+              font-size: 13px;
+              font-weight: 600;
+            }
+
+            .detail-value {
+              color: #2d3748;
+              font-size: 14px;
+              font-weight: 500;
+            }
+          }
+        }
+
+        .btn-primary {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border: none;
+          padding: 14px 24px;
+          font-weight: 700;
+          font-size: 15px;
+          letter-spacing: 0.5px;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #5568d3 0%, #6a3d94 100%);
+          }
+
+          &:active {
+            transform: translateY(0);
+          }
+        }
       }
     }
   }
 
-  // Animations and effects
-  @keyframes gradient-shift {
-    0%,
-    100% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
+  // Error Page
+  &.error-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+
+    .error-content {
+      background: white;
+      padding: 60px 40px;
+      border-radius: 24px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      max-width: 500px;
+
+      .error-icon {
+        animation: pulse 2s infinite;
+      }
+
+      h2 {
+        color: #2d3748;
+        font-weight: 700;
+        margin-bottom: 24px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 14px 32px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+      }
     }
   }
 
-  @keyframes pulse {
-    0%,
-    100% {
-      transform: scale(1);
+  // Animations
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
     }
-    50% {
-      transform: scale(1.05);
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 
@@ -419,164 +606,137 @@
     }
   }
 
-  // Responsive design
-  @media (max-width: 768px) {
-    padding: 16px;
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 
-    .venue-info-header {
-      .venue-details {
-        padding: 16px;
+  @keyframes pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
 
-        .venue-title-section h2 {
-          font-size: 24px;
+  @keyframes gradient-shift {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  // Responsive Design
+  @media (max-width: 992px) {
+    padding: 24px 0;
+
+    .venue-hero-section {
+      .venue-image-gallery {
+        min-height: 300px;
+        margin-bottom: 24px;
+      }
+
+      .venue-info-card {
+        padding: 24px;
+
+        .venue-title {
+          font-size: 26px;
         }
 
-        .venue-stats-row {
-          padding: 16px;
+        .venue-stats-grid {
+          grid-template-columns: 1fr;
         }
       }
     }
 
-    .booking-filters {
-      .ant-card-body {
-        padding: 20px;
+    .filter-section {
+      padding: 28px;
+
+      .filter-header .section-title {
+        font-size: 22px;
       }
 
       .filter-group {
-        margin-bottom: 20px;
+        margin-bottom: 16px;
+
+        .filter-label {
+          font-size: 14px;
+          margin-bottom: 10px;
+        }
+      }
+
+      .filter-result-info .result-badge {
+        padding: 12px 28px;
+        font-size: 14px;
       }
     }
 
-    .courts-section {
-      .section-header {
-        padding: 16px;
+    .courts-grid-section {
+      .section-header .section-title {
+        font-size: 28px;
+      }
 
-        .header-content {
-          flex-direction: column;
-          gap: 12px;
+      .sport-card .sport-card-image {
+        height: 200px;
+      }
+    }
+  }
 
-          h3 {
+  @media (max-width: 768px) {
+    padding: 16px 0;
+
+    .breadcrumb-nav {
+      padding: 12px 16px;
+      font-size: 14px;
+    }
+
+    .venue-hero-section {
+      .venue-info-card {
+        padding: 20px;
+
+        .venue-title {
+          font-size: 22px;
+        }
+
+        .venue-stats-grid .stat-box {
+          padding: 16px;
+
+          .stat-info .stat-value {
             font-size: 20px;
           }
         }
       }
     }
-  }
 
-  @media (max-width: 576px) {
-    .venue-info-header {
-      .venue-image {
-        img {
-          height: 220px;
-        }
-      }
-
-      .venue-details {
-        .venue-title-section h2 {
-          font-size: 20px;
-        }
-
-        .venue-stats-row {
-          padding: 12px;
-        }
-      }
-    }
-
-    .booking-filters {
-      .filter-header {
-        h4 {
-          font-size: 18px;
-        }
-      }
-    }
-  }
-}
-
-// Global enhancements
-.ant-card {
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-  }
-}
-
-.ant-btn {
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-1px);
-  }
-}
-
-// Sport Type Cards
-.sport-type-card {
-  height: 100%;
-  border-radius: 16px;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-
-  &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  }
-
-  .sport-card-cover {
-    position: relative;
-    height: 200px;
-    overflow: hidden;
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
-
-    &:hover img {
-      transform: scale(1.1);
-    }
-
-    .sport-type-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    .filter-section {
       padding: 20px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-    }
-  }
 
-  .sport-card-content {
-    padding: 16px 0;
-
-    .sport-stats {
-      margin-bottom: 16px;
-
-      .stat-item {
-        display: flex;
-        align-items: center;
+      .filter-header .section-title {
+        font-size: 20px;
+        flex-direction: column;
         gap: 8px;
-        margin-bottom: 8px;
       }
     }
 
-    .sport-details {
-      font-size: 13px;
-      line-height: 1.6;
-    }
-  }
+    .courts-grid-section {
+      .section-header .section-title {
+        font-size: 24px;
+      }
 
-  .ant-card-actions {
-    background: #f8f9fa;
-    border-top: 1px solid #e9ecef;
-
-    li {
-      margin: 8px 0;
+      .sport-card {
+        .sport-card-body {
+          padding: 20px;
+        }
+      }
     }
   }
 }
