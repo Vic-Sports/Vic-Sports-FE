@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import { Select, Button, message } from "antd";
+import { Button, message } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import type { IVenueFilterParams } from "@/types/venue";
 import type { ILocationOption } from "@/types/location";
 import { locationApiService } from "@/services/locationApi";
+import CustomSelect from "@/components/client/community/CustomSelect";
+import { FaFutbol, FaMapMarkerAlt, FaCity } from "react-icons/fa";
 import "./SearchFilter.scss";
 
 interface SearchFilterProps {
@@ -174,62 +176,69 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 
         <div className="search-grid">
           <div className="search-field">
-            <Select
-              style={{
-                width: "100%",
-                height: "50px",
-              }}
-              size="large"
+            <CustomSelect
+              value={formData.sportType || ""}
+              onChange={(value) =>
+                handleFormChange("sportType", value || undefined)
+              }
+              options={[
+                { value: "", label: t("search.filter.sport_placeholder") },
+                ...sportOptions.map((opt) => ({
+                  value: opt.value,
+                  label: opt.label,
+                })),
+              ]}
               placeholder={t("search.filter.sport_placeholder")}
-              options={sportOptions}
-              value={formData.sportType}
-              onChange={(value) => handleFormChange("sportType", value)}
-              allowClear
+              icon={<FaFutbol />}
             />
           </div>
 
           <div className="search-field">
-            <Select
-              style={{
-                width: "100%",
-                height: "50px",
-              }}
-              size="large"
-              placeholder={t("search.filter.city_placeholder")}
-              options={cityOptions}
-              value={formData.cityCode}
-              onChange={(value) => handleFormChange("cityCode", value)}
-              allowClear
-              loading={loadingCities}
-              showSearch
-              filterOption={(input, option) =>
-                (option?.label ?? "")
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
+            <CustomSelect
+              value={formData.cityCode?.toString() || ""}
+              onChange={(value) =>
+                handleFormChange("cityCode", value ? Number(value) : undefined)
               }
+              options={[
+                { value: "", label: t("search.filter.city_placeholder") },
+                ...cityOptions.map((opt) => ({
+                  value: opt.value.toString(),
+                  label: opt.label,
+                })),
+              ]}
+              placeholder={
+                loadingCities
+                  ? "Loading cities..."
+                  : t("search.filter.city_placeholder")
+              }
+              icon={<FaCity />}
             />
           </div>
 
           <div className="search-field">
-            <Select
-              style={{
-                width: "100%",
-                height: "50px",
-              }}
-              size="large"
-              placeholder={t("search.filter.district_placeholder")}
-              options={districtOptions}
-              value={formData.districtCode}
-              onChange={(value) => handleFormChange("districtCode", value)}
-              allowClear
-              disabled={!formData.cityCode}
-              loading={loadingDistricts}
-              showSearch
-              filterOption={(input, option) =>
-                (option?.label ?? "")
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
+            <CustomSelect
+              value={formData.districtCode?.toString() || ""}
+              onChange={(value) =>
+                handleFormChange(
+                  "districtCode",
+                  value ? Number(value) : undefined
+                )
               }
+              options={[
+                { value: "", label: t("search.filter.district_placeholder") },
+                ...districtOptions.map((opt) => ({
+                  value: opt.value.toString(),
+                  label: opt.label,
+                })),
+              ]}
+              placeholder={
+                !formData.cityCode
+                  ? "Select city first"
+                  : loadingDistricts
+                  ? "Loading districts..."
+                  : t("search.filter.district_placeholder")
+              }
+              icon={<FaMapMarkerAlt />}
             />
           </div>
 

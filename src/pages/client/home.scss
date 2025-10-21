@@ -1187,7 +1187,6 @@
 
 // Community Hub Section
 .community-hub-section {
-  position: relative;
   z-index: 10;
   padding: 128px 0;
 
@@ -1378,13 +1377,23 @@
   padding: 32px;
 
   .tournaments-title {
-    font-size: 32px;
+    font-size: clamp(1.5rem, 3vw, 2rem);
     font-weight: 700;
-    background: linear-gradient(45deg, #fff, #d946ef);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin: 0 0 32px;
+    margin: 0 0 12px;
+
+    .gradient-text {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+
+  .tournaments-description {
+    font-size: 1rem;
+    color: rgba(26, 26, 26, 0.7);
+    line-height: 1.6;
+    margin-bottom: 24px;
   }
 
   .tournaments-list {
@@ -1623,6 +1632,656 @@
     p {
       color: rgba(26, 26, 26, 0.6);
       margin: 0;
+    }
+  }
+}
+
+// Community Hub Section
+.community-hub-section {
+  padding: 100px 0;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(
+      circle,
+      rgba(14, 165, 233, 0.1) 0%,
+      transparent 70%
+    );
+    border-radius: 50%;
+  }
+
+  .section-header {
+    margin-bottom: 60px;
+    position: relative;
+    z-index: 1;
+
+    .section-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 24px;
+      background: linear-gradient(
+        135deg,
+        rgba(14, 165, 233, 0.1),
+        rgba(217, 70, 239, 0.1)
+      );
+      border: 2px solid rgba(14, 165, 233, 0.2);
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #0ea5e9;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .section-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      margin-bottom: 20px;
+      line-height: 1.2;
+
+      .gradient-text {
+        background: linear-gradient(135deg, #0ea5e9, #d946ef);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+    }
+
+    .section-description {
+      font-size: 1.2rem;
+      color: rgba(26, 26, 26, 0.7);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+  }
+
+  .community-card {
+    background: white;
+    border-radius: 24px;
+    padding: 40px 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid transparent;
+    height: 100%;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(14, 165, 233, 0.05),
+        rgba(217, 70, 239, 0.05)
+      );
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    &:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 12px 40px rgba(14, 165, 233, 0.2);
+      border-color: rgba(14, 165, 233, 0.3);
+
+      &::before {
+        opacity: 1;
+      }
+
+      .card-icon {
+        transform: scale(1.1) rotate(5deg);
+        background: linear-gradient(135deg, #0ea5e9, #d946ef);
+      }
+
+      .card-action {
+        background: linear-gradient(135deg, #0ea5e9, #d946ef);
+        color: white;
+        transform: translateX(4px);
+      }
+    }
+
+    &.highlight {
+      background: linear-gradient(
+        135deg,
+        rgba(14, 165, 233, 0.05),
+        rgba(217, 70, 239, 0.05)
+      );
+      border-color: #0ea5e9;
+
+      .card-action.featured {
+        background: linear-gradient(135deg, #0ea5e9, #d946ef);
+        color: white;
+        box-shadow: 0 4px 16px rgba(14, 165, 233, 0.3);
+      }
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 6px 16px;
+      background: linear-gradient(135deg, #0ea5e9, #d946ef);
+      color: white;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      z-index: 1;
+    }
+
+    .card-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(
+        135deg,
+        rgba(14, 165, 233, 0.1),
+        rgba(217, 70, 239, 0.1)
+      );
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      color: #0ea5e9;
+      margin-bottom: 24px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-description {
+      font-size: 1rem;
+      color: rgba(26, 26, 26, 0.6);
+      line-height: 1.6;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #0ea5e9;
+
+        .stat-icon {
+          font-size: 16px;
+        }
+      }
+    }
+
+    .card-action {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: rgba(14, 165, 233, 0.1);
+      border: 2px solid #0ea5e9;
+      border-radius: 12px;
+      color: #0ea5e9;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+
+      &:hover {
+        box-shadow: 0 4px 16px rgba(14, 165, 233, 0.25);
+      }
+    }
+  }
+
+  .quick-preview {
+    margin-top: 80px;
+    padding-top: 60px;
+    border-top: 2px solid rgba(0, 0, 0, 0.08);
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+
+      h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin: 0;
+      }
+
+      .view-all-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #0ea5e9, #d946ef);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
+        }
+      }
+    }
+
+    .activity-preview-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 25px rgba(14, 165, 233, 0.15);
+        border-color: #0ea5e9;
+      }
+
+      .activity-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+
+        .activity-sport {
+          padding: 6px 14px;
+          background: linear-gradient(
+            135deg,
+            rgba(14, 165, 233, 0.1),
+            rgba(217, 70, 239, 0.1)
+          );
+          border-radius: 20px;
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: #0ea5e9;
+        }
+
+        .activity-status {
+          padding: 4px 12px;
+          border-radius: 12px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          text-transform: uppercase;
+
+          &.open {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+          }
+
+          &.full {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+          }
+
+          &.closed {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+          }
+        }
+      }
+
+      .activity-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 12px;
+      }
+
+      .activity-info {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 16px;
+
+        .info-item {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.9rem;
+          color: rgba(26, 26, 26, 0.7);
+
+          svg {
+            color: #0ea5e9;
+          }
+        }
+      }
+
+      .activity-join-btn {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(
+          135deg,
+          rgba(14, 165, 233, 0.1),
+          rgba(217, 70, 239, 0.1)
+        );
+        border: 2px solid #0ea5e9;
+        border-radius: 10px;
+        color: #0ea5e9;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        cursor: pointer;
+
+        &:hover {
+          background: linear-gradient(135deg, #0ea5e9, #d946ef);
+          color: white;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+      }
+    }
+  }
+}
+
+// Tournaments Hub Section
+.tournaments-hub-section {
+  padding: 100px 0;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(
+      circle,
+      rgba(102, 126, 234, 0.1) 0%,
+      transparent 70%
+    );
+    border-radius: 50%;
+  }
+
+  .section-header {
+    margin-bottom: 60px;
+    position: relative;
+    z-index: 1;
+
+    .section-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 24px;
+      background: linear-gradient(
+        135deg,
+        rgba(102, 126, 234, 0.1),
+        rgba(118, 75, 162, 0.1)
+      );
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #667eea;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .section-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      margin-bottom: 20px;
+      line-height: 1.2;
+
+      .gradient-text {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+    }
+
+    .section-description {
+      font-size: 1.2rem;
+      color: rgba(26, 26, 26, 0.7);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+  }
+
+  .tournament-feature-card {
+    background: white;
+    border-radius: 24px;
+    padding: 40px 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid transparent;
+    height: 100%;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(102, 126, 234, 0.05),
+        rgba(118, 75, 162, 0.05)
+      );
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    &:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+      border-color: rgba(102, 126, 234, 0.3);
+
+      &::before {
+        opacity: 1;
+      }
+
+      .card-icon {
+        transform: scale(1.1) rotate(5deg);
+        background: linear-gradient(135deg, #667eea, #764ba2);
+      }
+
+      .card-action {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        transform: translateX(4px);
+      }
+    }
+
+    &.highlight {
+      background: linear-gradient(
+        135deg,
+        rgba(102, 126, 234, 0.05),
+        rgba(118, 75, 162, 0.05)
+      );
+      border-color: #667eea;
+
+      .card-action.featured {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+      }
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 6px 16px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      z-index: 1;
+    }
+
+    .card-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(
+        135deg,
+        rgba(102, 126, 234, 0.1),
+        rgba(118, 75, 162, 0.1)
+      );
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      color: #667eea;
+      margin-bottom: 24px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-description {
+      font-size: 1rem;
+      color: rgba(26, 26, 26, 0.6);
+      line-height: 1.6;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #667eea;
+
+        .stat-icon {
+          font-size: 16px;
+        }
+      }
+    }
+
+    .card-action {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: rgba(102, 126, 234, 0.1);
+      border: 2px solid #667eea;
+      border-radius: 12px;
+      color: #667eea;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+
+      &:hover {
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.25);
+      }
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .community-hub-section,
+  .tournaments-hub-section {
+    padding: 60px 0;
+
+    .section-header {
+      margin-bottom: 40px;
+
+      .section-title {
+        font-size: 2.5rem;
+      }
+
+      .section-description {
+        font-size: 1rem;
+      }
+    }
+
+    .community-card,
+    .tournament-feature-card {
+      padding: 30px 24px;
+      margin-bottom: 20px;
+    }
+
+    .quick-preview {
+      margin-top: 60px;
+      padding-top: 40px;
+
+      .preview-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+
+        h3 {
+          font-size: 1.5rem;
+        }
+      }
     }
   }
 }
