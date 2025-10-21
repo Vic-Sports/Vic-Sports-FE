@@ -1,43 +1,32 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { Container, Row, Col } from "react-bootstrap";
+import { notification } from "antd";
 import {
-  Row,
-  Col,
-  Card,
-  Typography,
-  Button,
-  Empty,
-  Select,
-  Divider,
-  Rate,
-  Tag,
-  Breadcrumb,
-  Space,
-  Statistic,
-  notification,
-} from "antd";
-import {
-  EnvironmentOutlined,
-  PhoneOutlined,
-  ClockCircleOutlined,
-  FilterOutlined,
-  ArrowLeftOutlined,
-  StarOutlined,
-  TeamOutlined,
-  TrophyOutlined,
-  CrownOutlined,
-} from "@ant-design/icons";
+  FaMapMarkerAlt,
+  FaPhone,
+  FaClock,
+  FaStar,
+  FaTrophy,
+  FaUsers,
+  FaFilter,
+  FaArrowLeft,
+  FaCheckCircle,
+  FaCalendarAlt,
+  FaFutbol,
+  FaBasketballBall,
+  FaTableTennis,
+  FaVolleyballBall,
+  FaSortAmountDown,
+} from "react-icons/fa";
 import type { ICourt } from "@/types/court";
 import type { IVenue } from "@/types/venue";
 import { getVenueByIdAPI, getVenueCourtsAPI } from "@/services/venueApi";
 import BookingModal from "@/components/client/booking/BookingModal";
+import CustomSelect from "@/components/client/community/CustomSelect";
 import "./VenueCourts.scss";
 import FullscreenLoader from "@/components/shared/FullscreenLoader";
-
 import VenueImageCarousel from "./VenueImageCarousel";
-
-const { Title, Text, Paragraph } = Typography;
-const { Option } = Select;
 
 interface SportTypeGroup {
   sportType: string;
@@ -52,6 +41,7 @@ interface SportTypeGroup {
 const VenueCourts: React.FC = () => {
   const { venueId } = useParams<{ venueId: string }>();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   // State
   const [venue, setVenue] = useState<IVenue | null>(null);
@@ -249,6 +239,30 @@ const VenueCourts: React.FC = () => {
     return [...new Set(courts.map((court) => court.courtType))];
   };
 
+  // Prepare options for CustomSelect
+  const sportTypeOptions = [
+    { value: "", label: "Tất cả môn thể thao" },
+    ...getSportTypes().map((type) => ({
+      value: type,
+      label: type.charAt(0).toUpperCase() + type.slice(1),
+    })),
+  ];
+
+  const courtTypeOptions = [
+    { value: "", label: "Tất cả loại sân" },
+    ...getCourtTypes().map((type) => ({
+      value: type,
+      label: type,
+    })),
+  ];
+
+  const sortOptions = [
+    { value: "rating", label: "⭐ Đánh giá cao nhất" },
+    { value: "price", label: "💰 Giá thấp nhất" },
+    { value: "name", label: "🔤 Tên sân A-Z" },
+    { value: "capacity", label: "👥 Sức chứa lớn" },
+  ];
+
   const handleBookSportType = (sportGroup: SportTypeGroup) => {
     // Open booking modal with sample court - modal will load all courts of this sport type
     setSelectedSampleCourt(sportGroup.sampleCourt);
@@ -267,350 +281,329 @@ const VenueCourts: React.FC = () => {
     }).format(amount);
   };
 
+  const getSportIcon = (sportType: string) => {
+    const sport = sportType.toLowerCase();
+    if (sport.includes("football") || sport.includes("bóng đá"))
+      return <FaFutbol />;
+    if (sport.includes("basketball") || sport.includes("rổ"))
+      return <FaBasketballBall />;
+    if (sport.includes("tennis") || sport.includes("quần vợt"))
+      return <FaTableTennis />;
+    if (sport.includes("badminton") || sport.includes("cầu lông"))
+      return <FaTableTennis />;
+    if (sport.includes("volleyball") || sport.includes("bóng chuyền"))
+      return <FaVolleyballBall />;
+    return <FaTrophy />;
+  };
+
   if (loading) {
-    // Use portal-based fullscreen loader to ensure single loader visible
-    return (
-      <>
-        <FullscreenLoader message="Đang tải dữ liệu..." />
-      </>
-    );
+    return <FullscreenLoader message="Đang tải dữ liệu..." />;
   }
 
   if (error || !venue) {
     return (
-      <div className="venue-courts-page">
-        <div className="venue-courts-error">
-          <Empty
-            description={error || "Không tìm thấy venue"}
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-          />
-          <Button
-            type="primary"
-            icon={<ArrowLeftOutlined />}
-            onClick={() => window.history.back()}
-          >
-            Quay lại
-          </Button>
-        </div>
+      <div className="venue-courts-page error-page">
+        <Container>
+          <div className="error-content text-center">
+            <div className="error-icon mb-4">
+              <FaTrophy size={80} className="text-muted" />
+            </div>
+            <h2 className="mb-3">{error || "Không tìm thấy venue"}</h2>
+            <button
+              className="btn btn-primary btn-lg rounded-pill px-5"
+              onClick={() => navigate(-1)}
+            >
+              <FaArrowLeft className="me-2" />
+              Quay lại
+            </button>
+          </div>
+        </Container>
       </div>
     );
   }
 
   return (
     <div className="venue-courts-page">
-      {/* Breadcrumb */}
-      <Breadcrumb className="venue-breadcrumb">
-        <Breadcrumb.Item>
-          <a href="/search">Tìm kiếm</a>
-        </Breadcrumb.Item>
-        <Breadcrumb.Item>
-          <a href="#" onClick={() => window.history.back()}>
+      <Container>
+        {/* Breadcrumb Navigation */}
+        <nav className="breadcrumb-nav mb-4">
+          <button onClick={() => navigate("/")} className="breadcrumb-link">
+            Trang chủ
+          </button>
+          <span className="breadcrumb-separator">/</span>
+          <button onClick={() => navigate(-1)} className="breadcrumb-link">
             Danh sách venue
-          </a>
-        </Breadcrumb.Item>
-        <Breadcrumb.Item>{venue.name}</Breadcrumb.Item>
-      </Breadcrumb>
+          </button>
+          <span className="breadcrumb-separator">/</span>
+          <span className="breadcrumb-current">{venue.name}</span>
+        </nav>
 
-      {/* Venue Information Header */}
-      <Card className="venue-info-header">
-        <Row gutter={[24, 16]}>
-          <Col xs={24} md={8}>
-            <div className="venue-image">
-              <VenueImageCarousel images={venue.images} alt={venue.name} />
-              {venue.isVerified && (
-                <div className="verified-badge">
-                  <CrownOutlined />
-                  <span>Venue Đã Xác Thực</span>
-                </div>
-              )}
-            </div>
-          </Col>
-          <Col xs={24} md={16}>
-            <div className="venue-details">
-              <div className="venue-title-section">
-                <Title level={2}>{venue.name}</Title>
-                <div className="venue-rating-location">
-                  <Rate disabled value={venue.ratings.average} allowHalf />
-                  <Text className="rating-text">
-                    <StarOutlined style={{ color: "#ffa940" }} />{" "}
-                    {venue.ratings.average} ({venue.ratings.count} đánh giá)
-                  </Text>
-                </div>
-              </div>
-
-              <div className="venue-stats-row">
-                <Space size="large">
-                  <Statistic
-                    title="Tổng Đặt Sân"
-                    value={venue.totalBookings}
-                    prefix={<TrophyOutlined style={{ color: "#1890ff" }} />}
-                    valueStyle={{ color: "#1890ff", fontSize: "18px" }}
-                  />
-                  <Statistic
-                    title="Sân Khả Dụng"
-                    value={courts.length}
-                    prefix={<TeamOutlined style={{ color: "#722ed1" }} />}
-                    valueStyle={{ color: "#722ed1", fontSize: "18px" }}
-                  />
-                </Space>
-              </div>
-
-              <div className="venue-meta">
-                <div className="meta-item">
-                  <EnvironmentOutlined />
-                  <Text>{formatAddress(venue.address)}</Text>
-                </div>
-                <div className="meta-item">
-                  <PhoneOutlined />
-                  <Text>{venue.contactInfo.phone}</Text>
-                </div>
-                <div className="meta-item">
-                  <ClockCircleOutlined />
-                  <Text>Hôm nay: {getOperatingHoursToday()}</Text>
-                </div>
-              </div>
-
-              <Paragraph className="venue-description">
-                {venue.description}
-              </Paragraph>
-
-              <div className="venue-amenities">
-                {venue.amenities.slice(0, 4).map((amenity, index) => (
-                  <Tag key={index} className="amenity-tag">
-                    {amenity.name}
-                  </Tag>
-                ))}
-                {venue.amenities.length > 4 && (
-                  <Tag className="amenity-more">
-                    +{venue.amenities.length - 4} tiện ích khác
-                  </Tag>
+        {/* Hero Section with Venue Info */}
+        <div className="venue-hero-section mb-5">
+          <Row className="g-4">
+            {/* Venue Image Gallery */}
+            <Col lg={6} md={12}>
+              <div className="venue-image-gallery">
+                <VenueImageCarousel images={venue.images} alt={venue.name} />
+                {venue.isVerified && (
+                  <div className="verified-badge-overlay">
+                    <FaCheckCircle className="me-2" />
+                    <span>Đã Xác Thực</span>
+                  </div>
                 )}
               </div>
-            </div>
-          </Col>
-        </Row>
-      </Card>
+            </Col>
 
-      {/* Booking Filters */}
-      <Card className="booking-filters">
-        <div className="filter-header">
-          <Title level={4}>
-            <FilterOutlined style={{ color: "#1890ff" }} /> Bộ lọc sân thể thao
-          </Title>
-          <Text type="secondary">Tìm sân phù hợp với nhu cầu của bạn</Text>
+            {/* Venue Details */}
+            <Col lg={6} md={12}>
+              <div className="venue-info-card">
+                <div className="venue-header mb-4">
+                  <h1 className="venue-title">{venue.name}</h1>
+                  <div className="venue-rating">
+                    {[...Array(5)].map((_, index) => (
+                      <FaStar
+                        key={index}
+                        className={
+                          index < Math.floor(venue.ratings.average)
+                            ? "star-filled"
+                            : "star-empty"
+                        }
+                      />
+                    ))}
+                    <span className="rating-value ms-2">
+                      {venue.ratings.average.toFixed(1)} ({venue.ratings.count}{" "}
+                      đánh giá)
+                    </span>
+                  </div>
+                </div>
+
+                <div className="venue-stats-grid mb-4">
+                  <div className="stat-box">
+                    <div className="stat-icon bg-primary">
+                      <FaTrophy />
+                    </div>
+                    <div className="stat-info">
+                      <div className="stat-value">
+                        {venue.totalBookings.toLocaleString()}
+                      </div>
+                      <div className="stat-label">Tổng Đặt Sân</div>
+                    </div>
+                  </div>
+                  <div className="stat-box">
+                    <div className="stat-icon bg-success">
+                      <FaUsers />
+                    </div>
+                    <div className="stat-info">
+                      <div className="stat-value">{courts.length}</div>
+                      <div className="stat-label">Sân Khả Dụng</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="venue-details-list">
+                  <div className="detail-item">
+                    <FaMapMarkerAlt className="detail-icon" />
+                    <span>{formatAddress(venue.address)}</span>
+                  </div>
+                  <div className="detail-item">
+                    <FaPhone className="detail-icon" />
+                    <span>{venue.contactInfo.phone}</span>
+                  </div>
+                  <div className="detail-item">
+                    <FaClock className="detail-icon" />
+                    <span>Hôm nay: {getOperatingHoursToday()}</span>
+                  </div>
+                </div>
+
+                <p className="venue-description mt-4">{venue.description}</p>
+
+                <div className="venue-amenities mt-4">
+                  {venue.amenities.slice(0, 6).map((amenity, index) => (
+                    <span key={index} className="amenity-badge">
+                      {amenity.name}
+                    </span>
+                  ))}
+                  {venue.amenities.length > 6 && (
+                    <span className="amenity-badge more">
+                      +{venue.amenities.length - 6} tiện ích
+                    </span>
+                  )}
+                </div>
+              </div>
+            </Col>
+          </Row>
         </div>
 
-        <Row gutter={[24, 16]} align="middle">
-          <Col xs={24} sm={8}>
-            <div className="filter-group">
-              <Text strong style={{ color: "#1890ff" }}>
-                🏃‍♂️ Môn thể thao:
-              </Text>
-              <Select
-                value={sportTypeFilter}
-                onChange={setSportTypeFilter}
-                placeholder="Chọn môn thể thao"
-                allowClear
-                style={{ width: "100%" }}
-                size="large"
-              >
-                {getSportTypes().map((type) => (
-                  <Option key={type} value={type}>
-                    <Space>
-                      {type === "football" && "⚽"}
-                      {type === "tennis" && "🎾"}
-                      {type === "badminton" && "🏸"}
-                      {type === "basketball" && "🏀"}
-                      {type}
-                    </Space>
-                  </Option>
-                ))}
-              </Select>
-            </div>
-          </Col>
-
-          <Col xs={24} sm={8}>
-            <div className="filter-group">
-              <Text strong style={{ color: "#722ed1" }}>
-                🏟️ Loại sân:
-              </Text>
-              <Select
-                value={courtTypeFilter}
-                onChange={setCourtTypeFilter}
-                placeholder="Chọn loại sân"
-                allowClear
-                style={{ width: "100%" }}
-                size="large"
-              >
-                {getCourtTypes().map((type) => (
-                  <Option key={type} value={type}>
-                    <Space>
-                      {type === "trong nhà" ? "🏢" : "🌞"}
-                      {type}
-                    </Space>
-                  </Option>
-                ))}
-              </Select>
-            </div>
-          </Col>
-
-          <Col xs={24} sm={8}>
-            <div className="filter-group">
-              <Text strong style={{ color: "#52c41a" }}>
-                📊 Sắp xếp theo:
-              </Text>
-              <Select
-                value={sortBy}
-                onChange={setSortBy}
-                style={{ width: "100%" }}
-                size="large"
-              >
-                <Option value="rating">
-                  <Space>
-                    <StarOutlined style={{ color: "#ffa940" }} />
-                    Đánh giá cao nhất
-                  </Space>
-                </Option>
-                <Option value="price">
-                  <Space>💰 Giá thấp nhất</Space>
-                </Option>
-                <Option value="name">
-                  <Space>🔤 Tên sân A-Z</Space>
-                </Option>
-                <Option value="capacity">
-                  <Space>
-                    <TeamOutlined style={{ color: "#1890ff" }} />
-                    Sức chứa lớn
-                  </Space>
-                </Option>
-              </Select>
-            </div>
-          </Col>
-        </Row>
-
-        <div className="filter-summary">
-          <Text type="secondary">
-            🎯 Hiển thị {filteredSportGroups.length} loại thể thao phù hợp từ
-            tổng số {sportGroups.length} loại thể thao
-          </Text>
-        </div>
-      </Card>
-
-      <Divider />
-
-      {/* Sports List */}
-      <div className="courts-section">
-        <div className="section-header">
-          <div className="header-content">
-            <Title level={3}>
-              <TrophyOutlined style={{ color: "#1890ff" }} />
-              Danh sách loại thể thao
-            </Title>
-            <div className="court-count-badge">
-              <Text strong style={{ color: "#1890ff" }}>
-                {filteredSportGroups.length} loại thể thao khả dụng
-              </Text>
-            </div>
+        {/* Filter Section */}
+        <div className="filter-section mb-5">
+          <div className="filter-header text-center mb-4">
+            <h3 className="section-title">
+              <FaFilter className="me-2" />
+              Tìm Sân Phù Hợp
+            </h3>
+            <p className="section-subtitle">
+              Lọc và sắp xếp để tìm sân hoàn hảo cho bạn
+            </p>
           </div>
-          <Text type="secondary" className="section-description">
-            Chọn loại thể thao yêu thích và bắt đầu đặt lịch ngay hôm nay! 🎯
-          </Text>
+
+          <Row className="g-4">
+            <Col lg={4} md={6}>
+              <div className="filter-group">
+                <label className="filter-label">
+                  <FaTrophy className="me-2" />
+                  Môn thể thao
+                </label>
+                <CustomSelect
+                  value={sportTypeFilter || ""}
+                  onChange={(value) => setSportTypeFilter(value || undefined)}
+                  options={sportTypeOptions}
+                  placeholder="Chọn môn thể thao"
+                  icon={<FaTrophy />}
+                />
+              </div>
+            </Col>
+
+            <Col lg={4} md={6}>
+              <div className="filter-group">
+                <label className="filter-label">
+                  <FaUsers className="me-2" />
+                  Loại sân
+                </label>
+                <CustomSelect
+                  value={courtTypeFilter || ""}
+                  onChange={(value) => setCourtTypeFilter(value || undefined)}
+                  options={courtTypeOptions}
+                  placeholder="Chọn loại sân"
+                  icon={<FaUsers />}
+                />
+              </div>
+            </Col>
+
+            <Col lg={4} md={6}>
+              <div className="filter-group">
+                <label className="filter-label">
+                  <FaSortAmountDown className="me-2" />
+                  Sắp xếp theo
+                </label>
+                <CustomSelect
+                  value={sortBy}
+                  onChange={setSortBy}
+                  options={sortOptions}
+                  placeholder="Sắp xếp theo"
+                  icon={<FaSortAmountDown />}
+                />
+              </div>
+            </Col>
+          </Row>
+
+          <div className="filter-result-info text-center mt-4">
+            <span className="result-badge">
+              🎯 Hiển thị {filteredSportGroups.length} / {sportGroups.length}{" "}
+              loại thể thao
+            </span>
+          </div>
         </div>
 
-        {filteredSportGroups.length === 0 ? (
-          <Empty
-            description="Không có loại thể thao nào phù hợp với bộ lọc"
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-          />
-        ) : (
-          <Row gutter={[16, 16]}>
-            {filteredSportGroups.map((sportGroup) => (
-              <Col key={sportGroup.sportType} xs={24} sm={12} lg={8}>
-                <Card
-                  hoverable
-                  className="sport-type-card"
-                  cover={
-                    <div className="sport-card-cover">
+        {/* Courts Grid */}
+        <div className="courts-grid-section">
+          <div className="section-header text-center mb-5">
+            <h2 className="section-title gradient-text">
+              Danh Sách Sân Thể Thao
+            </h2>
+            <p className="section-subtitle">
+              Chọn loại thể thao yêu thích và bắt đầu đặt lịch ngay! 🚀
+            </p>
+          </div>
+
+          {filteredSportGroups.length === 0 ? (
+            <div className="no-results text-center py-5">
+              <FaTrophy size={60} className="text-muted mb-3" />
+              <h4>Không tìm thấy sân phù hợp</h4>
+              <p className="text-muted">Thử thay đổi bộ lọc của bạn</p>
+            </div>
+          ) : (
+            <Row className="g-4">
+              {filteredSportGroups.map((sportGroup) => (
+                <Col key={sportGroup.sportType} lg={4} md={6} sm={12}>
+                  <div className="sport-card">
+                    <div className="sport-card-image">
                       <img
                         src={
                           sportGroup.sampleCourt.images[0] ||
-                          "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=200&fit=crop&crop=center&auto=format&q=80"
+                          "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop&auto=format&q=80"
                         }
                         alt={sportGroup.sportType}
                         onError={(e) => {
                           (e.target as HTMLImageElement).src =
-                            "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=200&fit=crop&crop=center&auto=format&q=80";
+                            "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop&auto=format&q=80";
                         }}
                       />
-                      <div className="sport-type-overlay">
-                        <Title level={4} style={{ color: "white", margin: 0 }}>
+                      <div className="sport-card-overlay">
+                        <div className="sport-icon">
+                          {getSportIcon(sportGroup.sportType)}
+                        </div>
+                        <h4 className="sport-name">
                           {sportGroup.sportType.toUpperCase()}
-                        </Title>
+                        </h4>
                       </div>
                     </div>
-                  }
-                  actions={[
-                    <Button
-                      type="primary"
-                      size="large"
-                      onClick={() => handleBookSportType(sportGroup)}
-                      style={{ width: "90%" }}
-                    >
-                      Đặt sân ngay
-                    </Button>,
-                  ]}
-                >
-                  <div className="sport-card-content">
-                    <div className="sport-stats">
-                      <Space
-                        direction="vertical"
-                        size="small"
-                        style={{ width: "100%" }}
-                      >
-                        <div className="stat-item">
-                          <TeamOutlined style={{ color: "#1890ff" }} />
-                          <Text strong>
-                            {sportGroup.totalCourts} sân khả dụng
-                          </Text>
-                        </div>
-                        <div className="stat-item">
-                          <StarOutlined style={{ color: "#ffa940" }} />
-                          <Text>
-                            {sportGroup.averageRating.toFixed(1)} ⭐ trung bình
-                          </Text>
-                        </div>
-                        <div className="stat-item">
-                          <Text type="secondary">
-                            Giá: {formatCurrency(sportGroup.minPrice)} -{" "}
-                            {formatCurrency(sportGroup.maxPrice)}/giờ
-                          </Text>
-                        </div>
-                      </Space>
-                    </div>
 
-                    <div className="sport-details">
-                      <Text type="secondary">
-                        <strong>Loại sân:</strong>{" "}
-                        {sportGroup.sampleCourt.courtType}
-                      </Text>
-                      <br />
-                      <Text type="secondary">
-                        <strong>Sức chứa:</strong>{" "}
-                        {sportGroup.sampleCourt.capacity} người
-                      </Text>
-                      <br />
-                      <Text type="secondary">
-                        <strong>Bề mặt:</strong>{" "}
-                        {sportGroup.sampleCourt.surface}
-                      </Text>
+                    <div className="sport-card-body">
+                      <div className="sport-stats-row mb-3">
+                        <div className="stat-item-small">
+                          <FaUsers className="text-primary" />
+                          <span>{sportGroup.totalCourts} sân</span>
+                        </div>
+                        <div className="stat-item-small">
+                          <FaStar className="text-warning" />
+                          <span>{sportGroup.averageRating.toFixed(1)}</span>
+                        </div>
+                      </div>
+
+                      <div className="price-range mb-3">
+                        <span className="price-label">Giá:</span>
+                        <span className="price-value">
+                          {formatCurrency(sportGroup.minPrice)} -{" "}
+                          {formatCurrency(sportGroup.maxPrice)}
+                        </span>
+                      </div>
+
+                      <div className="court-details mb-3">
+                        <div className="detail-row">
+                          <span className="detail-label">Loại:</span>
+                          <span className="detail-value">
+                            {sportGroup.sampleCourt.courtType}
+                          </span>
+                        </div>
+                        <div className="detail-row">
+                          <span className="detail-label">Sức chứa:</span>
+                          <span className="detail-value">
+                            {sportGroup.sampleCourt.capacity} người
+                          </span>
+                        </div>
+                        <div className="detail-row">
+                          <span className="detail-label">Bề mặt:</span>
+                          <span className="detail-value">
+                            {sportGroup.sampleCourt.surface}
+                          </span>
+                        </div>
+                      </div>
+
+                      <button
+                        className="btn btn-primary w-100 rounded-pill"
+                        onClick={() => handleBookSportType(sportGroup)}
+                      >
+                        <FaCalendarAlt className="me-2" />
+                        Đặt Sân Ngay
+                      </button>
                     </div>
                   </div>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        )}
-      </div>
+                </Col>
+              ))}
+            </Row>
+          )}
+        </div>
+      </Container>
 
       {/* Booking Modal */}
       <BookingModal

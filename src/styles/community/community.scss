@@ -1,0 +1,976 @@
+// Futuristic Community List Styles
+.futuristic-community-list {
+  width: 100%;
+}
+
+// View Mode Controls
+.view-mode-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+  padding: 16px 0;
+
+  .view-mode-buttons {
+    display: flex;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.03);
+    padding: 6px;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+
+    .view-mode-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: transparent;
+      border: none;
+      border-radius: 12px;
+      color: rgba(26, 26, 26, 0.6);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      svg {
+        font-size: 16px;
+      }
+
+      &:hover {
+        background: rgba(14, 165, 233, 0.1);
+        color: #0ea5e9;
+      }
+
+      &.active {
+        background: linear-gradient(45deg, #0ea5e9, #d946ef);
+        color: white;
+        box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+      }
+    }
+  }
+}
+
+.posts-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  // Grid layout
+  &.posts-feed-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+    gap: 24px;
+
+    @media (max-width: 992px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  // List layout (default, vertical stacking)
+  &.posts-feed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  // Compact layout
+  &.posts-feed-compact {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 16px;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Post Card
+.futuristic-post-card {
+  position: relative;
+  background: rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+  overflow: hidden;
+  transition: all 0.5s ease;
+
+  &:hover {
+    border-color: rgba(14, 165, 233, 0.5);
+    transform: translateY(-4px);
+
+    .post-glow {
+      opacity: 1;
+    }
+  }
+
+  .post-glow {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      45deg,
+      rgba(14, 165, 233, 0.2),
+      rgba(217, 70, 239, 0.2)
+    );
+    border-radius: 24px;
+    filter: blur(40px);
+    opacity: 0;
+    transition: opacity 0.7s ease;
+    z-index: 0;
+  }
+}
+
+// Post Header
+.futuristic-post-card .post-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px 24px 16px;
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .user-avatar {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: linear-gradient(45deg, #0ea5e9, #d946ef);
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .avatar-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+      }
+    }
+
+    .user-details {
+      .user-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin: 0 0 4px 0;
+      }
+
+      .post-time {
+        font-size: 13px;
+        color: rgba(26, 26, 26, 0.6);
+      }
+    }
+  }
+
+  .post-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+
+    .sport-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(14, 165, 233, 0.1);
+      border: 1px solid rgba(14, 165, 233, 0.3);
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #0ea5e9;
+
+      .sport-icon {
+        font-size: 16px;
+      }
+    }
+
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      &.status-open {
+        background: rgba(16, 185, 129, 0.15);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+
+      &.status-closed {
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+
+      &.status-full {
+        background: rgba(251, 191, 36, 0.15);
+        color: #fbbf24;
+        border: 1px solid rgba(251, 191, 36, 0.3);
+      }
+    }
+  }
+}
+
+// Post Content
+.futuristic-post-card .post-content {
+  position: relative;
+  z-index: 1;
+  padding: 0 24px 24px;
+
+  .post-title {
+    font-size: 24px;
+    font-weight: 700;
+    background: linear-gradient(45deg, #1a1a1a, #0ea5e9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+
+  .post-description {
+    font-size: 15px;
+    color: rgba(26, 26, 26, 0.7);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  // Post Images Gallery
+  .post-images-gallery {
+    margin-bottom: 20px;
+    border-radius: 16px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    // Single image
+    .single-image {
+      width: 100%;
+      max-height: 400px;
+
+      img {
+        border-radius: 16px;
+      }
+    }
+
+    // Two images
+    .two-images {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      max-height: 300px;
+
+      img {
+        height: 300px;
+        border-radius: 12px;
+      }
+    }
+
+    // Three images
+    .three-images {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 8px;
+      max-height: 350px;
+
+      .main-image {
+        grid-row: 1 / 3;
+
+        img {
+          height: 350px;
+          border-radius: 12px;
+        }
+      }
+
+      .side-images {
+        display: grid;
+        grid-template-rows: repeat(2, 1fr);
+        gap: 8px;
+
+        img {
+          height: 171px;
+          border-radius: 12px;
+        }
+      }
+    }
+
+    // Four images
+    .four-images {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 8px;
+      max-height: 400px;
+
+      img {
+        height: 196px;
+        border-radius: 12px;
+      }
+    }
+
+    // Five or more images
+    .five-images {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 8px;
+      max-height: 350px;
+
+      img {
+        height: 171px;
+        border-radius: 12px;
+      }
+
+      img:first-child {
+        grid-column: 1 / 3;
+        grid-row: 1 / 3;
+        height: 350px;
+      }
+
+      .more-images {
+        position: relative;
+
+        img {
+          height: 171px;
+        }
+
+        .overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.6);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 32px;
+          font-weight: 700;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background: rgba(0, 0, 0, 0.75);
+          }
+        }
+      }
+    }
+  }
+
+  .post-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+
+    .info-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.03);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 16px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(14, 165, 233, 0.05);
+        border-color: rgba(14, 165, 233, 0.2);
+      }
+
+      .info-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(45deg, #0ea5e9, #d946ef);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+
+      .info-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        .info-label {
+          font-size: 12px;
+          color: rgba(26, 26, 26, 0.6);
+          font-weight: 500;
+        }
+
+        .info-value {
+          font-size: 14px;
+          font-weight: 600;
+          color: #1a1a1a;
+        }
+      }
+    }
+  }
+
+  .location-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(217, 70, 239, 0.1);
+    border: 1px solid rgba(217, 70, 239, 0.2);
+    border-radius: 12px;
+    color: #d946ef;
+    font-size: 13px;
+    font-weight: 500;
+  }
+}
+
+// Post Footer
+.futuristic-post-card .post-footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+
+  .post-actions {
+    display: flex;
+    gap: 8px;
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      background: transparent;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      color: rgba(26, 26, 26, 0.7);
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      cursor: pointer;
+
+      svg {
+        font-size: 16px;
+      }
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.05);
+        border-color: rgba(14, 165, 233, 0.3);
+        color: #0ea5e9;
+      }
+
+      &.liked {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: rgba(239, 68, 68, 0.3);
+        color: #ef4444;
+
+        svg {
+          fill: #ef4444;
+        }
+      }
+    }
+  }
+
+  .join-btn {
+    padding: 12px 24px;
+    background: linear-gradient(45deg, #0ea5e9, #d946ef);
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(14, 165, 233, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .futuristic-post-card {
+    .post-header {
+      padding: 20px 20px 16px;
+      flex-direction: column;
+      gap: 16px;
+
+      .post-badges {
+        flex-direction: row;
+        align-items: center;
+        align-self: flex-start;
+      }
+    }
+
+    .post-content {
+      padding: 0 20px 20px;
+
+      .post-title {
+        font-size: 20px;
+      }
+
+      .post-images-gallery {
+        .single-image {
+          max-height: 300px;
+        }
+
+        .two-images img,
+        .three-images .main-image img {
+          height: 200px;
+        }
+
+        .three-images .side-images img {
+          height: 96px;
+        }
+
+        .four-images img {
+          height: 150px;
+        }
+
+        .five-images {
+          max-height: 300px;
+
+          img {
+            height: 146px;
+          }
+
+          img:first-child {
+            height: 300px;
+          }
+
+          .more-images {
+            img {
+              height: 146px;
+            }
+
+            .overlay {
+              font-size: 24px;
+            }
+          }
+        }
+      }
+
+      .post-info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .post-footer {
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px 20px;
+
+      .post-actions {
+        width: 100%;
+        justify-content: space-between;
+
+        .action-btn {
+          flex: 1;
+          justify-content: center;
+        }
+      }
+
+      .join-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .futuristic-post-card {
+    border-radius: 16px;
+
+    .post-header {
+      padding: 16px 16px 12px;
+
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+      }
+
+      .user-details .user-name {
+        font-size: 14px;
+      }
+    }
+
+    .post-content {
+      padding: 0 16px 16px;
+
+      .post-title {
+        font-size: 18px;
+      }
+
+      .post-description {
+        font-size: 14px;
+      }
+
+      .post-info-grid .info-card {
+        padding: 12px;
+
+        .info-icon {
+          width: 32px;
+          height: 32px;
+          font-size: 14px;
+        }
+      }
+    }
+
+    .post-footer {
+      padding: 12px 16px;
+
+      .post-actions .action-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+
+        svg {
+          font-size: 14px;
+        }
+      }
+
+      .join-btn {
+        padding: 10px 20px;
+        font-size: 13px;
+      }
+    }
+  }
+}
+
+// Loading and Empty States
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 32px;
+  text-align: center;
+  color: rgba(26, 26, 26, 0.6);
+
+  .icon {
+    font-size: 64px;
+    margin-bottom: 24px;
+    opacity: 0.5;
+  }
+
+  h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+  }
+
+  p {
+    font-size: 16px;
+    max-width: 400px;
+    margin-bottom: 24px;
+  }
+
+  .action-button {
+    padding: 12px 24px;
+    background: linear-gradient(45deg, #0ea5e9, #d946ef);
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(14, 165, 233, 0.4);
+    }
+  }
+}
+
+// Animations
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.posts-feed > .futuristic-post-card {
+  animation: slideInUp 0.5s ease-out;
+  animation-fill-mode: both;
+
+  @for $i from 1 through 10 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.1}s;
+    }
+  }
+}
+
+// Compact Post Card Styles
+.compact-post-card {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: rgba(14, 165, 233, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(14, 165, 233, 0.15);
+  }
+
+  .compact-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+
+    .user-info-compact {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .user-avatar-small {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        overflow: hidden;
+        background: linear-gradient(45deg, #0ea5e9, #d946ef);
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .avatar-placeholder {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 16px;
+        }
+      }
+
+      .user-name-compact {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin: 0;
+      }
+
+      .post-time-compact {
+        font-size: 11px;
+        color: rgba(26, 26, 26, 0.5);
+      }
+    }
+
+    .compact-badges {
+      display: flex;
+      gap: 6px;
+      flex-direction: column;
+      align-items: flex-end;
+
+      .sport-badge-small {
+        padding: 4px 10px;
+        background: rgba(14, 165, 233, 0.1);
+        border: 1px solid rgba(14, 165, 233, 0.2);
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #0ea5e9;
+      }
+
+      .status-badge-small {
+        padding: 3px 8px;
+        border-radius: 8px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+
+        &.status-open {
+          background: rgba(16, 185, 129, 0.15);
+          color: #10b981;
+          border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        &.status-closed {
+          background: rgba(239, 68, 68, 0.15);
+          color: #ef4444;
+          border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        &.status-full {
+          background: rgba(251, 191, 36, 0.15);
+          color: #fbbf24;
+          border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+      }
+    }
+  }
+
+  .compact-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .compact-description {
+    font-size: 13px;
+    color: rgba(26, 26, 26, 0.6);
+    margin-bottom: 12px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .compact-info {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+
+    span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: rgba(26, 26, 26, 0.7);
+
+      svg {
+        color: #0ea5e9;
+      }
+    }
+  }
+
+  .compact-actions {
+    display: flex;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+
+    .action-btn-compact {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: transparent;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      color: rgba(26, 26, 26, 0.7);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      svg {
+        font-size: 14px;
+      }
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.05);
+        border-color: rgba(14, 165, 233, 0.3);
+        color: #0ea5e9;
+      }
+
+      &.liked {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: rgba(239, 68, 68, 0.3);
+        color: #ef4444;
+
+        svg {
+          fill: #ef4444;
+        }
+      }
+    }
+
+    .join-btn-compact {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: linear-gradient(45deg, #0ea5e9, #d946ef);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+      justify-content: center;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+// Responsive adjustments for view mode controls
+@media (max-width: 768px) {
+  .view-mode-controls {
+    .view-mode-buttons {
+      width: 100%;
+      justify-content: center;
+
+      .view-mode-btn {
+        flex: 1;
+        justify-content: center;
+        padding: 10px 12px;
+        font-size: 12px;
+
+        svg {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
