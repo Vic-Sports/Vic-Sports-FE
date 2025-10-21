@@ -44,6 +44,7 @@ import OwnerDashBoardPage from "./pages/owner/dashboard";
 import ManageUserOwnerPage from "./pages/owner/manage.user";
 import OwnerTournamentsPage from "./pages/owner/tournaments";
 import OwnerVenuesPage from "./pages/owner/venues";
+import CommunityPage from "./pages/client/community/CommunityPage"; // Import CommunityPage
 
 const router = createBrowserRouter([
   {
@@ -113,6 +114,10 @@ const router = createBrowserRouter([
             <ChatPage />
           </ProtectedRoute>
         ),
+      },
+      {
+        path: "community",
+        element: <CommunityPage />,
       },
     ],
   },

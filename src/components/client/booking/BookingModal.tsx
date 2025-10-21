@@ -220,19 +220,13 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
       console.log("Final same venue courts:", sameVenueCourts); // Debug log
 
-      // Sort courts by name and add court numbers
+      // Sort courts by name and use court name as display
       const courtsWithNumbers: CourtWithNumber[] = sameVenueCourts
         .sort((a: ICourt, b: ICourt) => a.name.localeCompare(b.name))
-        .map((c: ICourt, index: number) => {
-          // Đánh số sân: có thể dùng số (1, 2, 3...) hoặc chữ (A, B, C...)
-          const courtNumber =
-            index < 26
-              ? `Sân ${String.fromCharCode(65 + index)}` // A, B, C...
-              : `Sân ${index + 1}`; // 1, 2, 3... nếu quá 26 sân
-
+        .map((c: ICourt) => {
           return {
             ...c,
-            courtNumber,
+            courtNumber: c.name, // Use court name instead of generated label
             isSelected: c._id === court._id, // Auto select current court
           };
         });
@@ -249,7 +243,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
         console.log("Using current court as fallback");
         const fallbackCourt: CourtWithNumber = {
           ...court,
-          courtNumber: "Sân A",
+          courtNumber: court.name,
           isSelected: true,
         };
         setAvailableCourts([fallbackCourt]);
@@ -986,7 +980,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
       courtIds: selectedCourts, // Thay đổi từ courtId thành courtIds
       courtNames: availableCourts
         .filter((c) => selectedCourts.includes(c._id || ""))
-        .map((c) => `${c.courtNumber} (${c.name})`)
+        .map((c) => c.courtNumber)
         .join(", "),
       date: selectedDate.format("YYYY-MM-DD"),
       timeSlots: selectedSlots.map((slot) => ({
@@ -1297,12 +1291,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
                                 onClick={(e) => e.stopPropagation()}
                               />
                               <div style={{ marginTop: 4 }}>
-                                <Text strong>{c.courtNumber}</Text>
-                                <br />
-                                <Text
-                                  type="secondary"
-                                  style={{ fontSize: "12px" }}
-                                >
+                                <Text strong style={{ fontSize: "14px" }}>
                                   {c.name}
                                 </Text>
                               </div>

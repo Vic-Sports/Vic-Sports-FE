@@ -1,5 +1,5 @@
 import React from "react";
-import { FaCheckCircle, FaExclamationTriangle, FaSync } from "react-icons/fa";
+import { FaExclamationTriangle, FaSync } from "react-icons/fa";
 
 interface CommunityHubStatusProps {
   loading: boolean;
@@ -33,10 +33,7 @@ const CommunityHubStatus: React.FC<CommunityHubStatusProps> = ({
         <FaExclamationTriangle className="mb-2" size={24} />
         <p className="mb-3">Failed to load data: {error}</p>
         {onRetry && (
-          <button 
-            className="btn btn-outline-primary btn-sm"
-            onClick={onRetry}
-          >
+          <button className="btn btn-outline-primary btn-sm" onClick={onRetry}>
             <FaSync className="me-1" />
             Retry
           </button>
@@ -48,7 +45,6 @@ const CommunityHubStatus: React.FC<CommunityHubStatusProps> = ({
   if (React.Children.count(children) === 0) {
     return (
       <div className="text-center py-4 text-muted">
-        <FaCheckCircle className="mb-2" size={24} />
         <p>{emptyMessage}</p>
       </div>
     );
