@@ -12,16 +12,19 @@ import {
   FaTh,
   FaList,
   FaBars,
+  FaEdit,
 } from "react-icons/fa";
 import {
   likePostAPI,
   acceptJoinRequestAPI,
   rejectJoinRequestAPI,
+  closePostAPI,
 } from "@/services/communityApi";
 import type { IPost } from "@/services/communityApi";
 import { message } from "antd";
 import { useCurrentApp } from "../../context/app.context"; // Corrected import path
 import { useNavigate } from "react-router-dom"; // Import navigation hook
+import CreatePostModal from "./CreatePostModal";
 import "../../../styles/community/community.scss";
 
 interface CommunityListProps {
@@ -39,10 +42,29 @@ const CommunityList: React.FC<CommunityListProps> = ({ posts: propPosts }) => {
   const [joiningPosts, setJoiningPosts] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<"grid" | "list" | "compact">("grid");
 
+  // Edit post modal state
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingPost, setEditingPost] = useState<IPost | null>(null);
+
   // Update posts when props change
   React.useEffect(() => {
     setPosts(propPosts);
   }, [propPosts]);
+
+  // Initialize liked posts based on current user
+  React.useEffect(() => {
+    if (!user?.id || !posts.length) return;
+
+    const userLikedPosts: string[] = [];
+    posts.forEach((post) => {
+      // Check if post.likes is an array and contains current user's ID
+      if (Array.isArray(post.likes) && post.likes.includes(user.id)) {
+        userLikedPosts.push(post._id);
+      }
+    });
+
+    setLikedPosts(userLikedPosts);
+  }, [posts, user?.id]);
 
   const handleLike = async (postId: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -114,11 +136,62 @@ const CommunityList: React.FC<CommunityListProps> = ({ posts: propPosts }) => {
     }
   };
 
+  const handleEditPost = (post: IPost, e: React.MouseEvent) => {
+    e.preventDefault();
+    setEditingPost(post);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdatePost = async (updatedPost: any) => {
+    // Check if post should be closed (participants full)
+    // Use currentParticipants (manual count) instead of participants.length
+    const currentCount =
+      updatedPost.currentParticipants || updatedPost.participants?.length || 0;
+    const maxParticipants = updatedPost.maxParticipants || 0;
+
+    // Update the post in the local state
+    // Merge with existing post to preserve fields like 'user' that backend might not return
+    setPosts((prevPosts) =>
+      prevPosts.map((p) =>
+        p._id === updatedPost._id ? { ...p, ...updatedPost } : p
+      )
+    );
+    message.success("Cập nhật bài viết thành công!");
+
+    // Check if post is now full and close it
+    if (currentCount >= maxParticipants && updatedPost.status !== "closed") {
+      try {
+        await closePostAPI(updatedPost._id);
+        message.info("Bài viết đã đủ người và được đóng.");
+
+        // Update status to closed
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post._id === updatedPost._id ? { ...post, status: "closed" } : post
+          )
+        );
+      } catch (error) {
+        console.error("Error closing post:", error);
+      }
+    }
+
+    setIsEditModalOpen(false);
+    setEditingPost(null);
+  };
+
   const handleAcceptRequest = async (postId: string, userId: string) => {
     try {
       const response: any = await acceptJoinRequestAPI(postId, userId);
       if (response.success) {
         message.success("Yêu cầu tham gia đã được chấp nhận.");
+
+        const updatedPost = response.data;
+        // Use currentParticipants (manual count) instead of participants.length
+        const currentCount =
+          updatedPost.currentParticipants ||
+          updatedPost.participants?.length ||
+          0;
+        const maxParticipants = updatedPost.maxParticipants || 0;
 
         // Update post participants count
         setPosts((prevPosts) =>
@@ -126,15 +199,36 @@ const CommunityList: React.FC<CommunityListProps> = ({ posts: propPosts }) => {
             post._id === postId
               ? {
                   ...post,
-                  currentParticipants: response.data.currentParticipants,
-                  participants: response.data.participants,
+                  currentParticipants: updatedPost.currentParticipants,
+                  participants: updatedPost.participants,
                   pendingRequests: post.pendingRequests?.filter(
                     (req) => req.userId !== userId
                   ),
+                  status: updatedPost.status,
                 }
               : post
           )
         );
+
+        // Check if post is now full and close it
+        if (
+          currentCount >= maxParticipants &&
+          updatedPost.status !== "closed"
+        ) {
+          try {
+            await closePostAPI(postId);
+            message.info("Bài viết đã đủ người và được đóng.");
+
+            // Update status to closed
+            setPosts((prevPosts) =>
+              prevPosts.map((post) =>
+                post._id === postId ? { ...post, status: "closed" } : post
+              )
+            );
+          } catch (error) {
+            console.error("Error closing post:", error);
+          }
+        }
       }
     } catch (error: any) {
       console.error("Error accepting join request:", error);
@@ -192,6 +286,39 @@ const CommunityList: React.FC<CommunityListProps> = ({ posts: propPosts }) => {
       return likes.length;
     }
     return 0;
+  };
+
+  // Helper to check if current user is the post owner
+  // Handle both cases: user as string (ID) or user as object
+  const isPostOwner = (post: IPost): boolean => {
+    if (!user?.id) return false;
+
+    // If post.user is a string (user ID)
+    if (typeof post.user === "string") {
+      return user.id === post.user;
+    }
+
+    // If post.user is an object with _id
+    if (typeof post.user === "object" && post.user?._id) {
+      return user.id === post.user._id;
+    }
+
+    return false;
+  };
+
+  // Helper to get current participants count
+  const getCurrentParticipants = (post: IPost): number => {
+    // Always use currentParticipants if available (whether open or closed)
+    // This preserves the actual count when reopening a closed post
+    if (
+      post.currentParticipants !== undefined &&
+      post.currentParticipants > 0
+    ) {
+      return post.currentParticipants;
+    }
+
+    // Fall back to participants array length (registered users)
+    return post.participants?.length || 0;
   };
 
   const renderPendingRequests = (post: IPost) => {
@@ -267,7 +394,7 @@ const CommunityList: React.FC<CommunityListProps> = ({ posts: propPosts }) => {
               <FaClock /> {post.timeSlot.start}
             </span>
             <span>
-              <FaUsers /> {post.participants.length}/{post.maxParticipants}
+              <FaUsers /> {getCurrentParticipants(post)}/{post.maxParticipants}
             </span>
           </div>
           <div className="compact-actions">
@@ -279,14 +406,27 @@ const CommunityList: React.FC<CommunityListProps> = ({ posts: propPosts }) => {
             >
               <FaHeart /> {getLikesCount(post.likes)}
             </button>
-            <button
-              className="join-btn-compact"
-              onClick={(e) => handleJoinActivity(post._id, e)}
-              disabled={joiningPosts.includes(post._id)}
-            >
-              <FaUsers />{" "}
-              {joiningPosts.includes(post._id) ? "Joining..." : "Join"}
-            </button>
+            {isPostOwner(post) ? (
+              <button
+                className="edit-btn-compact"
+                onClick={(e) => handleEditPost(post, e)}
+              >
+                <FaEdit /> Chỉnh sửa
+              </button>
+            ) : post.status === "closed" ? (
+              <button className="closed-btn-compact" disabled>
+                Hoạt động đã đóng
+              </button>
+            ) : (
+              <button
+                className="join-btn-compact"
+                onClick={(e) => handleJoinActivity(post._id, e)}
+                disabled={joiningPosts.includes(post._id)}
+              >
+                <FaUsers />{" "}
+                {joiningPosts.includes(post._id) ? "Joining..." : "Join"}
+              </button>
+            )}
           </div>
         </div>
       );
@@ -398,7 +538,7 @@ const CommunityList: React.FC<CommunityListProps> = ({ posts: propPosts }) => {
               <div className="info-content">
                 <span className="info-label">Người tham gia</span>
                 <span className="info-value">
-                  {post.participants.length}/{post.maxParticipants}
+                  {getCurrentParticipants(post)}/{post.maxParticipants}
                 </span>
               </div>
             </div>
@@ -426,16 +566,30 @@ const CommunityList: React.FC<CommunityListProps> = ({ posts: propPosts }) => {
               <span>Chia sẻ</span>
             </button>
           </div>
-          <button
-            className="join-btn"
-            onClick={(e) => handleJoinActivity(post._id, e)}
-            disabled={joiningPosts.includes(post._id)}
-          >
-            <FaUsers className="me-2" />
-            {joiningPosts.includes(post._id)
-              ? "Đang tham gia..."
-              : "Tham gia hoạt động"}
-          </button>
+          {isPostOwner(post) ? (
+            <button
+              className="edit-btn"
+              onClick={(e) => handleEditPost(post, e)}
+            >
+              <FaEdit className="me-2" />
+              Chỉnh sửa bài đăng
+            </button>
+          ) : post.status === "closed" ? (
+            <button className="closed-btn" disabled>
+              Hoạt động đã đóng
+            </button>
+          ) : (
+            <button
+              className="join-btn"
+              onClick={(e) => handleJoinActivity(post._id, e)}
+              disabled={joiningPosts.includes(post._id)}
+            >
+              <FaUsers className="me-2" />
+              {joiningPosts.includes(post._id)
+                ? "Đang tham gia..."
+                : "Tham gia hoạt động"}
+            </button>
+          )}
         </div>
 
         {/* Pending Requests */}
@@ -505,6 +659,36 @@ const CommunityList: React.FC<CommunityListProps> = ({ posts: propPosts }) => {
           </div>
         )}
       </CommunityHubStatus>
+
+      {/* Edit Post Modal */}
+      {editingPost && (
+        <CreatePostModal
+          open={isEditModalOpen}
+          onCancel={() => {
+            setIsEditModalOpen(false);
+            setEditingPost(null);
+          }}
+          onCreate={handleUpdatePost}
+          initialData={{
+            _id: editingPost._id,
+            title: editingPost.title,
+            description: editingPost.description,
+            sport: editingPost.sport,
+            courtId:
+              typeof editingPost.court === "string"
+                ? editingPost.court
+                : editingPost.court._id,
+            location: editingPost.location,
+            date: editingPost.date,
+            startTime: editingPost.timeSlot?.start,
+            endTime: editingPost.timeSlot?.end,
+            maxParticipants: editingPost.maxParticipants,
+            currentParticipants: getCurrentParticipants(editingPost),
+            registeredCount: editingPost.participants?.length || 0,
+            status: editingPost.status,
+          }}
+        />
+      )}
     </div>
   );
 };
