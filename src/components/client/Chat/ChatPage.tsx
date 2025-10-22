@@ -87,7 +87,7 @@ const ChatPage: React.FC = () => {
   const [loadingMoreMessages, setLoadingMoreMessages] = useState(false); // Track loading state for "Load More"
   const [currentPage, setCurrentPage] = useState(1); // Current page for pagination
   const allMessagesCache = useRef<Message[]>([]); // Cache all messages for client-side pagination
-  const hasInitializedChat = useRef(false); // Track if we've already initialized the chat
+  const hasInitializedChat = useRef<string | null>(null); // Track if we've already initialized a specific chat (ownerId-postId)
   const previousMessageCountRef = useRef(0); // Track previous message count
   const isInitialLoadRef = useRef(true); // Track if this is the first load (page mount)
   const shouldScrollOnLoadRef = useRef(false); // Track if we should scroll after loading messages
@@ -567,18 +567,19 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     const initializeChat = async () => {
       if (!state || !state.ownerId || !state.postId) {
-        console.error("Missing navigation state, ownerId, or postId.");
-        antMessage.error("Không thể tải thông tin bài viết hoặc người dùng.");
-        return;
-      }
-
-      // Prevent re-initialization if already done
-      if (hasInitializedChat.current) {
-        console.log("Chat already initialized, skipping...");
         return;
       }
 
       const { ownerId, postId } = state;
+
+      // Create a unique key for this specific chat initialization
+      const chatKey = `${ownerId}-${postId}`;
+
+      // Prevent re-initialization of the SAME chat request
+      if (hasInitializedChat.current === chatKey) {
+        console.log("Same chat request already initialized, skipping...");
+        return;
+      }
 
       try {
         // Load user chats
@@ -593,8 +594,6 @@ const ChatPage: React.FC = () => {
             c.participants.some((p: any) => p.id === ownerId)
         );
 
-        let isNewChat = false;
-
         // If no chat exists, create a new one
         if (!chat) {
           const createResponse = await chatApi.createDirectChat({
@@ -603,7 +602,6 @@ const ChatPage: React.FC = () => {
           chat = createResponse.data.chat;
           if (chat) {
             setChats((prev) => [chat as Chat, ...prev]);
-            isNewChat = true; // Mark as new chat
           }
         }
 
@@ -620,8 +618,8 @@ const ChatPage: React.FC = () => {
 
           await loadMessages(chat._id, 1, 10);
 
-          // Send a summary message ONLY if this is a newly created chat
-          if (isNewChat && postId && socket) {
+          // Send a summary message whenever user requests to join activity (regardless of chat being new or existing)
+          if (postId && socket) {
             const summaryMessage = `Người dùng ${user?.fullName} muốn tham gia hoạt động từ bài viết #${postId}.`;
             socket.emit("send_message", {
               chatId: chat._id,
@@ -630,8 +628,8 @@ const ChatPage: React.FC = () => {
             });
           }
 
-          // Mark as initialized
-          hasInitializedChat.current = true;
+          // Mark this specific chat request as initialized
+          hasInitializedChat.current = chatKey;
         }
       } catch (error) {
         console.error("Error initializing chat:", error);

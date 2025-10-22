@@ -36,9 +36,9 @@ export interface IPost {
     end: string;
   };
   maxParticipants: number;
-  currentParticipants: [];
+  currentParticipants: number; // Manual count (including friends outside system)
   status: "open" | "closed" | "cancelled";
-  participants: string[];
+  participants: string[]; // Array of registered user IDs
   images?: string[];
   media?: {
     images?: string[];
@@ -181,7 +181,7 @@ export const cancelPostAPI = async (postId: string) => {
 
 /**
  * Close a Community Post
- * PATCH /api/v1/community/:id/close
+ * PATCH /api/community/:id/close
  */
 export const closePostAPI = async (postId: string) => {
   return instance.patch<{ success: boolean; message: string; data: IPost }>(

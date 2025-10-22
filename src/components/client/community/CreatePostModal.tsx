@@ -8,13 +8,19 @@ import {
   DatePicker,
   TimePicker,
   Spin,
+  Switch,
 } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import type { UploadFile, UploadProps } from "antd/es/upload/interface";
 import dayjs from "dayjs";
 import { FaTimes } from "react-icons/fa";
-import { createPostAPI } from "@/services/communityApi";
+import {
+  createPostAPI,
+  updatePostAPI,
+  closePostAPI,
+} from "@/services/communityApi";
 import { getAllVenuesAPI, getVenueCourtsAPI } from "@/services/venueApi";
+import { getCourtByIdAPI } from "@/services/courtApi";
 import "./CreatePostModal.scss";
 
 const { TextArea } = Input;
@@ -26,6 +32,7 @@ interface CreatePostModalProps {
   onCreate: (post: any) => void;
   onRefresh?: () => void;
   initialData?: {
+    _id?: string; // Post ID for edit mode
     title?: string;
     description?: string;
     sport?: string;
@@ -37,6 +44,8 @@ interface CreatePostModalProps {
     endTime?: string;
     maxParticipants?: number;
     currentParticipants?: number;
+    registeredCount?: number; // Number of users registered via system
+    status?: "open" | "closed" | "cancelled";
   };
 }
 
@@ -63,6 +72,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
   const [endTime, setEndTime] = useState<dayjs.Dayjs | null>(null);
   const [currentParticipants, setCurrentParticipants] = useState(0);
   const [maxParticipants, setMaxParticipants] = useState(10);
+  const [isClosed, setIsClosed] = useState(false); // Post status (closed or not)
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
 
@@ -139,8 +149,81 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
       if (initialData.currentParticipants !== undefined) {
         setCurrentParticipants(initialData.currentParticipants);
       }
+      if (initialData.status) {
+        setIsClosed(initialData.status === "closed");
+      }
     }
   }, [open, initialData]);
+
+  // Auto-fetch venue from court when editing (if venueId not provided)
+  useEffect(() => {
+    const fetchVenueFromCourt = async () => {
+      // Only fetch if modal is open, courtId exists, venueId not provided, and venues are loaded
+      if (
+        !open ||
+        !initialData?.courtId ||
+        initialData?.venueId ||
+        venues.length === 0
+      ) {
+        console.log("⏭️ Skipping auto-fetch venue:", {
+          open,
+          courtId: initialData?.courtId,
+          hasVenueId: !!initialData?.venueId,
+          venuesCount: venues.length,
+        });
+        return;
+      }
+
+      try {
+        console.log(
+          "🔍 Fetching court details to get venueId:",
+          initialData.courtId
+        );
+        const response = await getCourtByIdAPI(initialData.courtId);
+
+        console.log("📦 Full API response:", response);
+        console.log("📦 Response.data:", response.data);
+
+        // Response structure: response.data.court = ICourt (has venueId)
+        // Backend wraps court in { court: {...} } object
+        const court = (response.data as any)?.court || response.data;
+        console.log("📦 Court object:", court);
+
+        // Backend may populate venueId as an object or keep it as string
+        let detectedVenueId: string | null = null;
+
+        if (court?.venueId) {
+          // venueId can be string or populated object
+          detectedVenueId =
+            typeof court.venueId === "string"
+              ? court.venueId
+              : court.venueId._id;
+          console.log(
+            "✅ Auto-detected venueId from court.venueId:",
+            detectedVenueId
+          );
+        } else if (court?.venue) {
+          // Fallback: check if venue field exists
+          detectedVenueId =
+            typeof court.venue === "string" ? court.venue : court.venue._id;
+          console.log(
+            "✅ Auto-detected venueId from court.venue:",
+            detectedVenueId
+          );
+        }
+
+        if (detectedVenueId) {
+          setVenueId(detectedVenueId);
+        } else {
+          console.warn("⚠️ No venueId found in response", { court });
+        }
+      } catch (error) {
+        console.error("❌ Error fetching court details:", error);
+      }
+    };
+
+    fetchVenueFromCourt();
+  }, [open, initialData?.courtId, initialData?.venueId, venues.length]);
 
   // Set venue and court from initial data after venues/courts are loaded
   useEffect(() => {
@@ -210,8 +293,25 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
     return false; // Prevent auto upload
   };
 
+  const handleStatusToggle = (checked: boolean) => {
+    // Just update local state, actual API call will happen when user clicks "Update"
+    setIsClosed(checked);
+
+    if (!checked) {
+      // If opening back, reset currentParticipants to registered count
+      const registeredCount = initialData?.registeredCount || 0;
+      setCurrentParticipants(registeredCount);
+      antMessage.info(
+        `Bài viết sẽ được mở lại với ${registeredCount} người đã đăng ký. Nhấn "Cập nhật" để lưu.`
+      );
+    } else {
+      antMessage.info("Nhấn 'Cập nhật' để lưu thay đổi.");
+    }
+  };
+
   const handleCreate = async () => {
-    console.log("=== CREATE POST CLICKED ===");
+    const isEditMode = !!initialData?._id;
+    console.log(`=== ${isEditMode ? "UPDATE" : "CREATE"} POST CLICKED ===`);
     console.log("Form values:", {
       title,
       description,
@@ -255,17 +355,29 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
       antMessage.error("Vui lòng chọn giờ bắt đầu và kết thúc!");
       return;
     }
-    if (currentParticipants >= maxParticipants) {
+    if (currentParticipants > maxParticipants) {
       console.log(
-        "❌ Validation failed: currentParticipants >= maxParticipants"
+        "❌ Validation failed: currentParticipants > maxParticipants"
       );
-      antMessage.error("Số người hiện tại phải nhỏ hơn số người tối đa!");
+      antMessage.error("Số người hiện tại không được lớn hơn số người tối đa!");
+      return;
+    }
+
+    // When editing, validate currentParticipants must be >= registered count
+    const registeredCount = initialData?.registeredCount || 0;
+    if (isEditMode && currentParticipants < registeredCount) {
+      console.log(
+        "❌ Validation failed: currentParticipants < registeredCount"
+      );
+      antMessage.error(
+        `Số người hiện tại không được nhỏ hơn số người đã đăng ký (${registeredCount} người)!`
+      );
       return;
     }
 
     console.log("✅ All validations passed!");
 
-    const postData = {
+    const postData: any = {
       title: title.trim(),
       description: description.trim(),
       sport,
@@ -281,15 +393,32 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
       images: previewImages,
     };
 
+    // Add status when editing
+    if (isEditMode) {
+      postData.status = isClosed ? "closed" : "open";
+    }
+
     try {
       setLoading(true);
-      console.log("Creating post with data:", postData);
 
-      const response = await createPostAPI(postData);
-      console.log("Create post response:", response);
+      let response;
+      if (isEditMode) {
+        console.log("Updating post with data:", postData);
+        response = await updatePostAPI(initialData._id!, postData);
+        console.log("Update post response:", response);
+      } else {
+        console.log("Creating post with data:", postData);
+        response = await createPostAPI(postData);
+        console.log("Create post response:", response);
+      }
 
       if (response.success) {
-        antMessage.success(response.message || "Tạo bài viết thành công!");
+        antMessage.success(
+          response.message ||
+            (isEditMode
+              ? "Cập nhật bài viết thành công!"
+              : "Tạo bài viết thành công!")
+        );
         onCreate(response.data);
         handleReset();
 
@@ -298,11 +427,21 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
           onRefresh();
         }
       } else {
-        console.error("Create post failed:", response);
-        antMessage.error("Không thể tạo bài viết. Vui lòng thử lại!");
+        console.error(
+          `${isEditMode ? "Update" : "Create"} post failed:`,
+          response
+        );
+        antMessage.error(
+          `Không thể ${
+            isEditMode ? "cập nhật" : "tạo"
+          } bài viết. Vui lòng thử lại!`
+        );
       }
     } catch (error: any) {
-      console.error("Error creating post:", error);
+      console.error(
+        `Error ${isEditMode ? "updating" : "creating"} post:`,
+        error
+      );
       console.error("Error details:", {
         message: error?.message,
         response: error?.response,
@@ -312,7 +451,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
       const errorMessage =
         error?.response?.data?.message ||
         error?.message ||
-        "Đã xảy ra lỗi khi tạo bài viết!";
+        `Đã xảy ra lỗi khi ${isEditMode ? "cập nhật" : "tạo"} bài viết!`;
       antMessage.error(errorMessage);
     } finally {
       setLoading(false);
@@ -331,6 +470,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
     setEndTime(null);
     setCurrentParticipants(0);
     setMaxParticipants(10);
+    setIsClosed(false);
     setFileList([]);
     setPreviewImages([]);
   };
@@ -351,7 +491,9 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
     >
       <div className="modal-content">
         <div className="modal-header">
-          <h2 className="modal-title">Tạo bài viết mới</h2>
+          <h2 className="modal-title">
+            {initialData?._id ? "Chỉnh sửa bài viết" : "Tạo bài viết mới"}
+          </h2>
           <button className="close-btn" onClick={handleCancel}>
             <FaTimes />
           </button>
@@ -554,11 +696,21 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 type="number"
                 value={currentParticipants}
                 onChange={(e) => setCurrentParticipants(Number(e.target.value))}
-                min={0}
+                min={initialData?.registeredCount || 0}
                 max={100}
                 size="large"
                 placeholder="0"
               />
+              {initialData?._id && initialData?.registeredCount ? (
+                <p
+                  className="upload-hint"
+                  style={{ marginTop: "4px", color: "#0ea5e9" }}
+                >
+                  💡 Đã có {initialData.registeredCount} người đăng ký qua hệ
+                  thống. Bạn có thể tăng thêm nếu có người ngoài hệ thống tham
+                  gia.
+                </p>
+              ) : null}
             </div>
 
             <div className="form-group">
@@ -576,6 +728,28 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
               />
             </div>
           </div>
+
+          {/* Post Status (only in edit mode) */}
+          {initialData?._id && (
+            <div className="form-group">
+              <label className="form-label">Trạng thái bài viết</label>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "12px" }}
+              >
+                <Switch
+                  checked={isClosed}
+                  onChange={handleStatusToggle}
+                  checkedChildren="Đã đóng"
+                  unCheckedChildren="Đang mở"
+                />
+                <span style={{ color: "rgba(0, 0, 0, 0.6)", fontSize: "14px" }}>
+                  {isClosed
+                    ? "Bài viết đã đóng - không nhận thêm người tham gia"
+                    : "Bài viết đang mở - vẫn nhận người tham gia"}
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Image Upload */}
           <div className="form-group">
@@ -632,7 +806,13 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({
             onClick={handleCreate}
             disabled={loading}
           >
-            {loading ? "Đang tạo..." : "Tạo bài viết"}
+            {loading
+              ? initialData?._id
+                ? "Đang cập nhật..."
+                : "Đang tạo..."
+              : initialData?._id
+              ? "Cập nhật bài viết"
+              : "Tạo bài viết"}
           </button>
         </div>
       </div>
