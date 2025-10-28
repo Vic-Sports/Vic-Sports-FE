@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Card,
@@ -23,6 +23,7 @@ import {
   MailOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
+import { getPayOSPaymentStatus } from "@/services/payOSApi";
 import "./booking-success.scss";
 
 const { Title, Text, Paragraph } = Typography;
@@ -55,15 +56,30 @@ interface BookingResult {
 const BookingSuccessPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [finalBookingData, setFinalBookingData] =
+    useState<BookingResult | null>(null);
 
-  const bookingData = location.state?.booking as BookingResult;
-
-  // Get booking data with fallback to localStorage
+  // Get booking data with fallback to localStorage and API call
   const getBookingData = (): BookingResult | null => {
     // First try from navigation state
     if (location.state?.booking) {
       console.log("Using location.state.booking:", location.state.booking);
-      return location.state.booking;
+      let bookingResult = location.state.booking;
+
+      // Merge payment status from location.state if provided
+      if (location.state?.paymentStatus) {
+        console.log(
+          "Merging paymentStatus from location.state:",
+          location.state.paymentStatus
+        );
+        bookingResult = {
+          ...bookingResult,
+          paymentStatus: location.state.paymentStatus,
+        };
+      }
+
+      console.log("Final booking result from navigation state:", bookingResult);
+      return bookingResult;
     }
 
     // Then try localStorage as fallback
@@ -72,6 +88,15 @@ const BookingSuccessPage: React.FC = () => {
       try {
         const parsed = JSON.parse(storedBooking);
         console.log("Using localStorage booking:", parsed);
+
+        // Also check if paymentStatus was stored
+        if (parsed.paymentStatus) {
+          console.log(
+            "Using stored paymentStatus from localStorage:",
+            parsed.paymentStatus
+          );
+        }
+
         return parsed;
       } catch (error) {
         console.error("Error parsing stored booking:", error);
@@ -84,16 +109,76 @@ const BookingSuccessPage: React.FC = () => {
     return null;
   };
 
-  const finalBookingData = getBookingData();
+  // Check PayOS payment status from backend if reload
+  const checkPayOSStatus = async (booking: BookingResult) => {
+    try {
+      // Check if booking has payosOrderCode (from PayOS flow)
+      const payosOrderCode = (booking as any)?.payosOrderCode;
+
+      if (!payosOrderCode) {
+        console.log("No PayOS order code found, skipping backend check");
+        return booking;
+      }
+
+      console.log(
+        "🔄 Checking PayOS status from backend for orderCode:",
+        payosOrderCode
+      );
+
+      const backendResult = await getPayOSPaymentStatus(String(payosOrderCode));
+      console.log("✅ Backend payment status result:", backendResult);
+
+      if (backendResult.success && backendResult.data) {
+        const payload = backendResult.data;
+        const normalizedStatus = String(payload.status || "")
+          .trim()
+          .toUpperCase();
+
+        // If backend shows payment is PAID, update booking status
+        if (["PAID", "SUCCESS", "SUCCEEDED"].includes(normalizedStatus)) {
+          console.log(
+            "✅ Backend confirms payment is PAID, updating booking status"
+          );
+          const updatedBooking: BookingResult = {
+            ...booking,
+            paymentStatus: "paid",
+          };
+          return updatedBooking;
+        }
+      }
+
+      return booking;
+    } catch (error) {
+      console.error("❌ Failed to check PayOS status from backend:", error);
+      // Return original booking on error
+      return booking;
+    }
+  };
+
+  // Initialize booking data on mount and on location.state change
+  useEffect(() => {
+    const initializeBookingData = async () => {
+      const initialBooking = getBookingData();
+
+      if (initialBooking) {
+        // Check PayOS status from backend if this is a reload scenario
+        const updatedBooking = await checkPayOSStatus(initialBooking);
+        setFinalBookingData(updatedBooking);
+
+        // Save updated booking to localStorage
+        localStorage.setItem("currentBooking", JSON.stringify(updatedBooking));
+      } else {
+        setFinalBookingData(null);
+      }
+    };
+
+    initializeBookingData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state]);
 
   // Debug: Log the data structure
   useEffect(() => {
     console.log("BookingSuccess - location.state:", location.state);
-    console.log("BookingSuccess - original bookingData:", bookingData);
-    console.log(
-      "BookingSuccess - bookingData.customerInfo:",
-      bookingData?.customerInfo
-    );
     console.log("BookingSuccess - finalBookingData:", finalBookingData);
     console.log(
       "BookingSuccess - customerInfo:",
@@ -126,7 +211,7 @@ const BookingSuccessPage: React.FC = () => {
         Object.keys(parsed)
       );
     }
-  }, [location.state, bookingData, finalBookingData]);
+  }, [finalBookingData, location.state]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("vi-VN", {
