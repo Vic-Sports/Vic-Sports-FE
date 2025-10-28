@@ -171,9 +171,18 @@ const PayOSReturn: React.FC = () => {
               JSON.parse(localStorage.getItem("currentBooking") || "null") ||
               {};
             localStorage.removeItem("currentBooking");
+
+            // Update booking with actual payment status from PayOS
+            const updatedBooking = {
+              ...stored,
+              paymentStatus: "paid",
+              paymentMethod: "payos",
+              payosOrderCode: paymentInfo.orderCode,
+            };
+
             navigate("/booking/success", {
               state: {
-                booking: stored,
+                booking: updatedBooking,
                 paymentMethod: "payos",
                 paymentData: paymentInfo,
               },
