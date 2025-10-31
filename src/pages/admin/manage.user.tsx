@@ -1,9 +1,9 @@
-import TableUser from "@/components/admin/user/table.user";
+import ManageUserAdmin from "@/components/admin/user/manage.user";
 
 const ManageUserPage = () => {
   return (
     <div>
-      <TableUser />
+      <ManageUserAdmin />
     </div>
   );
 };

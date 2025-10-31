@@ -5,7 +5,8 @@ import {
   UserOutlined,
   DollarCircleOutlined,
   MenuFoldOutlined,
-  MenuUnfoldOutlined
+  MenuUnfoldOutlined,
+  HomeOutlined
 } from "@ant-design/icons";
 import { Layout, Menu, Dropdown, Space, Avatar } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -62,7 +63,7 @@ const LayoutAdmin = () => {
         </Link>
       ),
       key: "/admin/courts",
-      icon: <ExceptionOutlined />
+      icon: <HomeOutlined />
     },
     {
       label: (
