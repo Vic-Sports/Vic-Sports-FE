@@ -23,6 +23,8 @@ import LayoutOwner from "./components/layout/layout.owner";
 import DashBoardPage from "./pages/admin/dashboard";
 import ManageUserPage from "./pages/admin/manage.user";
 import ManageVenueAdminPage from "./pages/admin/manage.venue";
+import ManageCourtPage from "./pages/admin/manage.court";
+import ManageBookingPage from "./pages/admin/manage.booking";
 import EmailVerificationPage from "./pages/client/auth/email-verification";
 import EmailVerificationFailedPage from "./pages/client/auth/email-verification-failed";
 import EmailVerifiedPage from "./pages/client/auth/email-verified";
@@ -146,6 +148,22 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ManageVenueAdminPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "courts",
+        element: (
+          <ProtectedRoute>
+            <ManageCourtPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "bookings",
+        element: (
+          <ProtectedRoute>
+            <ManageBookingPage />
           </ProtectedRoute>
         ),
       },

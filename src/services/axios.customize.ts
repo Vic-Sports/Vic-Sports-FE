@@ -8,6 +8,7 @@ const createInstanceAxios = (baseURL: string) => {
     // baseURL: import.meta.env.VITE_BACKEND_URL,
     baseURL: baseURL,
     withCredentials: true, // có thuộc tính này sẽ su dung đc cookies (refresh token)
+    timeout: 10000, // Timeout sau 10 giây
   });
 
   const handleRefreshToken = async () => {
