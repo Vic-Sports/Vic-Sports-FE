@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/charts": "^2.6.6",
     "@ant-design/plots": "^2.6.5",
     "@ant-design/pro-components": "2.8.1",
     "@googlemaps/google-maps-services-js": "^3.4.2",
@@ -24,7 +25,7 @@
     "bootstrap": "^5.3.7",
     "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
-    "dayjs": "1.11.13",
+    "dayjs": "^1.11.13",
     "exceljs": "4.4.0",
     "i18next": "^25.3.1",
     "i18next-browser-languagedetector": "^8.2.0",
