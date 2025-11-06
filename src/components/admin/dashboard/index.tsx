@@ -1,5 +1,5 @@
-import { ProCard, StatisticCard } from "@ant-design/pro-components";
-import { Card, Row, Col, Spin, Alert, Table, Tag, Select } from "antd";
+import { StatisticCard } from "@ant-design/pro-components";
+import { Card, Row, Col, Spin, Alert, Table, Tag } from "antd";
 import {
   UserOutlined,
   TeamOutlined,
@@ -14,7 +14,7 @@ import {
 import RcResizeObserver from "rc-resize-observer";
 import { useState, useEffect } from "react";
 import { getAdminStats } from "../../../services/adminApi";
-import { Line, Column, Pie } from "@ant-design/charts";
+import { Pie } from "@ant-design/charts";
 
 const { Statistic } = StatisticCard;
 const { Option } = Select;
@@ -167,7 +167,7 @@ const AdminDashboard = () => {
         >
           <StatisticCard
             statistic={{
-              title: "Tổng doanh thu",
+              title: "Doanh thu Admin (5% commission)",
               value: formatCurrency(stats.totalRevenue),
               description: (
                 <Statistic
