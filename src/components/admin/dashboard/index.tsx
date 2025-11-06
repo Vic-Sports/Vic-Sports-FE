@@ -17,7 +17,6 @@ import { getAdminStats } from "../../../services/adminApi";
 import { Pie } from "@ant-design/charts";
 
 const { Statistic } = StatisticCard;
-const { Option } = Select;
 
 interface AdminStats {
   totalUsers: number;
